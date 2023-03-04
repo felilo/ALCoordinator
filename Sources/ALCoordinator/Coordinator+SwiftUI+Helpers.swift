@@ -1,5 +1,5 @@
 //
-//  Coordinator+Helpers.swift
+//  Coordinator+SwiftUI+Helpers.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,27 +22,12 @@
 //  THE SOFTWARE.
 //
 
-import UIKit
+import SwiftUI
 
 extension Coordinator {
   
   @discardableResult
-  func popToViewController(viewController: String, animated: Bool = true) -> Bool {
-    let ctrl = root.viewControllers.first { vc in
-      getNameOf(viewController: vc) == viewController
-    }
-    if let ctrl {
-      root.popToViewController(ctrl, animated: animated)
-    }
-    return ctrl != nil
-  }
-  
-  func getNameOf(viewController: UIViewController) -> String {
-    "\(type(of: viewController))"
-  }
-  
-  
-  func getNameOf<T>(object: T) -> String {
-    String(describing: object.self)
-  }
-}
+  func popToView<T>(_ view: T, animated: Bool = true) -> Bool {
+    let name = "UIHostingController<\(getNameOf(object: view))>"
+    return popToViewController(viewController: name, animated: animated)
+  }}

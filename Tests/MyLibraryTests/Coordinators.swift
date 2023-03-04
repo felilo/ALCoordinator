@@ -1,5 +1,5 @@
 //
-//  Coordinator+Helpers.swift
+//  Coordinators.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,27 +22,23 @@
 //  THE SOFTWARE.
 //
 
-import UIKit
 
-extension Coordinator {
-  
-  @discardableResult
-  func popToViewController(viewController: String, animated: Bool = true) -> Bool {
-    let ctrl = root.viewControllers.first { vc in
-      getNameOf(viewController: vc) == viewController
-    }
-    if let ctrl {
-      root.popToViewController(ctrl, animated: animated)
-    }
-    return ctrl != nil
-  }
-  
-  func getNameOf(viewController: UIViewController) -> String {
-    "\(type(of: viewController))"
-  }
+import UIKit
+@testable import ALCoordinator
+
+struct MainCoordinator: Coordinator {
   
   
-  func getNameOf<T>(object: T) -> String {
-    String(describing: object.self)
-  }
+  // ---------------------------------------------------------------------
+  // MARK: Coordinator
+  // ---------------------------------------------------------------------
+  
+  
+  var uuid: String  = UUID().uuidString
+  var parent: Coordinator!
+  var navigationController: UINavigationController = .init()
+  var children = [Coordinator]()
+  
+  
+  func start(animated: Bool = false) { }
 }

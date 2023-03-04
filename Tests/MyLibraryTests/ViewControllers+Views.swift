@@ -1,5 +1,5 @@
 //
-//  Coordinator+Helpers.swift
+//  ViewControllers+Views.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -23,26 +23,12 @@
 //
 
 import UIKit
+import SwiftUI
 
-extension Coordinator {
-  
-  @discardableResult
-  func popToViewController(viewController: String, animated: Bool = true) -> Bool {
-    let ctrl = root.viewControllers.first { vc in
-      getNameOf(viewController: vc) == viewController
-    }
-    if let ctrl {
-      root.popToViewController(ctrl, animated: animated)
-    }
-    return ctrl != nil
-  }
-  
-  func getNameOf(viewController: UIViewController) -> String {
-    "\(type(of: viewController))"
-  }
-  
-  
-  func getNameOf<T>(object: T) -> String {
-    String(describing: object.self)
-  }
+class FirstViewController: UIViewController {}
+class SecondViewController: UIViewController {}
+class ThirdViewController: UIViewController {}
+
+struct FirstView: View {
+  var body: some View { Text("FistView") }
 }

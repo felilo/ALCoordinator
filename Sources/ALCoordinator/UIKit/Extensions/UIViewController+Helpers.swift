@@ -46,7 +46,7 @@ public extension UIViewController {
   }
   
   
-  public var tag: String {
+  var tag: String {
     get {
       return objc_getAssociatedObject(self, &tagAssociationKey) as? String ?? "❤️"
     }
