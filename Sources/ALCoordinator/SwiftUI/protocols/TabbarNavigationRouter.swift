@@ -23,13 +23,8 @@
 //
 
 
-
-
 import Foundation
-import ALCoordinator
 
 public protocol TabbarNavigationRouter {
   func coordinator(parent: Coordinator) -> Coordinator
 }
-
-
