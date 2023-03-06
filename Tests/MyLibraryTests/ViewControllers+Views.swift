@@ -30,5 +30,9 @@ class SecondViewController: UIViewController {}
 class ThirdViewController: UIViewController {}
 
 struct FirstView: View {
-  var body: some View { Text("FistView") }
+  var body: some View { Text("FirstView") }
+}
+
+struct SecondView: View {
+  var body: some View { Text("SecondView") }
 }

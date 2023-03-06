@@ -24,21 +24,35 @@
 
 
 import UIKit
-@testable import ALCoordinator
+import SwiftUI
+import ALCoordinator
 
-struct MainCoordinator: Coordinator {
+class MainCoordinator: BaseCoordinator { }
+
+class MainCoordinatorSUI: CoordinatorSUI<MainRouter> {}
+
+
+enum MainRouter: NavigationRouter {
+  case first
+  case second
   
   
   // ---------------------------------------------------------------------
-  // MARK: Coordinator
+  // MARK: NavigationRouter
   // ---------------------------------------------------------------------
   
   
-  var uuid: String  = UUID().uuidString
-  var parent: Coordinator!
-  var navigationController: UINavigationController = .init()
-  var children = [Coordinator]()
+  var transition: NavigationTranisitionStyle {
+    .push
+  }
   
   
-  func start(animated: Bool = false) { }
+  func view() -> any View {
+    switch self {
+      case .first:
+        return FirstView()
+      case .second:
+        return SecondView()
+    }
+  }
 }

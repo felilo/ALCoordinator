@@ -10,7 +10,7 @@ final class AFLCoordinatorTests: XCTestCase {
     // Given a coordinator with some controllers in its navigation stack
     let sut = getCoordinator()
     // When the user pop to SecondViewController
-    sut.popToViewController(vc: Item.self)
+    sut.popToView(Item.self)
     // Then the top controller in the stack is the SecondViewController
     let lastCtrl = sut.root.viewControllers.last
     XCTAssertNotNil(lastCtrl)
@@ -24,11 +24,11 @@ final class AFLCoordinatorTests: XCTestCase {
   func test_navigateToView() {
     
     typealias Item = FirstView
-    // Given a coordinator with some controllers in its navigation stack
+    // Given a coordinator with some views in its navigation stack
     let sut = getCoordinatorWithViewSUI()
-    // When the user pop to SecondViewController
+    // When the user pop to FirstView
     sut.popToView(Item.self)
-    // Then the top controller in the stack is the SecondViewController
+    // Then the top controller in the stack is the FirstView
     let lastCtrl = sut.root.viewControllers.last
     XCTAssertNotNil(lastCtrl)
     XCTAssertEqual(
@@ -39,7 +39,7 @@ final class AFLCoordinatorTests: XCTestCase {
   
   
   private func getCoordinator() -> Coordinator {
-    let coordinator = MainCoordinator()
+    let coordinator = MainCoordinator(parent: nil)
     coordinator.root.viewControllers = [
       FirstViewController(),
       SecondViewController(),
@@ -50,7 +50,8 @@ final class AFLCoordinatorTests: XCTestCase {
   
   
   private func getCoordinatorWithViewSUI() -> Coordinator {
-    let coordinator = getCoordinator()
+    let coordinator = MainCoordinatorSUI(parent: nil)
+    coordinator.show(.second)
     let ctrl = UIHostingController(rootView: FirstView())
     coordinator.root.viewControllers.insert(ctrl, at: 0)
     return coordinator

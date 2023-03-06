@@ -69,7 +69,6 @@ public class ManagerCoordinatorSUI<Router: NavigationRouter> {
   
   private func buildHostingCtrl(view: some View) -> UIViewController {
     let ctrl = UIHostingController(rootView: view)
-    ctrl.tag = NSStringFromClass(type(of: ctrl))
     return ctrl
   }
   

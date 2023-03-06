@@ -77,9 +77,9 @@ public extension Coordinator {
   
   
   @discardableResult
-  func popToViewController<T>(vc: T, animated: Bool = true) -> Bool {
-    popToViewController(
-      viewController: getNameOf(object: vc),
+  func popToView<T>(_ view: T, animated: Bool = true) -> Bool {
+    isPopToViewController(
+      name: getNameOf(object: view),
       animated: animated
     )
   }
@@ -187,47 +187,5 @@ public extension Coordinator {
   }
   
   
-  /// Get the deepest coordinator from a given coordinator as parameter
-  /// - Parameters:
-  ///   - value: Coordinator
-  private func getDeepCoordinator(from value:inout Coordinator?) -> Coordinator?{
-    if value?.children.last == nil {
-      return value
-    } else {
-      var last = value?.children.last
-      return getDeepCoordinator(from: &last)
-    }
-  }
   
-  
-  /// Remove its coordinator child
-  /// - Parameters:
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  ///   - coordinator: Coordinator
-  ///   - completion
-  private func removeChild(coordinator : Coordinator, completion:(() -> Void)? = nil) {
-    guard let index = children.firstIndex(where: {$0.uuid == coordinator.uuid}) else {
-      completion?()
-      return
-    }
-    var aux = self
-    aux.children.remove(at: index)
-    coordinator.removeChildren {
-      removeChild(coordinator: coordinator, completion: completion)
-    }
-  }
-  
-  
-  /// Remove its coordinators children
-  /// - Parameter animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  private func removeChildren(animated: Bool = false, _ completion:(() -> Void)? = nil){
-    
-    guard let coordinator = children.first else {
-      completion?()
-      return
-    }
-    coordinator.finish(animated: animated, completion: {
-      removeChildren(completion)
-    })
-  }
 }

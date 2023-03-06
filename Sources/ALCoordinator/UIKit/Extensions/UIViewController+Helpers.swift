@@ -28,6 +28,7 @@
 import UIKit
 
 private var tagAssociationKey: UInt8 = 0
+private var nameAssociationKey: UInt8 = 0
 
 public extension UIViewController {
   
@@ -54,7 +55,22 @@ public extension UIViewController {
       objc_setAssociatedObject(self, &tagAssociationKey, newValue, .OBJC_ASSOCIATION_RETAIN)
     }
   }
+  
+  
+  var name: String {
+    get {
+      return objc_getAssociatedObject(
+        self,
+        &nameAssociationKey
+      ) as? String ?? "\(type(of: self))"
+    }
+    set(newValue) {
+      objc_setAssociatedObject(
+        self,
+        &nameAssociationKey,
+        newValue,
+        .OBJC_ASSOCIATION_RETAIN
+      )
+    }
+  }
 }
-
-
-
