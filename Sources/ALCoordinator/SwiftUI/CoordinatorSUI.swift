@@ -22,8 +22,6 @@
 //  THE SOFTWARE.
 //
 
-
-
 import SwiftUI
 import Combine
 
@@ -44,7 +42,11 @@ open class CoordinatorSUI<Router: NavigationRouter>: BaseCoordinator {
   }
   
   
-  open func restartMainCoordinator(mainCoordinator: Coordinator? = nil, animated: Bool, completion: (() -> Void)? ) {
+  open func restartMainCoordinator(
+    mainCoordinator: Coordinator? = BaseCoordinator.mainCoordinator,
+    animated: Bool,
+    completion: (() -> Void)?
+  ) {
     manager.restartMainCoordinator(
       mainCoordinator: mainCoordinator,
       animated: animated,
