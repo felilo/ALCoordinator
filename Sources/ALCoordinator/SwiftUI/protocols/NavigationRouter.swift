@@ -36,8 +36,7 @@ public protocol NavigationRouter {
 
 public enum NavigationTranisitionStyle {
   case push
-  case presentModally
+  case present
   case presentFullscreen
-  case pushModally
-  case tab
+  case custom(style: UIModalPresentationStyle)
 }

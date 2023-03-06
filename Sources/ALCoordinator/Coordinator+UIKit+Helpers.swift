@@ -113,17 +113,24 @@ public extension Coordinator {
   /// - Parameters:
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion
-  func finish(animated: Bool = true, completion: (() -> Void)?) {
-    close(animated: animated) {
-      guard let parent = parent else {
-        return removeChildren(completion)
-      }
-      clearCoordinator()
-      parent.removeChild(
-        coordinator: self,
-        completion: completion
-      )
+  func finish(animated: Bool = true, withDissmis: Bool = true, completion: (() -> Void)?) {
+    guard withDissmis else {
+      return handleFinish(completion: completion)
     }
+    close(animated: animated) {
+      handleFinish(completion: completion)
+    }
+  }
+  
+  private func handleFinish(completion: (() -> Void)?) {
+    guard let parent = parent else {
+      return removeChildren(completion)
+    }
+    clearCoordinator()
+    parent.removeChild(
+      coordinator: self,
+      completion: completion
+    )
   }
   
   
