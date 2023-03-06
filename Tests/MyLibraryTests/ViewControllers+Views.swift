@@ -1,5 +1,5 @@
 //
-//  BaseTabBarCoordinator.swift
+//  ViewControllers+Views.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,48 +22,17 @@
 //  THE SOFTWARE.
 //
 
-
 import UIKit
+import SwiftUI
 
-open class BaseTabBarCoordinator: BaseCoordinator {
-  
-  
-  // ---------------------------------------------------------
-  // MARK: Properties
-  // ---------------------------------------------------------
-  
-  
-  open var tabBarItem: UITabBarItem? {
-    didSet {
-      setupBarItem()
-    }
-  }
-  
-  
-  // ---------------------------------------------------------
-  // MARK: Constructor
-  // ---------------------------------------------------------
-  
-  
-  public override init(parent: Coordinator!) {
-    super.init(parent: parent)
-  }
-  
-  
-  // ---------------------------------------------------------
-  // MARK: Helpers func
-  // ---------------------------------------------------------
-  
-  
-  private func setupBarItem() {
-    guard let item = tabBarItem else { return }
-    navigationController.tabBarItem = item
-  }
-  
-  
-  open override func start(animated: Bool = true) {
-    super.start()
-  }
+class FirstViewController: UIViewController {}
+class SecondViewController: UIViewController {}
+class ThirdViewController: UIViewController {}
+
+struct FirstView: View {
+  var body: some View { Text("FirstView") }
 }
 
-
+struct SecondView: View {
+  var body: some View { Text("SecondView") }
+}

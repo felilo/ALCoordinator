@@ -26,7 +26,6 @@
 
 import SwiftUI
 import Combine
-import ALCoordinator
 
 open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinator {
   

@@ -22,166 +22,36 @@
 //  THE SOFTWARE.
 //
 
-
 import UIKit
+import SwiftUI
 
-public extension Coordinator {
+extension Coordinator {
   
-  
-  // ---------------------------------------------------------
-  // MARK: Helpers func
-  // ---------------------------------------------------------
-  
-  
-  /// navigation controller del coordinator
-  var root:UINavigationController {
-    return navigationController
-  }
-  
-  
-  /// Push ViewController
-  /// - Parameters:
-  ///   - viewController: The view controller to push onto the stack. This object cannot be a tab bar controller. If the view controller is already on the navigation stack, this method throws an exception.
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  func push(_ viewController: UIViewController, animated: Bool = true) {
-    DispatchQueue.main.async {
-      root.pushViewController(viewController, animated: animated)
+  @discardableResult
+  func isPopToViewController(name: String, animated: Bool = true) -> Bool {
+    let ctrl = root.viewControllers.first { vc in
+      vc.name == name || vc.name == "UIHostingController<\(name)>"
     }
-  }
-  
-  
-  /// Present ViewController
-  /// - Parameters:
-  ///   - viewController: controlador que llega como parametro
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  ///   - completion
-  func present(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
-    DispatchQueue.main.async {
-      root.present(viewController, animated: animated, completion: completion)
+    if let ctrl {
+      root.popToViewController(ctrl, animated: animated)
     }
+    return ctrl != nil
   }
   
   
-  /// Close the ViewController doing a pop
-  /// - Parameter animated: define si se quiere mostrar la animación
-  func pop(animated: Bool = true) {
-    root.popViewController(animated: animated)
+  func getNameOf(viewController: UIViewController) -> String {
+    "\(type(of: viewController))"
   }
   
   
-  /// Close the ViewController doing a popToRoot
-  /// - Parameter animated: Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  func popToRoot(animated: Bool = true) {
-    root.popToRootViewController(animated: animated)
+  func getNameOf<T>(object: T) -> String {
+    String(describing: object.self)
   }
-  
-  
-  /// Close the ViewController doing a dismiss
-  /// - Parameters:
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  ///   - completion: se requiere hacer un proceso previo antes de finalizar la desvinculacion
-  func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
-    root.dismiss(animated: animated, completion: completion)
-  }
-  
-  
-  /// Close the ViewController, this function checks what kind of presentation has the controller and then it make a dismiss or pop
-  /// - Parameters:
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  ///   - completion: se requiere hacer un proceso previo antes de finalizar la desvinculacion
-  func close(animated: Bool = true, completion: (() -> Void)? = nil) {
-    let isDismiss = root.isModal || (root.viewControllers.last?.isModal == true)
-    if isDismiss || parent == nil {
-      dismiss(animated: animated, completion: completion)
-    } else {
-      pop(animated: animated)
-      completion?()
-    }
-  }
-  
-  
-  /// Close the current navigation controller and then removes it from its coordinator parent
-  /// - Parameters:
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  ///   - completion
-  func finish(animated: Bool = true, completion: (() -> Void)?) {
-    close(animated: animated) {
-      guard let parent = parent else {
-        return removeChildren(completion)
-      }
-      clearCoordinator()
-      parent.removeChild(
-        coordinator: self,
-        completion: completion
-      )
-    }
-  }
-  
-  
-  // Clear all its properties
-  private func clearCoordinator() {
-    if let item = self as? TabbarCoordinator {
-      item.tabController?.viewControllers = nil
-      item.tabController = nil
-      item.root.viewControllers = []
-    } else if let item = self as? BaseCoordinator {
-      item.root.viewControllers = []
-    }
-  }
-  
-  
-  /// Get the top coordinator
-  /// - Parameters:
-  ///   - appCoordinator: Main coordinator
-  ///   - pCoodinator:
-  func topCoordinator(pCoodinator: Coordinator? = nil) -> Coordinator? {
-    
-    guard children.last != nil else { return self }
-    var auxCoordinator = pCoodinator ?? self.children.last
-    
-    guard let tabCoordinator = auxCoordinator as? TabbarCoordinator else {
-      return getDeepCoordinator(from: &auxCoordinator)
-    }
-    
-    let itemSelected        = tabCoordinator.tabController.selectedIndex
-    let coordinatorSelected = tabCoordinator.children[itemSelected]
-    auxCoordinator          = coordinatorSelected.children.last
-    
-    guard let coord = auxCoordinator as? TabbarCoordinator else {
-      auxCoordinator = coordinatorSelected
-      return getDeepCoordinator(
-        from: &auxCoordinator
-      )
-    }
-    return topCoordinator(pCoodinator: coord)
-  }
-  
-  
-  // Restart coordinator
-  func restart(animated: Bool, completion: (() -> Void)?) {
-    finish(animated: animated) {
-      start(animated: animated)
-      completion?()
-    }
-  }
-  
-  
-  mutating func startChildCoordinator(_ coordinator: Coordinator, animated: Bool = true){
-    children.append(coordinator)
-    if let tabbar = (self as? TabbarCoordinator)?.tabController {
-      var ctrls = tabbar.viewControllers ?? []
-      ctrls.append(coordinator.root)
-      tabbar.setViewControllers(ctrls, animated: animated)
-    } else {
-      present(coordinator.root, animated: animated)
-    }
-  }
-  
   
   /// Get the deepest coordinator from a given coordinator as parameter
   /// - Parameters:
   ///   - value: Coordinator
-  private func getDeepCoordinator(from value:inout Coordinator?) -> Coordinator?{
+  func getDeepCoordinator(from value:inout Coordinator?) -> Coordinator?{
     if value?.children.last == nil {
       return value
     } else {
@@ -196,7 +66,7 @@ public extension Coordinator {
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - coordinator: Coordinator
   ///   - completion
-  private func removeChild(coordinator : Coordinator, completion:(() -> Void)? = nil) {
+  func removeChild(coordinator : Coordinator, completion:(() -> Void)? = nil) {
     guard let index = children.firstIndex(where: {$0.uuid == coordinator.uuid}) else {
       completion?()
       return
@@ -211,7 +81,7 @@ public extension Coordinator {
   
   /// Remove its coordinators children
   /// - Parameter animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  private func removeChildren(animated: Bool = false, _ completion:(() -> Void)? = nil){
+  func removeChildren(animated: Bool = false, _ completion:(() -> Void)? = nil){
     
     guard let coordinator = children.first else {
       completion?()

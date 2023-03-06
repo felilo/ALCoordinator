@@ -25,7 +25,6 @@
 
 
 import SwiftUI
-import ALCoordinator
 import Combine
 
 open class CoordinatorSUI<Router: NavigationRouter>: BaseCoordinator {

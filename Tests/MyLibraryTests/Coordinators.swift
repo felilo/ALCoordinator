@@ -1,5 +1,5 @@
 //
-//  BaseTabBarCoordinator.swift
+//  Coordinators.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -24,46 +24,35 @@
 
 
 import UIKit
+import SwiftUI
+import ALCoordinator
 
-open class BaseTabBarCoordinator: BaseCoordinator {
+class MainCoordinator: BaseCoordinator { }
+
+class MainCoordinatorSUI: CoordinatorSUI<MainRouter> {}
+
+
+enum MainRouter: NavigationRouter {
+  case first
+  case second
   
   
-  // ---------------------------------------------------------
-  // MARK: Properties
-  // ---------------------------------------------------------
+  // ---------------------------------------------------------------------
+  // MARK: NavigationRouter
+  // ---------------------------------------------------------------------
   
   
-  open var tabBarItem: UITabBarItem? {
-    didSet {
-      setupBarItem()
+  var transition: NavigationTranisitionStyle {
+    .push
+  }
+  
+  
+  func view() -> any View {
+    switch self {
+      case .first:
+        return FirstView()
+      case .second:
+        return SecondView()
     }
   }
-  
-  
-  // ---------------------------------------------------------
-  // MARK: Constructor
-  // ---------------------------------------------------------
-  
-  
-  public override init(parent: Coordinator!) {
-    super.init(parent: parent)
-  }
-  
-  
-  // ---------------------------------------------------------
-  // MARK: Helpers func
-  // ---------------------------------------------------------
-  
-  
-  private func setupBarItem() {
-    guard let item = tabBarItem else { return }
-    navigationController.tabBarItem = item
-  }
-  
-  
-  open override func start(animated: Bool = true) {
-    super.start()
-  }
 }
-
-
