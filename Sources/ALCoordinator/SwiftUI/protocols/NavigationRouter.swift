@@ -26,21 +26,17 @@ import SwiftUI
 
 public protocol NavigationRouter {
   
-  associatedtype V: View
-  
   var transition: NavigationTranisitionStyle { get }
   
   /// Creates and returns a view of assosiated type
   ///
-  @ViewBuilder
-  func view() -> V
+  func view() -> any View
 }
 
 
 public enum NavigationTranisitionStyle {
   case push
-  case presentModally
+  case present
   case presentFullscreen
-  case pushModally
-  case tab
+  case custom(style: UIModalPresentationStyle)
 }

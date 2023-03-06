@@ -69,7 +69,6 @@ public class ManagerCoordinatorSUI<Router: NavigationRouter> {
   
   private func buildHostingCtrl(view: some View) -> UIViewController {
     let ctrl = UIHostingController(rootView: view)
-    ctrl.tag = NSStringFromClass(type(of: ctrl))
     return ctrl
   }
   
@@ -80,40 +79,42 @@ public class ManagerCoordinatorSUI<Router: NavigationRouter> {
     coordinator: Coordinator,
     animated: Bool
   ) {
+    let handlePresent: (UIModalPresentationStyle) -> Void = { [weak self] style in
+      self?.handlePresentCtrl(ctrl: ctrl, style: style, coordinator: coordinator, animated: animated)
+    }
     switch transitionStyle {
-      case .presentModally:
-        handlePresentCtrl(ctrl: ctrl, coordinator: coordinator, animated: animated)
+      case .present:
+        handlePresent(.automatic)
       case .presentFullscreen:
-        ctrl.modalPresentationStyle = .fullScreen
-        handlePresentCtrl(ctrl: ctrl, coordinator: coordinator, animated: animated)
-      case .push, .tab:
+        handlePresent(.fullScreen)
+      case .push:
         handlePushCtrl(ctrl: ctrl, coordinator: coordinator, animated: animated)
-      case .pushModally:
-        coordinator.present(ctrl, animated: animated)
-        //        handlePushTransition(ctrl, coordinator: coordinator, animated: animated)
+      case .custom(let style):
+        handlePresent(style)
     }
   }
   
   
-  private func handlePushTransition(_ ctrl: UIViewController, coordinator: Coordinator, animated: Bool) {
-    
-  }
-  
-  
-  private func handlePresentCtrl(ctrl: UIViewController, coordinator: Coordinator, animated: Bool) {
-    if coordinator.root.viewControllers.isEmpty {
-      coordinator.root.viewControllers = [ctrl]
-    } else {
+  private func handlePresentCtrl(ctrl: UIViewController, style: UIModalPresentationStyle, coordinator: Coordinator, animated: Bool) {
+    handlePresentation(coordinator: coordinator, ctrl: ctrl) {
+      ctrl.modalPresentationStyle = style
       coordinator.present(ctrl, animated: animated)
     }
   }
   
   
   private func handlePushCtrl(ctrl: UIViewController, coordinator: Coordinator, animated: Bool) {
+    handlePresentation(coordinator: coordinator, ctrl: ctrl) {
+      coordinator.push(ctrl, animated: animated)
+    }
+  }
+  
+  
+  private func handlePresentation(coordinator: Coordinator, ctrl: UIViewController, _ presentation: @escaping () -> ()) {
     if coordinator.root.viewControllers.isEmpty {
       coordinator.root.viewControllers = [ctrl]
     } else {
-      coordinator.push(ctrl, animated: animated)
+      presentation()
     }
   }
 }

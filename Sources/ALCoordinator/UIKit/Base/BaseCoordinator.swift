@@ -25,7 +25,7 @@
 
 import UIKit
 
-open class BaseCoordinator: Coordinator {
+open class BaseCoordinator: NSObject, Coordinator  {
   
   
   // ---------------------------------------------------------
@@ -33,6 +33,7 @@ open class BaseCoordinator: Coordinator {
   // ---------------------------------------------------------
   
   
+  public static var mainCoordinator: Coordinator?
   open var uuid: String
   open var parent: Coordinator!
   open var children = [Coordinator]()
@@ -44,7 +45,7 @@ open class BaseCoordinator: Coordinator {
   // ---------------------------------------------------------
   
   
-  public init(parent: Coordinator) {
+  public init(parent: Coordinator!) {
     self.parent = parent
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
   }
@@ -56,8 +57,10 @@ open class BaseCoordinator: Coordinator {
   ) {
     self.parent = parent
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
+    super.init()
     root.modalPresentationStyle = presentationStyle
     root.setNavigationBarHidden(true, animated: false)
+    handlePresentationStyle()
   }
   
   
@@ -67,6 +70,30 @@ open class BaseCoordinator: Coordinator {
   
   
   open func start(animated: Bool = true ) {
-    fatalError("")
+    fatalError("start(animated:) has not been implemented")
+  }
+  
+  
+  private func handlePresentationStyle() {
+    switch root.modalPresentationStyle {
+      case .custom,  .none, .automatic, .fullScreen:
+        return
+      default:
+        root.presentationController?.delegate = self
+    }
+  }
+}
+
+
+
+extension BaseCoordinator: UIAdaptivePresentationControllerDelegate {
+  
+  // ---------------------------------------------------------------------
+  // MARK: UIAdaptivePresentationControllerDelegate
+  // ---------------------------------------------------------------------
+  
+  
+  public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    finish(withDissmis: false, completion: nil)
   }
 }

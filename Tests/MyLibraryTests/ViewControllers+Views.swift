@@ -1,5 +1,5 @@
 //
-//  CoordinatorSUI.swift
+//  ViewControllers+Views.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,37 +22,17 @@
 //  THE SOFTWARE.
 //
 
+import UIKit
 import SwiftUI
-import Combine
 
-open class CoordinatorSUI<Router: NavigationRouter>: BaseCoordinator {
-  
-  
-  private let manager = ManagerCoordinatorSUI<Router>()
-  public var cancelables = Set<AnyCancellable>()
-  
-  
-  // ---------------------------------------------------------------------
-  // MARK: Helper funcs
-  // ---------------------------------------------------------------------
-  
-  
-  open func show(_ router: Router, transitionStyle: NavigationTranisitionStyle? = nil, animated: Bool = true) {
-    manager.show(self, router: router, transitionStyle: transitionStyle, animated: animated)
-  }
-  
-  
-  open func restartMainCoordinator(
-    mainCoordinator: Coordinator? = BaseCoordinator.mainCoordinator,
-    animated: Bool,
-    completion: (() -> Void)?
-  ) {
-    manager.restartMainCoordinator(
-      mainCoordinator: mainCoordinator,
-      animated: animated,
-      completion: completion
-    )
-  }
+class FirstViewController: UIViewController {}
+class SecondViewController: UIViewController {}
+class ThirdViewController: UIViewController {}
+
+struct FirstView: View {
+  var body: some View { Text("FirstView") }
 }
 
-
+struct SecondView: View {
+  var body: some View { Text("SecondView") }
+}
