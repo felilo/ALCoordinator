@@ -37,7 +37,6 @@ open class TabbarCoordinator: BaseCoordinator {
   
   
   open var tabController: T!
+  open var pages: [TabbarPage] = []
   
 }
-
-

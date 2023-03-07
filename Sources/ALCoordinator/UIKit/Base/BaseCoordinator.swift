@@ -45,7 +45,7 @@ open class BaseCoordinator: NSObject, Coordinator  {
   // ---------------------------------------------------------
   
   
-  public init(parent: Coordinator!) {
+  public init(parent: Coordinator?) {
     self.parent = parent
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
   }

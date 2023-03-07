@@ -30,9 +30,32 @@ import Combine
 open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinator {
   
   
+  public typealias Router = Router
+  
+  
+  // ---------------------------------------------------------------------
+  // MARK: Properties
+  // ---------------------------------------------------------------------
+  
+  
   public var cancelables = Set<AnyCancellable>()
   private (set) var tabbarViewStyle: TabbarViewStyle = .default
-  public typealias Router = Router
+
+  
+  // ---------------------------------------------------------------------
+  // MARK: Constructor
+  // ---------------------------------------------------------------------
+  
+
+  public init(
+    withParent parent: Coordinator,
+    pages: [TapPageSUI],
+    customView: TabbarViewStyle = .default
+  ) {
+    super.init(withParent: parent)
+    setupTabbarView(customView)
+    setupPages(pages)
+  }
   
   
   // ---------------------------------------------------------------------
@@ -45,8 +68,13 @@ open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinat
     tabController.modalPresentationStyle = .fullScreen
     parent.present(tabController, animated: animated)
   }
+
   
+  // ---------------------------------------------------------------------
+  // MARK: Helper funcs
+  // ---------------------------------------------------------------------
   
+
   open func setupTabbarView(_ value: TabbarViewStyle = .default) {
     tabbarViewStyle = value
     switch value {
@@ -56,6 +84,7 @@ open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinat
         tabController = .init()
     }
   }
+  
   
   open func buildTabbarItem(page: TabbarPage) -> UITabBarItem? {
     guard tabbarViewStyle == .default else { return nil }
@@ -67,13 +96,36 @@ open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinat
   }
   
   
+  open func setupPages(_ values: [TapPageSUI]) {
+    values.forEach({
+      let item = $0.coordinator(parent: self)
+      item.root.tabBarItem = buildTabbarItem(page: $0)
+      item.start(animated: false)
+    })
+  }
+
+  
+  // ---------------------------------------------------------------------
+  // MARK: Enums
+  // ---------------------------------------------------------------------
+  
+
   public enum TabbarViewStyle: Equatable {
-    static public func == (lhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle, rhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle) -> Bool {
-      lhs.id == rhs.id
-    }
+    
     
     case `default`
     case custom(value: any View)
+    
+    
+    // ---------------------------------------------------------------------
+    // MARK: Equatable
+    // ---------------------------------------------------------------------
+    
+    
+    static public func == (
+      lhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle,
+      rhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle
+    ) -> Bool { lhs.id == rhs.id }
     
     
     private var id: Int {
@@ -84,5 +136,3 @@ open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinat
     }
   }
 }
-
-
