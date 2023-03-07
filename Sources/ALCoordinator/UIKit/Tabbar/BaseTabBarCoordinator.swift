@@ -45,7 +45,7 @@ open class BaseTabBarCoordinator: BaseCoordinator {
   // ---------------------------------------------------------
   
   
-  public override init(parent: Coordinator!) {
+  public override init(parent: Coordinator?) {
     super.init(parent: parent)
   }
   
@@ -65,5 +65,3 @@ open class BaseTabBarCoordinator: BaseCoordinator {
     super.start()
   }
 }
-
-

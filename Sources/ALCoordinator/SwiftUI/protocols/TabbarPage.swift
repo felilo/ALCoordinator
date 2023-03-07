@@ -30,3 +30,5 @@ public protocol TabbarPage {
   var icon: String { get }
   var position: Int { get }
 }
+
+public typealias TapPageSUI = TabbarPage & TabbarNavigationRouter
