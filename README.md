@@ -111,7 +111,7 @@ class MainCoordinator: BaseCoordinator {
       var transition: NavigationTranisitionStyle {
         switch self {
           case .firstStep, secondStep:
-            return .presentFullscreen
+            return .push
         }
       }
 
@@ -124,7 +124,6 @@ class MainCoordinator: BaseCoordinator {
         }
       }
     }
-
     ```
 
   * UIKit:
@@ -156,7 +155,6 @@ class MainCoordinator: BaseCoordinator {
 
     ```swift
     enum HomeRouter: CaseIterable, TabbarPage {
-
 
       case marketplace
       case settings
