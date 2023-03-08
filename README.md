@@ -356,6 +356,14 @@ The CoordinatorSUI class is a specialized coordinator object that is designed to
 `TabbarPage`
 The typealias TabbarPage is a short way to implement protocols TabbarPageDataSource & TabbarNavigationRouter
 
+
+### Installation 💾
+
+SPM
+
+Open Xcode and your project, click File / Swift Packages / Add package dependency... . In the textfield "Enter package repository URL", write https://github.com/felilo/AFCoordinator/ and press Next twice
+
+
 ## Contributing
 
 Contributions to the ALCoordinator library are welcome! To contribute, simply fork this repository and make your changes in a new branch. When your changes are ready, submit a pull request to this repository for review.
