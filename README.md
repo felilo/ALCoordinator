@@ -221,7 +221,7 @@ class MainCoordinator: BaseCoordinator {
     class HomeCoordinator: TabbarCoordinatorSUI<HomeRouter> {
       public init(withParent parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
-        let view = HomeTabbarView()
+        let view = HomeTabbarView(pages: pages)
         super.init(withParent: parent, pages: pages, customView: .custom(value: view))
         view.$currentPage
           .sink { [weak self] page in
