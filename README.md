@@ -341,8 +341,8 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
 
 ## Contributing
 
-Contributions to the Coordinator-pattern library are welcome! To contribute, simply fork this repository and make your changes in a new branch. When your changes are ready, submit a pull request to this repository for review.
+Contributions to the ALCoordinator library are welcome! To contribute, simply fork this repository and make your changes in a new branch. When your changes are ready, submit a pull request to this repository for review.
 
 License
 
-The Coordinator-pattern library is released under the MIT license. See the LICENSE file for more information.
+The ALCoordinator library is released under the MIT license. See the LICENSE file for more information.
