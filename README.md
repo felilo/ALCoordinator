@@ -339,6 +339,23 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
   </tbody>
 </table>
 
+
+#### Classes
+
+In addition to the functions listed above, the Coordinator-pattern library provides several classes that can be used to simplify the implementation of the Coordinator pattern in an iOS app. These classes are:
+
+`BaseCoordinator`
+The BaseCoordinator class provides a basic implementation of the Coordinator protocol, with default implementations. This class can be subclassed to create custom coordinator objects that implement the Coordinator protocol.
+
+`TabbarCoordinatorSUI`
+The TabbarCoordinatorSUI class is a specialized coordinator object that is designed to manage the navigation flow of a tab bar interface. This class provides methods for adding child coordinators for each tab in the tab bar, and for managing the selection of tabs.
+
+`CoordinatorSUI`
+The CoordinatorSUI class is a specialized coordinator object that is designed to manage the navigation flow of a SwiftUI app. This class provides methods for showing views.
+
+`TabbarPage`
+The typealias TabbarPage is a short way to implement protocols TabbarPageDataSource & TabbarNavigationRouter
+
 ## Contributing
 
 Contributions to the ALCoordinator library are welcome! To contribute, simply fork this repository and make your changes in a new branch. When your changes are ready, submit a pull request to this repository for review.
