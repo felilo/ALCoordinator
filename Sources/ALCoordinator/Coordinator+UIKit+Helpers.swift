@@ -192,7 +192,4 @@ public extension Coordinator {
       present(coordinator.root, animated: animated)
     }
   }
-  
-  
-  
 }

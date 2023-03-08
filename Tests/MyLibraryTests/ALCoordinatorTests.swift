@@ -3,7 +3,7 @@ import UIKit
 import SwiftUI
 @testable import ALCoordinator
 
-final class AFLCoordinatorTests: XCTestCase {
+final class ALCoordinatorTests: XCTestCase {
   
   func test_navigateToViewController() {
     typealias Item = SecondViewController

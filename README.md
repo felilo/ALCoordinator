@@ -1,4 +1,4 @@
-# AFCoodinator
+# ALCoodinator
 
 This repository contains a library implementing the Coordinator pattern, which is a design pattern used in iOS app development to manage app navigation flows. The library provides a set of classes and protocols that can be used to implement the Coordinator pattern in an iOS app. It works either UIKit or SwiftUI apps
 

@@ -25,10 +25,10 @@
 import Foundation
 
 
-public protocol TabbarPage {
+public protocol TabbarPageDataSource {
   var title: String { get }
   var icon: String { get }
   var position: Int { get }
 }
 
-public typealias TapPageSUI = TabbarPage & TabbarNavigationRouter
+public typealias TabbarPage = TabbarPageDataSource & TabbarNavigationRouter

@@ -27,7 +27,7 @@
 import SwiftUI
 import Combine
 
-open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinator {
+open class TabbarCoordinatorSUI<Router: TabbarPage>: TabbarCoordinator {
   
   
   public typealias Router = Router
@@ -49,7 +49,7 @@ open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinat
 
   public init(
     withParent parent: Coordinator,
-    pages: [TapPageSUI],
+    pages: [TabbarPage],
     customView: TabbarViewStyle = .default
   ) {
     super.init(withParent: parent)
@@ -96,7 +96,7 @@ open class TabbarCoordinatorSUI<Router: TabbarNavigationRouter>: TabbarCoordinat
   }
   
   
-  open func setupPages(_ values: [TapPageSUI]) {
+  open func setupPages(_ values: [TabbarPage]) {
     values.forEach({
       let item = $0.coordinator(parent: self)
       item.root.tabBarItem = buildTabbarItem(page: $0)
