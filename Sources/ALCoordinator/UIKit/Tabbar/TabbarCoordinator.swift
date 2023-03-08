@@ -39,5 +39,3 @@ open class TabbarCoordinator: BaseCoordinator {
   open var tabController: T!
   
 }
-
-
