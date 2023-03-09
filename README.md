@@ -8,8 +8,102 @@ Its core navigation has created with UINavigationController (UIKit) with the aim
 
 To use the Coordinator pattern library in your iOS project, you'll need to add the library files to your project and set up a Coordinator object. Here are the basic steps:
 
-1. Create a SceneDelegate class if your app supports scenes:
+<br>
 
+1. Create class MainCoordinator: 
+
+```swift
+class MainCoordinator: BaseCoordinator {
+  
+  init() {
+    super.init(parent: nil)
+  }
+  
+  override func start(animated: Bool = false) {
+    let coordinator = OnboardingCoordinator(withParent: self)
+    coordinator.start(animated: animated)
+  }
+}
+```
+
+<br>
+
+2. Create custom coordinator:
+
+* SwiftUI
+
+    ```swift
+    enum OnboardingRouter: NavigationRouter {
+
+      case firstStep(viewModel: FirstStepViewModel)
+      case secondStep(viewModel: SecondStepViewModel)
+
+      // MARK: NavigationRouter
+      var transition: NavigationTranisitionStyle {
+        switch self {
+          case .firstStep, secondStep:
+            return .push
+        }
+      }
+
+      func view() -> any View {
+        switch self {
+          case .firstStep(let vm):
+            return FirstStepView(viewModel: vm)
+          case .secondStep(let vm):
+            return SecondStepView().environmentObject(vm)
+        }
+      }
+    }
+    ```
+        
+    ```swift
+    class OnboardingCoordinator: CoordinatorSUI<OnboardingRouter> {
+
+      override func start(animated: Bool) {
+        let vm = SecondStepViewModel(coordinator: self)
+        show(.firstStep(viewModel: vm))
+        parent.startChildCoordinator(self, animated: animated)
+      }
+
+      func showStep2() {
+        let vm = SecondStepViewModel(coordinator: self)
+        show(.secondStep(viewModel: vm))
+      }
+
+      func showLoginCoordinator() {
+        let coordinator = LoginCoordinator()
+        coordinator.start()
+      }
+    }
+    ```
+        
+* UIKit:
+
+    ```swift
+    class OnboardingCoordinator: BaseCoordinator {
+
+      override func start(animated: Bool) {
+        let vc = FirstViewController()
+        root.viewControllers.append(vc)
+        parent.startChildCoordinator(self, animated: animated)
+      }
+
+      func showStep2() {
+        let vc = SecondViewController()
+        push(vc)
+      }
+
+      func showLoginCoordinator() {
+        let coordinator = LoginCoordinator()
+        coordinator.start()
+      }
+    }
+    ```
+
+<br>
+
+3. Create a SceneDelegate class if your app supports scenes:
 
 ```swift
 import UIKit
@@ -36,8 +130,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 ```
+<br>
 
-2. In your app's AppDelegate file, set the SceneDelegate class as the windowScene delegate:
+4. In your app's AppDelegate file, set the SceneDelegate class as the windowScene delegate:
 
 
 ```swift
@@ -59,104 +154,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         sceneDelegate.scene(windowScene, willConnectTo: session, options: connectionOptions)
     }
 }
-
 ```
 
-3. Create class MainCoordinator: 
+<br>
 
+### Create a Tabbar
 
-```swift
-class MainCoordinator: BaseCoordinator {
-  
-  init() {
-    super.init(parent: nil)
-  }
-  
-  override func start(animated: Bool = false) {
-    let coordinator = OnboardingCoordinator(withParent: self)
-    coordinator.start(animated: animated)
-  }
-}
-```
-
-4. Create custom coordinator:
-
-
-  * SwiftUI:
-
-    ```swift
-    class OnboardingCoordinator: CoordinatorSUI<OnboardingRouter> {
-
-      override func start(animated: Bool) {
-        show(.firstStep)
-        parent.startChildCoordinator(self, animated: animated)
-      }
-
-      func showStep2() {
-        show(.secondStep)
-      }
-
-      func showLoginCoordinator() {
-        let coordinator = LoginCoordinator()
-        coordinator.start()
-      }
-    }
-
-    enum OnboardingRouter: NavigationRouter {
-
-      case firstStep
-      case secondStep
-
-      // MARK: NavigationRouter
-      var transition: NavigationTranisitionStyle {
-        switch self {
-          case .firstStep, secondStep:
-            return .presentFullscreen
-        }
-      }
-
-      func view() -> any View {
-        switch self {
-          case .firstStep:
-            return FirstStepView()
-          case .secondStep:
-            return SecondStepView()
-        }
-      }
-    }
-
-    ```
-
-  * UIKit:
-
-    ```swift
-    class OnboardingCoordinator: BaseCoordinator {
-
-      override func start(animated: Bool) {
-        let vc = FirstViewController()
-        root.viewControllers.append(vc)
-        parent.startChildCoordinator(self, animated: animated)
-      }
-
-      func showStep2() {
-        let vc = SecondViewController()
-        push(vc)
-      }
-
-      func showLoginCoordinator() {
-        let coordinator = LoginCoordinator()
-        coordinator.start()
-      }
-    }
-    ```
-
-### How build Tabbar?
 
 1. Create a router
 
     ```swift
     enum HomeRouter: CaseIterable, TabbarPage {
-
 
       case marketplace
       case settings
@@ -202,15 +210,21 @@ class MainCoordinator: BaseCoordinator {
       }
     }
     ```
+<br>
 
 2. Create a TabbarCoordinator
 
   * Default tabbar build with UIKIT (It also works with SwiftUI)
     ```swift
     class HomeCoordinator: TabbarCoordinatorSUI<HomeRouter> {
+    
       public init(withParent parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
-        super.init(withParent: parent, pages: pages)
+
+        super.init(
+            withParent: parent, 
+            pages: pages
+        )
       }
     }
     ```
@@ -219,10 +233,17 @@ class MainCoordinator: BaseCoordinator {
 
     ```swift
     class HomeCoordinator: TabbarCoordinatorSUI<HomeRouter> {
+    
       public init(withParent parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
         let view = HomeTabbarView(pages: pages)
-        super.init(withParent: parent, pages: pages, customView: .custom(value: view))
+        
+        super.init(
+            withParent: parent, 
+            pages: pages, 
+            customView: .custom(value: view)
+        )
+        
         view.$currentPage
           .sink { [weak self] page in
             self?.tabController.selectedIndex = page.position
@@ -230,6 +251,8 @@ class MainCoordinator: BaseCoordinator {
       }
     }
     ```
+<br>
+<br>
 
 ### Actions:
 Actions you can perform from the coordinator depends on the kind of coordinator used. For instance, using a BaseCoordinator, CoordinatorSUI or Coordinator some of the functions you can perform are:
@@ -361,7 +384,7 @@ The typealias TabbarPage is a short way to implement protocols TabbarPageDataSou
 
 SPM
 
-Open Xcode and your project, click File / Swift Packages / Add package dependency... . In the textfield "Enter package repository URL", write https://github.com/felilo/AFCoordinator/ and press Next twice
+Open Xcode and your project, click File / Swift Packages / Add package dependency... . In the textfield "Enter package repository URL", write https://github.com/felilo/ALCoordinator and press Next twice
 
 
 ## Contributing
