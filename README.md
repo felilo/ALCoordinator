@@ -384,7 +384,7 @@ The typealias TabbarPage is a short way to implement protocols TabbarPageDataSou
 
 SPM
 
-Open Xcode and your project, click File / Swift Packages / Add package dependency... . In the textfield "Enter package repository URL", write https://github.com/felilo/AFCoordinator/ and press Next twice
+Open Xcode and your project, click File / Swift Packages / Add package dependency... . In the textfield "Enter package repository URL", write https://github.com/felilo/ALCoordinator and press Next twice
 
 
 ## Contributing
