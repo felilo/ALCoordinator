@@ -38,4 +38,45 @@ open class TabbarCoordinator: BaseCoordinator {
   
   open var tabController: T!
   
+  
+  // ---------------------------------------------------------------------
+  // MARK: Constructor
+  // ---------------------------------------------------------------------
+
+  
+  init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [TabbarPage]) {
+    super.init(parent: parent)
+    tabController = tarbbarCtrl
+    setupPages(pages)
+  }
+  
+  
+  // ---------------------------------------------------------------------
+  // MARK: Helper funcs
+  // ---------------------------------------------------------------------
+  
+  
+  public override func start(animated: Bool = true) {
+    parent.children.append(self)
+    tabController.modalPresentationStyle = .fullScreen
+    parent.present(tabController, animated: animated)
+  }
+  
+  
+  open func buildTabbarItem(page: TabbarPage) -> UITabBarItem? {
+    return .init(
+      title: page.title,
+      image: .init(systemName: page.icon),
+      selectedImage: .init(systemName: page.icon)
+    )
+  }
+  
+  
+  open func setupPages(_ values: [TabbarPage]) {
+    values.forEach({
+      let item = $0.coordinator(parent: self)
+      item.root.tabBarItem = buildTabbarItem(page: $0)
+      item.start(animated: false)
+    })
+  }
 }

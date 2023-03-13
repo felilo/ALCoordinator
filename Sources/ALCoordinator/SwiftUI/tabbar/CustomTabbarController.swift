@@ -76,11 +76,6 @@ public class CustomTabbarCtrl: UITabBarController {
   // ---------------------------------------------------------------------
   
   
-  open func insertCtrl(_ ctrl: UIViewController, position: Int, animated: Bool = false ) {
-    viewControllers?.insert(ctrl, at: position)
-  }
-  
-  
   private func setupCustomView() {
     let ctrl = buildHostingCtrl(view: customView)
     guard let customView = ctrl.view else { return }
@@ -93,9 +88,7 @@ public class CustomTabbarCtrl: UITabBarController {
   
   
   private func buildHostingCtrl(view: any View) -> UIViewController {
-    let ctrl = UIHostingController(rootView: AnyView(view))
-    ctrl.tag = NSStringFromClass(type(of: ctrl))
-    return ctrl
+    return UIHostingController(rootView: AnyView(view))
   }
   
   private func hideTabBarBorder() {

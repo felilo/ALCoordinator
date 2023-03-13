@@ -31,6 +31,9 @@ private var nameAssociationKey: UInt8 = 0
 public extension UIViewController {
   
   var isModal: Bool {
+    
+    
+    
     if let index = navigationController?.viewControllers.firstIndex(of: self), index > 0 {
       return false
     } else if presentingViewController != nil {
@@ -42,12 +45,6 @@ public extension UIViewController {
     } else {
       return false
     }
-  }
-  
-  
-  var tag: String {
-    get { getAssociatedObject(key: &tagAssociationKey) ?? "" }
-    set { setAssociatedObject(key: &tagAssociationKey, value: newValue)}
   }
   
   

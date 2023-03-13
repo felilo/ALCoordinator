@@ -39,7 +39,6 @@ open class TabbarCoordinatorSUI<Router: TabbarPage>: TabbarCoordinator {
   
   
   public var cancelables = Set<AnyCancellable>()
-  private (set) var tabbarViewStyle: TabbarViewStyle = .default
 
   
   // ---------------------------------------------------------------------
@@ -52,56 +51,19 @@ open class TabbarCoordinatorSUI<Router: TabbarPage>: TabbarCoordinator {
     pages: [TabbarPage],
     customView: TabbarViewStyle = .default
   ) {
-    super.init(withParent: parent)
-    setupTabbarView(customView)
-    setupPages(pages)
-  }
-  
-  
-  // ---------------------------------------------------------------------
-  // MARK: Helper funcs
-  // ---------------------------------------------------------------------
-  
-  
-  public override func start(animated: Bool = true) {
-    parent.children += [self]
-    tabController.modalPresentationStyle = .fullScreen
-    parent.present(tabController, animated: animated)
-  }
-
-  
-  // ---------------------------------------------------------------------
-  // MARK: Helper funcs
-  // ---------------------------------------------------------------------
-  
-
-  open func setupTabbarView(_ value: TabbarViewStyle = .default) {
-    tabbarViewStyle = value
-    switch value {
+    switch customView {
       case .custom(let view):
-        tabController = CustomTabbarCtrl(view: view)
+        super.init(
+          parent: parent,
+          tarbbarCtrl: CustomTabbarCtrl(view: view),
+          pages: pages
+        )
       default:
-        tabController = .init()
+        super.init(
+          parent: parent,
+          pages: pages
+        )
     }
-  }
-  
-  
-  open func buildTabbarItem(page: TabbarPage) -> UITabBarItem? {
-    guard tabbarViewStyle == .default else { return nil }
-    return .init(
-      title: page.title,
-      image: .init(systemName: page.icon),
-      selectedImage: .init(systemName: page.icon)
-    )
-  }
-  
-  
-  open func setupPages(_ values: [TabbarPage]) {
-    values.forEach({
-      let item = $0.coordinator(parent: self)
-      item.root.tabBarItem = buildTabbarItem(page: $0)
-      item.start(animated: false)
-    })
   }
 
   
@@ -123,8 +85,8 @@ open class TabbarCoordinatorSUI<Router: TabbarPage>: TabbarCoordinator {
     
     
     static public func == (
-      lhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle,
-      rhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle
+      lhs: TabbarViewStyle,
+      rhs: TabbarViewStyle
     ) -> Bool { lhs.id == rhs.id }
     
     

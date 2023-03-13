@@ -43,10 +43,9 @@ public extension Coordinator {
   /// - Parameters:
   ///   - viewController: The view controller to push onto the stack. This object cannot be a tab bar controller. If the view controller is already on the navigation stack, this method throws an exception.
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  func push(_ viewController: UIViewController, animated: Bool = true) {
-    DispatchQueue.main.async {
-      root.pushViewController(viewController, animated: animated)
-    }
+  func push(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+    root.pushViewController(viewController, animated: animated)
+    completion?()
   }
   
   
@@ -124,6 +123,7 @@ public extension Coordinator {
   
   private func handleFinish(completion: (() -> Void)?) {
     guard let parent = parent else {
+      popToRoot(animated: false)
       return removeChildren(completion)
     }
     clearCoordinator()
@@ -160,15 +160,14 @@ public extension Coordinator {
     }
     
     let itemSelected        = tabCoordinator.tabController.selectedIndex
-    let coordinatorSelected = tabCoordinator.children[itemSelected]
-    auxCoordinator          = coordinatorSelected.children.last
+    let currentCoordinator  = tabCoordinator.children[itemSelected]
+    auxCoordinator          = currentCoordinator.children.last
     
     guard let coord = auxCoordinator as? TabbarCoordinator else {
-      auxCoordinator = coordinatorSelected
-      return getDeepCoordinator(
-        from: &auxCoordinator
-      )
+      auxCoordinator = currentCoordinator
+      return getDeepCoordinator(from: &auxCoordinator)
     }
+    
     return topCoordinator(pCoodinator: coord)
   }
   
