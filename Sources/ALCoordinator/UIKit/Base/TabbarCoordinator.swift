@@ -24,11 +24,9 @@
 
 
 import UIKit
+import SwiftUI
 
-open class TabbarCoordinator: BaseCoordinator {
-  
-  
-  public typealias T = UITabBarController
+open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
   
   
   // ---------------------------------------------------------------------
@@ -36,7 +34,11 @@ open class TabbarCoordinator: BaseCoordinator {
   // ---------------------------------------------------------------------
   
   
-  open var tabController: T!
+  open var tabController: UITabBarController!
+  
+  open var currentPage: PAGE? {
+    didSet { setCurrentPage(currentPage) }
+  }
   
   
   // ---------------------------------------------------------------------
@@ -44,9 +46,16 @@ open class TabbarCoordinator: BaseCoordinator {
   // ---------------------------------------------------------------------
 
   
-  init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [TabbarPage]) {
+  public init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [PAGE]) {
     super.init(parent: parent)
     tabController = tarbbarCtrl
+    setupPages(pages)
+  }
+  
+  
+  public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
+    super.init(parent: parent)
+    tabController = CustomTabbarCtrl(view: customView)
     setupPages(pages)
   }
   
@@ -56,6 +65,11 @@ open class TabbarCoordinator: BaseCoordinator {
   // ---------------------------------------------------------------------
   
   
+  open func getCoordinatorSelected() -> Coordinator {
+    children[tabController.selectedIndex]
+  }
+  
+  
   public override func start(animated: Bool = true) {
     parent.children.append(self)
     tabController.modalPresentationStyle = .fullScreen
@@ -63,20 +77,41 @@ open class TabbarCoordinator: BaseCoordinator {
   }
   
   
-  open func buildTabbarItem(page: TabbarPage) -> UITabBarItem? {
-    return .init(
+  open func buildTabbarItem(page: PAGE) -> UITabBarItem? {
+    let item = UITabBarItem(
       title: page.title,
       image: .init(systemName: page.icon),
       selectedImage: .init(systemName: page.icon)
     )
+    item.tag = page.position
+    return item
   }
   
   
-  open func setupPages(_ values: [TabbarPage]) {
+  open func setupPages(_ values: [PAGE]) {
     values.forEach({
       let item = $0.coordinator(parent: self)
       item.root.tabBarItem = buildTabbarItem(page: $0)
       item.start(animated: false)
     })
+    currentPage = values.first
+  }
+  
+  
+  open func setPages(_ values: [PAGE]) {
+    removeChildren(animated: false) { [weak self] in
+      self?.setupPages(values)
+    }
+  }
+  
+  
+  private func setCurrentPage(_ value: TabbarPage?) {
+    guard let value,
+          let index = children.firstIndex(where: { $0.root.tabBarItem.tag == value.position })
+    else {
+      currentPage = nil
+      return
+    }
+    tabController.selectedIndex = index
   }
 }

@@ -40,19 +40,6 @@ open class CoordinatorSUI<Router: NavigationRouter>: BaseCoordinator {
   open func show(_ router: Router, transitionStyle: NavigationTranisitionStyle? = nil, animated: Bool = true) {
     manager.show(self, router: router, transitionStyle: transitionStyle, animated: animated)
   }
-  
-  
-  open func restartMainCoordinator(
-    mainCoordinator: Coordinator? = BaseCoordinator.mainCoordinator,
-    animated: Bool,
-    completion: (() -> Void)?
-  ) {
-    manager.restartMainCoordinator(
-      mainCoordinator: mainCoordinator,
-      animated: animated,
-      completion: completion
-    )
-  }
 }
 
 

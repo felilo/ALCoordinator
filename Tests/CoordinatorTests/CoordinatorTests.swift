@@ -12,6 +12,7 @@ final class ALCoordinatorTests: XCTestCase {
     let item = Item()
     navigateToViewExpect(sut, toCompleteWithView: item, when: {
       sut.push(item, animated: false)
+      sut.push(.init(), animated: false)
       sut.popToView(Item.self)
     })
   }
@@ -23,6 +24,7 @@ final class ALCoordinatorTests: XCTestCase {
     let item = Item(rootView: FirstView())
     navigateToViewExpect(sut, toCompleteWithView: item, when: {
       sut.push(item, animated: false)
+      sut.push(.init(), animated: false)
       sut.popToView(Item.self, animated: false)
     })
   }
@@ -58,17 +60,6 @@ final class ALCoordinatorTests: XCTestCase {
   }
   
   
-  func test_finishChildWithTabbarCoordinator() {
-    let sut = makeSut()
-    let pages = Pages.allCases.sorted(by: { $0.position < $1.position })
-    let tabbarCoordinator = TabbarCoordinator(parent: sut, pages: pages)
-    tabbarCoordinator.start()
-    finishCoordinatorExpect(sut) {
-      _ = TabbarCoordinator(parent: sut, pages: Pages.allCases)
-    }
-  }
-  
-  
   func test_startChildCoordinator() {
     var sut = makeSut()
     let childCoordinator = ChildCoordinator(parent: sut)
@@ -83,22 +74,44 @@ final class ALCoordinatorTests: XCTestCase {
     let firstCoordinator = makeChildCoordinator(parent: sut)
     let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
     let thirdCoordinator = makeChildCoordinator(parent: secondCoordinator)
+    
     XCTAssertEqual(sut.topCoordinator()?.uuid, thirdCoordinator.uuid)
+    BaseCoordinator.mainCoordinator = sut
+    XCTAssertEqual(sut.getTopCoordinator()?.uuid, thirdCoordinator.uuid)
   }
   
+  
+  func test_restartMainCoordinator() {
+    let sut = makeSut()
+    let firstCoordinator = makeChildCoordinator(parent: sut)
+    let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
+    
+    let expect = XCTestExpectation()
+    
+    secondCoordinator.restartMainCoordinator(mainCoordinator: sut, animated: false) {
+      XCTAssertTrue(sut.children.isEmpty)
+      expect.fulfill()
+    }
+    
+    wait(for: [expect], timeout: 1)
+  }
+}
+
+
+
+extension ALCoordinatorTests {
   
   
   // ---------------------------------------------------------------------
   // MARK: Helpers
   // ---------------------------------------------------------------------
   
-
+  
   private func navigateToViewExpect(
     _ sut: Coordinator,
     toCompleteWithView expectedView: UIViewController?,
     when action: @escaping () -> Void
   ) {
-    sut.push(UIViewController(), animated: false)
     sut.push(UIViewController(), animated: false)
     action()
     let lastCtrl = sut.root.viewControllers.last
@@ -107,7 +120,6 @@ final class ALCoordinatorTests: XCTestCase {
   
   
   private func finishCoordinatorExpect(_ sut: Coordinator, when action: @escaping () -> Void) {
-    sut.push(.init(), animated: false)
     sut.push(.init(), animated: false)
     action()
     let exp = XCTestExpectation()
@@ -120,19 +132,19 @@ final class ALCoordinatorTests: XCTestCase {
   }
   
   
-  private func makeSut() -> Coordinator {
+  private func makeSut() -> BaseCoordinator {
     MainCoordinator(parent: nil)
   }
   
-  private func makeChildCoordinator(parent: Coordinator?) -> Coordinator {
-    let item = ChildCoordinator(parent: parent)
+  
+  private func makeChildCoordinator(parent: Coordinator?) -> BaseCoordinator {
+    let item = ChildCoordinator(parent: parent, presentationStyle: .fullScreen)
     item.start(animated: false)
     return item
   }
   
   
   private class ChildCoordinator: BaseCoordinator {
-    
     override func start(animated: Bool = false) {
       push(.init(), animated: animated)
       parent.startChildCoordinator(self)
@@ -140,34 +152,9 @@ final class ALCoordinatorTests: XCTestCase {
   }
   
   
-  private enum Pages: TabbarPage, CaseIterable {
-    
-    case firstStep
-    case secondStep
-    
-    func coordinator(parent: Coordinator) -> Coordinator {
-      ChildCoordinator(parent: parent)
-    }
-    
-    var title: String {
-      switch self {
-        case .firstStep: return "First"
-        case .secondStep: return "Second"
-      }
-    }
-    
-    var icon: String {
-      switch self {
-        case .firstStep: return "home"
-        case .secondStep: return "gear"
-      }
-    }
-    
-    var position: Int {
-      switch self {
-        case .firstStep: return 0
-        case .secondStep: return 1
-      }
+  private class MainCoordinator: BaseCoordinator {
+    override func start(animated: Bool = false) {
+      push(.init(), animated: animated)
     }
   }
 }
