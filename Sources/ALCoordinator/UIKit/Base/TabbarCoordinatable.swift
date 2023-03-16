@@ -1,5 +1,5 @@
 //
-//  ViewControllers+Views.swift
+//  TabbarCoordinatable.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -23,16 +23,18 @@
 //
 
 import UIKit
-import SwiftUI
 
-class FirstViewController: UIViewController {}
-class SecondViewController: UIViewController {}
-class ThirdViewController: UIViewController {}
 
-struct FirstView: View {
-  var body: some View { Text("FirstView") }
+public protocol BaseTabbarCoordinator {
+  
+  associatedtype PAGE
+  
+  var tabController: UITabBarController! { get set }
+  var currentPage: PAGE? { get set }
+  
+  
+  func getCoordinatorSelected() -> Coordinator
 }
 
-struct SecondView: View {
-  var body: some View { Text("SecondView") }
-}
+
+public typealias TabbarCoordinatable = BaseCoordinator & BaseTabbarCoordinator

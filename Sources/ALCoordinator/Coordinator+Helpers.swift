@@ -51,9 +51,23 @@ extension Coordinator {
   /// Get the deepest coordinator from a given coordinator as parameter
   /// - Parameters:
   ///   - value: Coordinator
-  func getDeepCoordinator(from value:inout Coordinator?) -> Coordinator?{
+//  func getDeepCoordinator(from value: inout Coordinator?) -> Coordinator?{
+//    if value?.children.last == nil {
+//      return value
+//    } else if value is (any TabbarCoordinatable) {
+//      return topCoordinator(pCoodinator: value)
+//    } else {
+//      var last = value?.children.last
+//      return getDeepCoordinator(from: &last)
+//    }
+//  }
+  
+  
+  func getDeepCoordinator(from value: inout Coordinator?) -> Coordinator?{
     if value?.children.last == nil {
       return value
+    } else if let tabCoordinator = value as? (any TabbarCoordinatable) {
+      return topCoordinator(pCoodinator: tabCoordinator.getCoordinatorSelected())
     } else {
       var last = value?.children.last
       return getDeepCoordinator(from: &last)

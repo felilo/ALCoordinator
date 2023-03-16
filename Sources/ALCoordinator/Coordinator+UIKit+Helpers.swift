@@ -43,10 +43,9 @@ public extension Coordinator {
   /// - Parameters:
   ///   - viewController: The view controller to push onto the stack. This object cannot be a tab bar controller. If the view controller is already on the navigation stack, this method throws an exception.
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  func push(_ viewController: UIViewController, animated: Bool = true) {
-    DispatchQueue.main.async {
-      root.pushViewController(viewController, animated: animated)
-    }
+  func push(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+    root.pushViewController(viewController, animated: animated)
+    completion?()
   }
   
   
@@ -124,6 +123,7 @@ public extension Coordinator {
   
   private func handleFinish(completion: (() -> Void)?) {
     guard let parent = parent else {
+      popToRoot(animated: false)
       return removeChildren(completion)
     }
     clearCoordinator()
@@ -136,7 +136,7 @@ public extension Coordinator {
   
   // Clear all its properties
   private func clearCoordinator() {
-    if let item = self as? TabbarCoordinator {
+    if var item = self as? (any TabbarCoordinatable) {
       item.tabController?.viewControllers = nil
       item.tabController = nil
       item.root.viewControllers = []
@@ -151,25 +151,9 @@ public extension Coordinator {
   ///   - appCoordinator: Main coordinator
   ///   - pCoodinator:
   func topCoordinator(pCoodinator: Coordinator? = nil) -> Coordinator? {
-    
     guard children.last != nil else { return self }
     var auxCoordinator = pCoodinator ?? self.children.last
-    
-    guard let tabCoordinator = auxCoordinator as? TabbarCoordinator else {
-      return getDeepCoordinator(from: &auxCoordinator)
-    }
-    
-    let itemSelected        = tabCoordinator.tabController.selectedIndex
-    let coordinatorSelected = tabCoordinator.children[itemSelected]
-    auxCoordinator          = coordinatorSelected.children.last
-    
-    guard let coord = auxCoordinator as? TabbarCoordinator else {
-      auxCoordinator = coordinatorSelected
-      return getDeepCoordinator(
-        from: &auxCoordinator
-      )
-    }
-    return topCoordinator(pCoodinator: coord)
+    return getDeepCoordinator(from: &auxCoordinator)
   }
   
   
@@ -184,7 +168,7 @@ public extension Coordinator {
   
   mutating func startChildCoordinator(_ coordinator: Coordinator, animated: Bool = true){
     children.append(coordinator)
-    if let tabbar = (self as? TabbarCoordinator)?.tabController {
+    if let tabbar = (self as? (any TabbarCoordinatable))?.tabController {
       var ctrls = tabbar.viewControllers ?? []
       ctrls.append(coordinator.root)
       tabbar.setViewControllers(ctrls, animated: animated)

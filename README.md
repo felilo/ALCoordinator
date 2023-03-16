@@ -10,25 +10,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 
 <br>
 
-1. Create class MainCoordinator: 
-
-```swift
-class MainCoordinator: BaseCoordinator {
-  
-  init() {
-    super.init(parent: nil)
-  }
-  
-  override func start(animated: Bool = false) {
-    let coordinator = OnboardingCoordinator(withParent: self)
-    coordinator.start(animated: animated)
-  }
-}
-```
-
-<br>
-
-2. Create custom coordinator:
+1. Create custom coordinator:
 
 * SwiftUI
 
@@ -100,6 +82,26 @@ class MainCoordinator: BaseCoordinator {
       }
     }
     ```
+    
+<br>
+
+2. Create class MainCoordinator: 
+
+```swift
+class MainCoordinator: BaseCoordinator {
+  
+  init() {
+    super.init(parent: nil)
+  }
+  
+  override func start(animated: Bool = false) {
+    let coordinator = OnboardingCoordinator(withParent: self)
+    coordinator.start(animated: animated)
+  }
+}
+```
+
+
 
 <br>
 
@@ -216,7 +218,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   * Default tabbar build with UIKIT (It also works with SwiftUI)
     ```swift
-    class HomeCoordinator: TabbarCoordinatorSUI<HomeRouter> {
+    class HomeCoordinator: TabbarCoordinator<HomeRouter> {
     
       public init(withParent parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
@@ -232,7 +234,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   * Custom view (SwiftUI)
 
     ```swift
-    class HomeCoordinator: TabbarCoordinatorSUI<HomeRouter> {
+    class HomeCoordinator: TabbarCoordinator<HomeRouter> {
     
       public init(withParent parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
@@ -240,13 +242,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         super.init(
             withParent: parent, 
-            pages: pages, 
-            customView: .custom(value: view)
+            customView: view,
+            pages: pages
         )
         
         view.$currentPage
           .sink { [weak self] page in
-            self?.tabController.selectedIndex = page.position
+            self?.currentPage = page
           }.store(in: &cancelables)
       }
     }
@@ -370,7 +372,7 @@ In addition to the functions listed above, the Coordinator-pattern library provi
 `BaseCoordinator`
 The BaseCoordinator class provides a basic implementation of the Coordinator protocol, with default implementations. This class can be subclassed to create custom coordinator objects that implement the Coordinator protocol.
 
-`TabbarCoordinatorSUI`
+`TabbarCoordinator`
 The TabbarCoordinatorSUI class is a specialized coordinator object that is designed to manage the navigation flow of a tab bar interface. This class provides methods for adding child coordinators for each tab in the tab bar, and for managing the selection of tabs.
 
 `CoordinatorSUI`

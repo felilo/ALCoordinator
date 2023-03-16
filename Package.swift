@@ -27,7 +27,7 @@ let package = Package(
       dependencies: []
     ),
     .testTarget(
-      name: "MyLibraryTests",
+      name: "CoordinatorTests",
       dependencies: ["ALCoordinator"]
     ),
   ],

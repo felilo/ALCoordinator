@@ -52,12 +52,9 @@ open class BaseCoordinator: NSObject, Coordinator  {
   }
   
   
-  public init(
-    withParent parent: Coordinator,
-    presentationStyle: UIModalPresentationStyle = .fullScreen
-  ) {
-    self.parent = parent
+  public init(parent: Coordinator?, presentationStyle: UIModalPresentationStyle = .fullScreen) {
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
+    self.parent = parent
     super.init()
     root.modalPresentationStyle = presentationStyle
     root.setNavigationBarHidden(true, animated: false)
@@ -75,10 +72,20 @@ open class BaseCoordinator: NSObject, Coordinator  {
   }
   
   
+  open func getTopCoordinator(mainCoordinator: Coordinator? = mainCoordinator) -> Coordinator? {
+    mainCoordinator?.topCoordinator()
+  }
+  
+  
+  open func restartMainCoordinator(mainCoordinator: Coordinator? = mainCoordinator, animated: Bool, completion: (() -> Void)?){
+    mainCoordinator?.restart(animated: animated, completion: completion)
+  }
+  
+  
   private func handlePresentationStyle() {
     switch root.modalPresentationStyle {
-      case .custom,  .none, .automatic, .fullScreen:
-        return
+      case .custom, .none, .automatic, .fullScreen:
+        break
       default:
         root.presentationController?.delegate = self
     }
@@ -88,6 +95,7 @@ open class BaseCoordinator: NSObject, Coordinator  {
 
 
 extension BaseCoordinator: UIAdaptivePresentationControllerDelegate {
+  
   
   // ---------------------------------------------------------------------
   // MARK: UIAdaptivePresentationControllerDelegate
