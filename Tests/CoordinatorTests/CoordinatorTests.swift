@@ -157,4 +157,19 @@ extension ALCoordinatorTests {
       push(.init(), animated: animated)
     }
   }
+  
+  
+  class FirstViewController: UIViewController {}
+  class SecondViewController: UIViewController {}
+  class ThirdViewController: UIViewController {}
+  
+  
+  struct FirstView: View {
+    var body: some View { Text("FirstView") }
+  }
+  
+  
+  struct SecondView: View {
+    var body: some View { Text("SecondView") }
+  }
 }
