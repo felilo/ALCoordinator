@@ -86,7 +86,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 <br>    
 
 
-### Create a Tabbar
+### Create a TabbarCoordinator
 
 
 1. Create a router
