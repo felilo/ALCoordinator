@@ -1,5 +1,5 @@
 //
-//  TabbarCoordinatorSUI.swift
+//  TabbarCoordinator.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -23,14 +23,10 @@
 //
 
 
-
+import UIKit
 import SwiftUI
-import Combine
 
-open class TabbarCoordinatorSUI<Router: TabbarPage>: TabbarCoordinator {
-  
-  
-  public typealias Router = Router
+open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
   
   
   // ---------------------------------------------------------------------
@@ -38,22 +34,28 @@ open class TabbarCoordinatorSUI<Router: TabbarPage>: TabbarCoordinator {
   // ---------------------------------------------------------------------
   
   
-  public var cancelables = Set<AnyCancellable>()
-  private (set) var tabbarViewStyle: TabbarViewStyle = .default
-
+  open var tabController: UITabBarController!
+  
+  open var currentPage: PAGE? {
+    didSet { setCurrentPage(currentPage) }
+  }
+  
   
   // ---------------------------------------------------------------------
   // MARK: Constructor
   // ---------------------------------------------------------------------
-  
 
-  public init(
-    withParent parent: Coordinator,
-    pages: [TabbarPage],
-    customView: TabbarViewStyle = .default
-  ) {
-    super.init(withParent: parent)
-    setupTabbarView(customView)
+  
+  public init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [PAGE]) {
+    super.init(parent: parent)
+    tabController = tarbbarCtrl
+    setupPages(pages)
+  }
+  
+  
+  public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
+    super.init(parent: parent)
+    tabController = CustomTabbarCtrl(view: customView)
     setupPages(pages)
   }
   
@@ -63,76 +65,53 @@ open class TabbarCoordinatorSUI<Router: TabbarPage>: TabbarCoordinator {
   // ---------------------------------------------------------------------
   
   
+  open func getCoordinatorSelected() -> Coordinator {
+    children[tabController.selectedIndex]
+  }
+  
+  
   public override func start(animated: Bool = true) {
-    parent.children += [self]
+    parent.children.append(self)
     tabController.modalPresentationStyle = .fullScreen
     parent.present(tabController, animated: animated)
   }
-
-  
-  // ---------------------------------------------------------------------
-  // MARK: Helper funcs
-  // ---------------------------------------------------------------------
-  
-
-  open func setupTabbarView(_ value: TabbarViewStyle = .default) {
-    tabbarViewStyle = value
-    switch value {
-      case .custom(let view):
-        tabController = CustomTabbarCtrl(view: view)
-      default:
-        tabController = .init()
-    }
-  }
   
   
-  open func buildTabbarItem(page: TabbarPage) -> UITabBarItem? {
-    guard tabbarViewStyle == .default else { return nil }
-    return .init(
+  open func buildTabbarItem(page: PAGE) -> UITabBarItem? {
+    let item = UITabBarItem(
       title: page.title,
       image: .init(systemName: page.icon),
       selectedImage: .init(systemName: page.icon)
     )
+    item.tag = page.position
+    return item
   }
   
   
-  open func setupPages(_ values: [TabbarPage]) {
+  open func setupPages(_ values: [PAGE]) {
     values.forEach({
       let item = $0.coordinator(parent: self)
       item.root.tabBarItem = buildTabbarItem(page: $0)
       item.start(animated: false)
     })
+    currentPage = values.first
   }
-
   
-  // ---------------------------------------------------------------------
-  // MARK: Enums
-  // ---------------------------------------------------------------------
   
-
-  public enum TabbarViewStyle: Equatable {
-    
-    
-    case `default`
-    case custom(value: any View)
-    
-    
-    // ---------------------------------------------------------------------
-    // MARK: Equatable
-    // ---------------------------------------------------------------------
-    
-    
-    static public func == (
-      lhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle,
-      rhs: TabbarCoordinatorSUI<Router>.TabbarViewStyle
-    ) -> Bool { lhs.id == rhs.id }
-    
-    
-    private var id: Int {
-      switch self {
-        case .default: return 0
-        case .custom: return 1
-      }
+  open func setPages(_ values: [PAGE]) {
+    removeChildren(animated: false) { [weak self] in
+      self?.setupPages(values)
     }
+  }
+  
+  
+  private func setCurrentPage(_ value: TabbarPage?) {
+    guard let value,
+          let index = children.firstIndex(where: { $0.root.tabBarItem.tag == value.position })
+    else {
+      currentPage = nil
+      return
+    }
+    tabController.selectedIndex = index
   }
 }

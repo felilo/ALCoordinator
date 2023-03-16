@@ -49,19 +49,6 @@ public class ManagerCoordinatorSUI<Router: NavigationRouter> {
   }
   
   
-  open func getTopCoordinator(mainCoordinator: Coordinator?) -> Coordinator? {
-    guard let mainCoordinator else { return nil }
-    return mainCoordinator.topCoordinator()
-  }
-  
-  
-  open func restartMainCoordinator(mainCoordinator: Coordinator?, animated: Bool, completion: (() -> Void)?){
-    guard let mainCoordinator
-    else { return }
-    mainCoordinator.restart(animated: animated, completion: completion)
-  }
-  
-  
   // ---------------------------------------------------------------------
   // MARK: Helper funcs
   // ---------------------------------------------------------------------
@@ -79,9 +66,11 @@ public class ManagerCoordinatorSUI<Router: NavigationRouter> {
     coordinator: Coordinator,
     animated: Bool
   ) {
+    
     let handlePresent: (UIModalPresentationStyle) -> Void = { [weak self] style in
       self?.handlePresentCtrl(ctrl: ctrl, style: style, coordinator: coordinator, animated: animated)
     }
+    
     switch transitionStyle {
       case .present:
         handlePresent(.automatic)
