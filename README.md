@@ -10,7 +10,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 
 <br>
 
-1. Create custom coordinator:
+### Create a Coordinator
 
 * SwiftUI
 
@@ -83,84 +83,10 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     }
     ```
     
-<br>
-
-2. Create class MainCoordinator: 
-
-```swift
-class MainCoordinator: BaseCoordinator {
-  
-  init() {
-    super.init(parent: nil)
-  }
-  
-  override func start(animated: Bool = false) {
-    let coordinator = OnboardingCoordinator(withParent: self)
-    coordinator.start(animated: animated)
-  }
-}
-```
+<br>    
 
 
-
-<br>
-
-3. Create a SceneDelegate class if your app supports scenes:
-
-```swift
-import UIKit
-import ALCoordinator
-
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
-    var window: UIWindow?
-    var mainCoordinator: Coordinator
-
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: windowScene)
-        window?.makeKeyAndVisible()
-        setupCoordinator(window: window, animated: true)
-    }
-    
-    private func setupCoordinator(window: UIWindow?, animated: Bool = false) {
-      mainCoordinator = .init()
-      window?.rootViewController = mainCoordinator.root
-      mainCoordinator?.start(animated: animated)
-      BaseCoordinator.mainCoordinator = mainCoordinator
-    }
-
-}
-```
-<br>
-
-4. In your app's AppDelegate file, set the SceneDelegate class as the windowScene delegate:
-
-
-```swift
-@main
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-    }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
-
-    // Add this method
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        let sceneDelegate = SceneDelegate()
-        sceneDelegate.scene(windowScene, willConnectTo: session, options: connectionOptions)
-    }
-}
-```
-
-<br>
-
-### Create a Tabbar
+### Create a TabbarCoordinator
 
 
 1. Create a router
@@ -253,6 +179,86 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
     ```
+
+<br>
+
+
+### Create MainCoordinator: 
+
+```swift
+class MainCoordinator: BaseCoordinator {
+  
+  init() {
+    super.init(parent: nil)
+  }
+  
+  override func start(animated: Bool = false) {
+    let coordinator = OnboardingCoordinator(withParent: self)
+    coordinator.start(animated: animated)
+  }
+}
+```
+<br>
+
+
+### Setup project
+
+
+<br>
+
+1. Create a SceneDelegate class if your app supports scenes:
+
+```swift
+import UIKit
+import ALCoordinator
+
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+
+    var window: UIWindow?
+    var mainCoordinator: Coordinator
+
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        window = UIWindow(windowScene: windowScene)
+        window?.makeKeyAndVisible()
+        setupCoordinator(window: window, animated: true)
+    }
+    
+    private func setupCoordinator(window: UIWindow?, animated: Bool = false) {
+      mainCoordinator = .init()
+      window?.rootViewController = mainCoordinator.root
+      mainCoordinator?.start(animated: animated)
+      BaseCoordinator.mainCoordinator = mainCoordinator
+    }
+
+}
+```
+<br>
+
+2. In your app's AppDelegate file, set the SceneDelegate class as the windowScene delegate:
+
+
+```swift
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+
+    var window: UIWindow?
+
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
+
+    // Add this method
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        let sceneDelegate = SceneDelegate()
+        sceneDelegate.scene(windowScene, willConnectTo: session, options: connectionOptions)
+    }
+}
+```
+
 <br>
 <br>
 
