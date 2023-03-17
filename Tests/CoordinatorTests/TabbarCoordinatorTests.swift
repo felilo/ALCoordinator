@@ -52,6 +52,20 @@ final class TabbarCoordinatorTests: XCTestCase {
     let mainCoordinator = sut.parent
     XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
   }
+
+  
+  func test_setPages() {
+    let sut = makeSut()
+    let pages = [Page.firstStep]
+    let expect = XCTestExpectation()
+    XCTAssertEqual(sut.children.count, Page.allCases.count)
+    sut.setPages(pages) {
+      XCTAssertEqual(sut.children.count, pages.count)
+      XCTAssertEqual(pages.count, sut.tabController?.viewControllers?.count)
+      expect.fulfill()
+    }
+    wait(for: [expect], timeout: 1)
+  }
 }
 
 

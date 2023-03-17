@@ -72,7 +72,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
   
   public override func start(animated: Bool = true) {
     parent.children.append(self)
-    tabController.modalPresentationStyle = .fullScreen
+    tabController?.modalPresentationStyle = .fullScreen
     parent.present(tabController, animated: animated)
   }
   
@@ -88,20 +88,22 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
   }
   
   
-  open func setupPages(_ values: [PAGE]) {
+  open func setPages(_ values: [PAGE], completion: (() -> Void)? = nil) {
+    removeChildren(animated: false) { [weak self] in
+      self?.cleanCoordinator()
+      self?.setupPages(values)
+      completion?()
+    }
+  }
+  
+  
+  private func setupPages(_ values: [PAGE]) {
     values.forEach({
       let item = $0.coordinator(parent: self)
       item.root.tabBarItem = buildTabbarItem(page: $0)
       item.start(animated: false)
     })
     currentPage = values.first
-  }
-  
-  
-  open func setPages(_ values: [PAGE]) {
-    removeChildren(animated: false) { [weak self] in
-      self?.setupPages(values)
-    }
   }
   
   
@@ -112,6 +114,6 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
       currentPage = nil
       return
     }
-    tabController.selectedIndex = index
+    tabController?.selectedIndex = index
   }
 }

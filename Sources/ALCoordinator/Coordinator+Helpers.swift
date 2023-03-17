@@ -39,30 +39,25 @@ extension Coordinator {
   }
   
   
+  /// Get name of an objetc
+  /// - Parameters:
+  ///   - viewController: UIViewController
   func getNameOf(viewController: UIViewController) -> String {
     "\(type(of: viewController))"
   }
   
   
+  /// Get name of an objetc
+  /// - Parameters:
+  ///   - object: Any
   func getNameOf<T>(object: T) -> String {
     String(describing: object.self)
   }
   
+  
   /// Get the deepest coordinator from a given coordinator as parameter
   /// - Parameters:
   ///   - value: Coordinator
-//  func getDeepCoordinator(from value: inout Coordinator?) -> Coordinator?{
-//    if value?.children.last == nil {
-//      return value
-//    } else if value is (any TabbarCoordinatable) {
-//      return topCoordinator(pCoodinator: value)
-//    } else {
-//      var last = value?.children.last
-//      return getDeepCoordinator(from: &last)
-//    }
-//  }
-  
-  
   func getDeepCoordinator(from value: inout Coordinator?) -> Coordinator?{
     if value?.children.last == nil {
       return value
@@ -104,5 +99,14 @@ extension Coordinator {
     coordinator.finish(animated: animated, completion: {
       removeChildren(completion)
     })
+  }
+  
+  
+  // Clear all its properties
+  func cleanCoordinator() {
+    if var item = self as? (any TabbarCoordinatable) {
+      item.tabController?.viewControllers = []
+    }
+    root.viewControllers = []
   }
 }

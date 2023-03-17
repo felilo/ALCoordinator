@@ -126,23 +126,11 @@ public extension Coordinator {
       popToRoot(animated: false)
       return removeChildren(completion)
     }
-    clearCoordinator()
+    cleanCoordinator()
     parent.removeChild(
       coordinator: self,
       completion: completion
     )
-  }
-  
-  
-  // Clear all its properties
-  private func clearCoordinator() {
-    if var item = self as? (any TabbarCoordinatable) {
-      item.tabController?.viewControllers = nil
-      item.tabController = nil
-      item.root.viewControllers = []
-    } else if let item = self as? BaseCoordinator {
-      item.root.viewControllers = []
-    }
   }
   
   

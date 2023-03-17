@@ -354,7 +354,7 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
     <tr>
       <td><code>restart(_:)</code></td>
       <td>Finish all its children and finally call <code>start()</code> function.
-        <br>Paramss
+        <br>params
         <br><b>completion:</b> <span>(() -> Void)?, default nil</span>
         <br><b>animated:</b> <span>Bool, default true</span>
       </td>
@@ -362,7 +362,7 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
     <tr>
       <td><code>startChildCoordinator(_:)</code></td>
       <td>It is a faster way to initialize a secondary coordinator. Inserting a child to its child coordinators and finally it calls <code>present(:)</code> function.
-        <br>Paramss
+        <br>params
         <br><b>coordinator:</b> <span>Coordinator, child coordinator</span>
         <br><b>animated:</b> <span>Bool, default true</span>
       </td>
@@ -378,15 +378,107 @@ In addition to the functions listed above, the Coordinator-pattern library provi
 `BaseCoordinator`
 The BaseCoordinator class provides a basic implementation of the Coordinator protocol, with default implementations. This class can be subclassed to create custom coordinator objects that implement the Coordinator protocol.
 
+<br>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>restartMainCoordinator()</code></td>
+      <td>Finish all its children and finally call <code>start()</code> function.
+        <br>Params
+        <br><b>mainCoordinator:</b> <span>Coordinator, default BaseCoordinator.mainCoordinator</span>
+        <br><b>completion:</b> <span>(() -> Void)?, default nil</span>
+        <br><b>animated:</b> <span>Bool, default true</span>
+      </td>
+    </tr>
+    <tr>
+      <td><code>getTopCoordinator()</code></td>
+      <td>Returns the last coordinator presented
+        <br>Params
+        <br><b>mainCoordinator:</b> <span>Coordinator, default BaseCoordinator.mainCoordinator</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
 `TabbarCoordinator`
-The TabbarCoordinatorSUI class is a specialized coordinator object that is designed to manage the navigation flow of a tab bar interface. This class provides methods for adding child coordinators for each tab in the tab bar, and for managing the selection of tabs.
+The TabbarCoordinator class is a specialized coordinator object that is designed to manage the navigation flow of a tab bar interface. This class provides methods for adding child coordinators for each tab in the tab bar, and for managing the selection of tabs.
+
+<br>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>getCoordinatorSelected()</code></td>
+      <td>Finish all its children and finally call <code>start()</code> function.
+        <br>params
+        <br><b>mainCoordinator:</b> <span>Coordinator, default BaseCoordinator.mainCoordinator</span>
+        <br><b>completion:</b> <span>(() -> Void)?, default nil</span>
+        <br><b>animated:</b> <span>Bool, default true</span>
+      </td>
+    </tr>
+    <tr>
+      <td><code>setPages(:)</code></td>
+      <td>Set pages
+        <br>Params
+        <br><b>pages:</b> <span>[TabbarPage], List of pages</span>
+      </td>
+    </tr>
+    <tr>
+      <td><code>currentPage</code></td>
+      <td>Variable to get or set current page</td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
 
 `CoordinatorSUI`
 The CoordinatorSUI class is a specialized coordinator object that is designed to manage the navigation flow of a SwiftUI app. This class provides methods for showing views.
 
+<br>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>show(:)</code></td>
+      <td>shows a SwiftUI view.
+        <br>Params
+        <br><b>router:</b> <span>NavigationRouter</span>
+        <br><b>transitionStyle:</b> <span>NavigationTranisitionStyle, default nil</span>
+        <br><b>animated:</b> <span>Bool, default true</span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<br>
+
 `TabbarPage`
 The typealias TabbarPage is a short way to implement protocols TabbarPageDataSource & TabbarNavigationRouter
 
+<br>
 
 ### Installation 💾
 
