@@ -54,8 +54,8 @@ final class ALCoordinatorTests: XCTestCase {
     let sut = makeSut()
     
     finishCoordinatorExpect(sut) { [weak self] in
-      let firstCoordinator = self?.makeChildCoordinator(parent: sut)
-      _ = self?.makeChildCoordinator(parent: firstCoordinator)
+      let coordinator = self?.makeChildCoordinator(parent: sut)
+      _ = self?.makeChildCoordinator(parent: coordinator)
     }
   }
   

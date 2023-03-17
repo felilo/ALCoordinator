@@ -46,8 +46,8 @@ open class BaseCoordinator: NSObject, Coordinator  {
   
   
   public init(parent: Coordinator?) {
-    self.parent = parent
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
+    self.parent = parent
     super.init()
   }
   
@@ -56,9 +56,7 @@ open class BaseCoordinator: NSObject, Coordinator  {
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
     self.parent = parent
     super.init()
-    root.modalPresentationStyle = presentationStyle
-    root.setNavigationBarHidden(true, animated: false)
-    handlePresentationStyle()
+    handlePresentationStyle(presentationStyle: presentationStyle)
   }
   
   
@@ -82,8 +80,10 @@ open class BaseCoordinator: NSObject, Coordinator  {
   }
   
   
-  private func handlePresentationStyle() {
-    switch root.modalPresentationStyle {
+  private func handlePresentationStyle(presentationStyle: UIModalPresentationStyle) {
+    root.modalPresentationStyle = presentationStyle
+    root.setNavigationBarHidden(true, animated: false)
+    switch presentationStyle {
       case .custom, .none, .automatic, .fullScreen:
         break
       default:

@@ -25,7 +25,6 @@
 
 import UIKit
 
-private var tagAssociationKey: UInt8 = 0
 private var nameAssociationKey: UInt8 = 0
 
 public extension UIViewController {
