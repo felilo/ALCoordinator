@@ -65,33 +65,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
         coordinator.start()
       }
     }
-<<<<<<< HEAD
 ```
-=======
-    ```
-        
-* UIKit:
-
-    ```swift
-    class OnboardingCoordinator: BaseCoordinator {
-
-      override func start(animated: Bool) {
-        push(FirstViewController())
-        parent.startChildCoordinator(self, animated: animated)
-      }
-
-      func showStep2() {
-        let vc = SecondViewController()
-        push(vc)
-      }
-
-      func showLoginCoordinator() {
-        let coordinator = LoginCoordinator()
-        coordinator.start()
-      }
-    }
-    ```
->>>>>>> main
     
 <br>    
 
@@ -196,17 +170,17 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 ### Create MainCoordinator: 
 
 ```swift
-class MainCoordinator: BaseCoordinator {
-  
-  init() {
-    super.init(parent: nil)
-  }
-  
-  override func start(animated: Bool = false) {
-    let coordinator = OnboardingCoordinator(parent: self)
-    coordinator.start(animated: animated)
-  }
-}
+    class MainCoordinator: BaseCoordinator {
+      
+      init() {
+        super.init(parent: nil)
+      }
+      
+      override func start(animated: Bool = false) {
+        let coordinator = OnboardingCoordinator(parent: self)
+        coordinator.start(animated: animated)
+      }
+    }
 ```
 <br>
 
@@ -219,28 +193,28 @@ class MainCoordinator: BaseCoordinator {
 1. Create a SceneDelegate class if your app supports scenes:
 
 ```swift
-import UIKit
-import ALCoordinator
-
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
-    var window: UIWindow?
-    var mainCoordinator: Coordinator
-
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: windowScene)
-        window?.makeKeyAndVisible()
-        setupCoordinator(window: window, animated: true)
-    }
+    import UIKit
+    import ALCoordinator
     
-    private func setupCoordinator(window: UIWindow?, animated: Bool = false) {
-      mainCoordinator = .init()
-      window?.rootViewController = mainCoordinator.root
-      mainCoordinator?.start(animated: animated)
-      BaseCoordinator.mainCoordinator = mainCoordinator
+    class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    
+        var window: UIWindow?
+        var mainCoordinator: Coordinator
+    
+        func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+            guard let windowScene = (scene as? UIWindowScene) else { return }
+            window = UIWindow(windowScene: windowScene)
+            window?.makeKeyAndVisible()
+            setupCoordinator(window: window, animated: true)
+        }
+        
+        private func setupCoordinator(window: UIWindow?, animated: Bool = false) {
+          mainCoordinator = .init()
+          window?.rootViewController = mainCoordinator.root
+          mainCoordinator?.start(animated: animated)
+          BaseCoordinator.mainCoordinator = mainCoordinator
+        }
     }
-}
 ```
 <br>
 
@@ -249,23 +223,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 ```swift
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+        var window: UIWindow?
+    
+        func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+            return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        }
+    
+        func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
+    
+        // Add this method
+        func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+            guard let windowScene = (scene as? UIWindowScene) else { return }
+            let sceneDelegate = SceneDelegate()
+            sceneDelegate.scene(windowScene, willConnectTo: session, options: connectionOptions)
+        }
     }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
-
-    // Add this method
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene) else { return }
-        let sceneDelegate = SceneDelegate()
-        sceneDelegate.scene(windowScene, willConnectTo: session, options: connectionOptions)
-    }
-}
 ```
 
 <br>
