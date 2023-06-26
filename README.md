@@ -12,9 +12,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 
 ### Create a Coordinator
 
-* SwiftUI
-
-    ```swift
+```swift
     enum OnboardingRouter: NavigationRouter {
 
       case firstStep(viewModel: FirstStepViewModel)
@@ -37,9 +35,9 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
         }
       }
     }
-    ```
+```
         
-    ```swift
+```swift
     class OnboardingCoordinator: CoordinatorSUI<OnboardingRouter> {
 
       override func start(animated: Bool) {
@@ -58,7 +56,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
         coordinator.start()
       }
     }
-    ```
+```
     
 <br>    
 
