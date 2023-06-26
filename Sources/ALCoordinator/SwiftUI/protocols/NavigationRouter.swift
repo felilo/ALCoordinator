@@ -26,7 +26,7 @@ import SwiftUI
 
 public protocol NavigationRouter {
   
-  var transition: NavigationTranisitionStyle { get }
+  var transition: NavigationTransitionStyle { get }
   
   /// Creates and returns a view of assosiated type
   ///
@@ -34,7 +34,7 @@ public protocol NavigationRouter {
 }
 
 
-public enum NavigationTranisitionStyle {
+public enum NavigationTransitionStyle {
   case push
   case present
   case presentFullscreen

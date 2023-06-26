@@ -59,29 +59,6 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
       }
     }
     ```
-        
-* UIKit:
-
-    ```swift
-    class OnboardingCoordinator: BaseCoordinator {
-
-      override func start(animated: Bool) {
-        let vc = FirstViewController()
-        root.viewControllers.append(vc)
-        parent.startChildCoordinator(self, animated: animated)
-      }
-
-      func showStep2() {
-        let vc = SecondViewController()
-        push(vc)
-      }
-
-      func showLoginCoordinator() {
-        let coordinator = LoginCoordinator()
-        coordinator.start()
-      }
-    }
-    ```
     
 <br>    
 
@@ -146,11 +123,11 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     ```swift
     class HomeCoordinator: TabbarCoordinator<HomeRouter> {
     
-      public init(withParent parent: Coordinator) {
+      public init(parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
 
         super.init(
-            withParent: parent, 
+            parent: parent, 
             pages: pages
         )
       }
@@ -162,12 +139,12 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     ```swift
     class HomeCoordinator: TabbarCoordinator<HomeRouter> {
     
-      public init(withParent parent: Coordinator) {
+      public init(parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
         let view = HomeTabbarView(pages: pages)
         
         super.init(
-            withParent: parent, 
+            parent: parent, 
             customView: view,
             pages: pages
         )
@@ -193,7 +170,7 @@ class MainCoordinator: BaseCoordinator {
   }
   
   override func start(animated: Bool = false) {
-    let coordinator = OnboardingCoordinator(withParent: self)
+    let coordinator = OnboardingCoordinator(parent: self)
     coordinator.start(animated: animated)
   }
 }
@@ -261,6 +238,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 <br>
 <br>
+
+
+#### You can find an example here https://github.com/felilo/TestCoordinatorLibrary
+
 
 ### Actions:
 Actions you can perform from the coordinator depends on the kind of coordinator used. For instance, using a BaseCoordinator, CoordinatorSUI or Coordinator some of the functions you can perform are:

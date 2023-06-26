@@ -36,7 +36,7 @@ public class ManagerCoordinatorSUI<Router: NavigationRouter> {
   open func show(
     _ coordinator: Coordinator,
     router: Router,
-    transitionStyle: NavigationTranisitionStyle? = nil,
+    transitionStyle: NavigationTransitionStyle? = nil,
     animated: Bool = true
   ) {
     let ctrl = buildHostingCtrl(view: router.view())
@@ -62,7 +62,7 @@ public class ManagerCoordinatorSUI<Router: NavigationRouter> {
   
   private func handlePresentCtrl(
     _ ctrl: UIViewController,
-    transitionStyle: NavigationTranisitionStyle,
+    transitionStyle: NavigationTransitionStyle,
     coordinator: Coordinator,
     animated: Bool
   ) {

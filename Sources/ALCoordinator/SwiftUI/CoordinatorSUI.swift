@@ -37,7 +37,7 @@ open class CoordinatorSUI<Router: NavigationRouter>: BaseCoordinator {
   // ---------------------------------------------------------------------
   
   
-  open func show(_ router: Router, transitionStyle: NavigationTranisitionStyle? = nil, animated: Bool = true) {
+  open func show(_ router: Router, transitionStyle: NavigationTransitionStyle? = nil, animated: Bool = true) {
     manager.show(self, router: router, transitionStyle: transitionStyle, animated: animated)
   }
 }
