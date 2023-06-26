@@ -46,14 +46,12 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     class OnboardingCoordinator: CoordinatorSUI<OnboardingRouter> {
 
       override func start(animated: Bool) {
-        let vm = SecondStepViewModel(coordinator: self)
-        show(.firstStep(viewModel: vm))
+        show(.firstStep(viewModel: FirstStepViewModel(coordinator: self)))
         parent.startChildCoordinator(self, animated: animated)
       }
 
       func showStep2() {
-        let vm = SecondStepViewModel(coordinator: self)
-        show(.secondStep(viewModel: vm))
+        show(.secondStep(viewModel: SecondStepViewModel(coordinator: self)))
       }
       
       func presentInfo(message: String) {
@@ -132,11 +130,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     
       public init(parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
-
-        super.init(
-            parent: parent, 
-            pages: pages
-        )
+        super.init(parent: parent,pages: pages)
       }
     }
     ```
