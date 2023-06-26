@@ -17,12 +17,15 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 
       case firstStep(viewModel: FirstStepViewModel)
       case secondStep(viewModel: SecondStepViewModel)
+      case info(message: String)
 
       // MARK: NavigationRouter
       var transition: NavigationTranisitionStyle {
         switch self {
           case .firstStep, secondStep:
             return .push
+          case .info:
+            return .present
         }
       }
 
@@ -32,6 +35,8 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
             return FirstStepView(viewModel: vm)
           case .secondStep(let vm):
             return SecondStepView().environmentObject(vm)
+          case .info(let message):
+            return InfoView(message: message)
         }
       }
     }
@@ -50,13 +55,43 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
         let vm = SecondStepViewModel(coordinator: self)
         show(.secondStep(viewModel: vm))
       }
+      
+      func presentInfo(message: String) {
+        show(.info(message: message))
+      }
 
       func showLoginCoordinator() {
         let coordinator = LoginCoordinator()
         coordinator.start()
       }
     }
+<<<<<<< HEAD
 ```
+=======
+    ```
+        
+* UIKit:
+
+    ```swift
+    class OnboardingCoordinator: BaseCoordinator {
+
+      override func start(animated: Bool) {
+        push(FirstViewController())
+        parent.startChildCoordinator(self, animated: animated)
+      }
+
+      func showStep2() {
+        let vc = SecondViewController()
+        push(vc)
+      }
+
+      func showLoginCoordinator() {
+        let coordinator = LoginCoordinator()
+        coordinator.start()
+      }
+    }
+    ```
+>>>>>>> main
     
 <br>    
 
@@ -205,7 +240,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       mainCoordinator?.start(animated: animated)
       BaseCoordinator.mainCoordinator = mainCoordinator
     }
-
 }
 ```
 <br>
