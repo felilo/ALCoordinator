@@ -12,9 +12,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 
 ### Create a Coordinator
 
-* SwiftUI
-
-    ```swift
+```swift
     enum OnboardingRouter: NavigationRouter {
 
       case firstStep(viewModel: FirstStepViewModel)
@@ -42,9 +40,9 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
         }
       }
     }
-    ```
+```
         
-    ```swift
+```swift
     class OnboardingCoordinator: CoordinatorSUI<OnboardingRouter> {
 
       override func start(animated: Bool) {
@@ -67,6 +65,9 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
         coordinator.start()
       }
     }
+<<<<<<< HEAD
+```
+=======
     ```
         
 * UIKit:
@@ -90,6 +91,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
       }
     }
     ```
+>>>>>>> main
     
 <br>    
 
@@ -154,11 +156,11 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     ```swift
     class HomeCoordinator: TabbarCoordinator<HomeRouter> {
     
-      public init(withParent parent: Coordinator) {
+      public init(parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
 
         super.init(
-            withParent: parent, 
+            parent: parent, 
             pages: pages
         )
       }
@@ -170,12 +172,12 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     ```swift
     class HomeCoordinator: TabbarCoordinator<HomeRouter> {
     
-      public init(withParent parent: Coordinator) {
+      public init(parent: Coordinator) {
         let pages: [Router] = [.marketplace, .settings]
         let view = HomeTabbarView(pages: pages)
         
         super.init(
-            withParent: parent, 
+            parent: parent, 
             customView: view,
             pages: pages
         )
@@ -201,7 +203,7 @@ class MainCoordinator: BaseCoordinator {
   }
   
   override func start(animated: Bool = false) {
-    let coordinator = OnboardingCoordinator(withParent: self)
+    let coordinator = OnboardingCoordinator(parent: self)
     coordinator.start(animated: animated)
   }
 }
@@ -268,6 +270,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 <br>
 <br>
+
+
+#### You can find an example here https://github.com/felilo/TestCoordinatorLibrary
+
 
 ### Actions:
 Actions you can perform from the coordinator depends on the kind of coordinator used. For instance, using a BaseCoordinator, CoordinatorSUI or Coordinator some of the functions you can perform are:
