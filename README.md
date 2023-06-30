@@ -47,7 +47,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
 
       override func start(animated: Bool) {
         show(.firstStep(viewModel: FirstStepViewModel(coordinator: self)))
-        parent.startChildCoordinator(self, animated: animated)
+        presentCoordinator(animated: animated)
       }
 
       func showStep2() {
@@ -345,6 +345,13 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
       <td>It is a faster way to initialize a secondary coordinator. Inserting a child to its child coordinators and finally it calls <code>present(:)</code> function.
         <br>params
         <br><b>coordinator:</b> <span>Coordinator, child coordinator</span>
+        <br><b>animated:</b> <span>Bool, default true</span>
+      </td>
+    </tr>
+    <tr>
+      <td><code>presentCoordinator(_:)</code></td>
+      <td>It is a faster way to present current Coordinator. You should call this function into start function.
+        <br>params
         <br><b>animated:</b> <span>Bool, default true</span>
       </td>
     </tr>
