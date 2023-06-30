@@ -380,6 +380,13 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
         <br><b>animated:</b> <span>Bool, default true</span>
       </td>
     </tr>
+    <tr>
+      <td><code>presentCoordinator(_:)</code></td>
+      <td>It is a faster way to present current Coordinator. You should call this function into start function.
+        <br>params
+        <br><b>animated:</b> <span>Bool, default true</span>
+      </td>
+    </tr>
   </tbody>
 </table>
 
