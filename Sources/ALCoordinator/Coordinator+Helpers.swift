@@ -104,9 +104,15 @@ extension Coordinator {
   
   // Clear all its properties
   func cleanCoordinator() {
-    if var item = self as? (any TabbarCoordinatable) {
+    if let item = self as? (any TabbarCoordinatable) {
       item.tabController?.viewControllers = []
     }
     root.viewControllers = []
+  }
+    
+  // 
+  func presentCoordinator(animated: Bool)  {
+    guard var parent = self.parent else { return }
+    parent.startChildCoordinator(self, animated: animated)
   }
 }

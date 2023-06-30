@@ -147,7 +147,8 @@ extension ALCoordinatorTests {
   private class ChildCoordinator: BaseCoordinator {
     override func start(animated: Bool = false) {
       push(.init(), animated: animated)
-      parent.startChildCoordinator(self)
+      presentCoordinator(animated: animated)
+      presentCoordinator(animated: animated)
     }
   }
   
