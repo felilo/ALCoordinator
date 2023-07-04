@@ -148,7 +148,6 @@ extension ALCoordinatorTests {
     override func start(animated: Bool = false) {
       push(.init(), animated: animated)
       presentCoordinator(animated: animated)
-      presentCoordinator(animated: animated)
     }
   }
   
