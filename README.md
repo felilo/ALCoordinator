@@ -193,7 +193,7 @@ To use the Coordinator pattern library in your iOS project, you'll need to add t
     class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
         var window: UIWindow?
-        var mainCoordinator: Coordinator
+        var mainCoordinator: Coordinator?
     
         func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
             guard let windowScene = (scene as? UIWindowScene) else { return }
