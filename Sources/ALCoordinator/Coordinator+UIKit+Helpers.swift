@@ -164,11 +164,4 @@ public extension Coordinator {
       present(coordinator.root, animated: animated)
     }
   }
-  
-  
-  //
-  func presentCoordinator(animated: Bool)  {
-    guard var parent = self.parent else { return }
-    parent.startChildCoordinator(self, animated: animated)
-  }
 }
