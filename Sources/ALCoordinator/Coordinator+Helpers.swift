@@ -109,10 +109,4 @@ extension Coordinator {
     }
     root.viewControllers = []
   }
-    
-  // 
-  func presentCoordinator(animated: Bool)  {
-    guard var parent = self.parent else { return }
-    parent.startChildCoordinator(self, animated: animated)
-  }
 }
