@@ -26,7 +26,7 @@
 import UIKit
 import SwiftUI
 
-open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
+open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDelegate where PAGE: TabbarPage {
   
   
   // ---------------------------------------------------------------------
@@ -35,11 +35,10 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
   
   
   open var tabController: UITabBarController!
-  
+  private (set) var pages: [PAGE]
   open var currentPage: PAGE? {
     didSet { setCurrentPage(currentPage) }
   }
-  
   
   // ---------------------------------------------------------------------
   // MARK: Constructor
@@ -47,16 +46,18 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
 
   
   public init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [PAGE]) {
+    self.pages = pages
     super.init(parent: parent)
     tabController = tarbbarCtrl
-    setupPages(pages)
+    setup()
   }
   
   
   public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
+    self.pages = pages
     super.init(parent: parent)
     tabController = CustomTabbarCtrl(view: customView)
-    setupPages(pages)
+    setup()
   }
   
   
@@ -89,21 +90,23 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
   
   
   open func setPages(_ values: [PAGE], completion: (() -> Void)? = nil) {
-    removeChildren(animated: false) { [weak self] in
-      self?.cleanCoordinator()
-      self?.setupPages(values)
-      completion?()
-    }
+    pages = values
+    handleUpdatePages(completion: completion)
   }
   
   
-  private func setupPages(_ values: [PAGE]) {
-    values.forEach({
+  public func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+    currentPage = pages.first(where: { $0.position == tabBarController.selectedIndex })
+  }
+  
+  
+  private func setupPages() {
+    pages.forEach({
       let item = $0.coordinator(parent: self)
       item.root.tabBarItem = buildTabbarItem(page: $0)
       item.start(animated: false)
     })
-    currentPage = values.first
+    currentPage = pages.first
   }
   
   
@@ -115,5 +118,20 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable where PAGE: TabbarPage {
       return
     }
     tabController?.selectedIndex = index
+  }
+  
+  
+  private func handleUpdatePages(completion: (() -> Void)? = nil) {
+    removeChildren(animated: false) { [weak self] in
+      self?.cleanCoordinator()
+      self?.setupPages()
+      completion?()
+    }
+  }
+  
+  
+  private func setup() {
+    self.tabController?.delegate = self
+    setupPages()
   }
 }
