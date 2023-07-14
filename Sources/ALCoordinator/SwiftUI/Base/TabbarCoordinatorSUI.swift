@@ -1,5 +1,5 @@
 //
-//  Coordinator+Helpers.swift
+//  TabbarCoordinatorSUI.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,43 +22,15 @@
 //  THE SOFTWARE.
 //
 
+import SwiftUI
 
-import UIKit
-
-public extension Coordinator {
-  /// navigation controller del coordinator
-  var root:UINavigationController {
-    return navigationController
-  }
+open class TabbarCoordinatorSUI<PAGE>: TabbarCoordinator<PAGE> where PAGE: TabbarPage {
   
-  
-  /// Get the top coordinator
-  /// - Parameters:
-  ///   - appCoordinator: Main coordinator
-  ///   - pCoodinator:
-  func topCoordinator(pCoodinator: Coordinator? = nil) -> Coordinator? {
-    guard children.last != nil else { return self }
-    var auxCoordinator = pCoodinator ?? self.children.last
-    return getDeepCoordinator(from: &auxCoordinator)
-  }
-  
-  
-  //
-  func presentCoordinator(animated: Bool)  {
-    guard var parent = self.parent else { return }
-    parent.startChildCoordinator(self, animated: animated)
-  }
-  
-  
-  mutating func startChildCoordinator(_ coordinator: Coordinator, animated: Bool = true){
-    children.append(coordinator)
-    if let tabbar = (self as? (any TabbarCoordinatable))?.tabController {
-      var ctrls = tabbar.viewControllers ?? []
-      ctrls.append(coordinator.root)
-      tabbar.setViewControllers(ctrls, animated: animated)
-    } else {
-      present(coordinator.root, animated: animated)
-    }
+  public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
+    super.init(
+      parent: parent,
+      tarbbarCtrl: CustomTabbarCtrl(view: customView),
+      pages: pages
+    )
   }
 }
-

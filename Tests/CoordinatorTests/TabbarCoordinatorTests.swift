@@ -24,7 +24,7 @@ final class TabbarCoordinatorTests: XCTestCase {
     var sut = makeSut()
     buildTabbarExpect(sut)
     
-    sut = TabbarCoordinator(
+    sut = TabbarCoordinatorSUI(
       parent: MainCoordinator(parent: nil),
       customView: CustomView(),
       pages: Page.allCases.sorted(by: { $0.position < $1.position })
@@ -52,7 +52,7 @@ final class TabbarCoordinatorTests: XCTestCase {
     let mainCoordinator = sut.parent
     XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
   }
-
+  
   
   func test_setPages() {
     let sut = makeSut()
@@ -119,13 +119,13 @@ extension TabbarCoordinatorTests {
 
 
 extension TabbarCoordinatorTests {
- 
+  
   
   // ---------------------------------------------------------------------
   // MARK: Coordinators
   // ---------------------------------------------------------------------
   
-
+  
   private class ChildCoordinator: BaseCoordinator {
     override func start(animated: Bool = false) {
       push(.init(), animated: animated)
@@ -149,7 +149,7 @@ extension TabbarCoordinatorTests {
 
 
 extension TabbarCoordinatorTests {
-
+  
   
   // ---------------------------------------------------------------------
   // MARK: Enums

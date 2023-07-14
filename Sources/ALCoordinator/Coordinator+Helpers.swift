@@ -109,4 +109,17 @@ extension Coordinator {
     }
     root.viewControllers = []
   }
+  
+  
+  func handleFinish(completion: (() -> Void)?) {
+    guard let parent = parent else {
+      popToRoot(animated: false)
+      return removeChildren(completion)
+    }
+    cleanCoordinator()
+    parent.removeChild(
+      coordinator: self,
+      completion: completion
+    )
+  }
 }

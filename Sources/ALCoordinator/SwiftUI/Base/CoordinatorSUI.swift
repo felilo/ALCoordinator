@@ -1,5 +1,5 @@
 //
-//  CustomTabbarCtrl.swift
+//  CoordinatorSUI.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -24,19 +24,8 @@
 
 import SwiftUI
 
-public protocol NavigationRouter {
+open class CoordinatorSUI<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
   
-  var transition: NavigationTransitionStyle { get }
   
-  /// Creates and returns a view of assosiated type
-  ///
-  func view() -> any View
-}
-
-
-public enum NavigationTransitionStyle {
-  case push
-  case present
-  case presentFullscreen
-  case custom(style: UIModalPresentationStyle)
+  public lazy var router = RouterSUIManager<Route>(coordinator: self)
 }

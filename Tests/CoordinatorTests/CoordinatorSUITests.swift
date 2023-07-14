@@ -14,11 +14,9 @@ final class CoordinatorSUITests: XCTestCase {
   
   func test_showVew() {
     let sut = makeSut()
-    sut.show(.firstStep)
+    sut.router.show(.firstStep)
     XCTAssertFalse(sut.root.viewControllers.isEmpty)
   }
-  
-  
 }
 
 
@@ -47,7 +45,7 @@ extension CoordinatorSUITests {
   }
   
   
-  private enum Router: NavigationRouter {
+  private enum Router: NavigationRoute {
     
     case firstStep
     case secondStep

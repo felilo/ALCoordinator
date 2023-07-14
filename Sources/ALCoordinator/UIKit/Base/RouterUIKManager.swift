@@ -1,5 +1,5 @@
 //
-//  Coordinator+Helpers.swift
+//  RouterManager.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,43 +22,36 @@
 //  THE SOFTWARE.
 //
 
-
 import UIKit
 
-public extension Coordinator {
-  /// navigation controller del coordinator
-  var root:UINavigationController {
-    return navigationController
+public class RouterUIKManager<Route: NavigationRoute> where Route.T == UIViewController  {
+  
+  
+  private let manager: RouterManager
+  
+  
+  init(coordinator: Coordinator) {
+    self.manager = .init(coordinator: coordinator)
   }
   
   
-  /// Get the top coordinator
-  /// - Parameters:
-  ///   - appCoordinator: Main coordinator
-  ///   - pCoodinator:
-  func topCoordinator(pCoodinator: Coordinator? = nil) -> Coordinator? {
-    guard children.last != nil else { return self }
-    var auxCoordinator = pCoodinator ?? self.children.last
-    return getDeepCoordinator(from: &auxCoordinator)
-  }
+  // ---------------------------------------------------------------------
+  // MARK: Helper funcs
+  // ---------------------------------------------------------------------
   
   
-  //
-  func presentCoordinator(animated: Bool)  {
-    guard var parent = self.parent else { return }
-    parent.startChildCoordinator(self, animated: animated)
-  }
-  
-  
-  mutating func startChildCoordinator(_ coordinator: Coordinator, animated: Bool = true){
-    children.append(coordinator)
-    if let tabbar = (self as? (any TabbarCoordinatable))?.tabController {
-      var ctrls = tabbar.viewControllers ?? []
-      ctrls.append(coordinator.root)
-      tabbar.setViewControllers(ctrls, animated: animated)
-    } else {
-      present(coordinator.root, animated: animated)
-    }
+  open func show(
+    _ coordinator: Coordinator,
+    route: Route,
+    transitionStyle: NavigationTransitionStyle? = nil,
+    animated: Bool = true
+  ) {
+    
+    manager.handlePresentCtrl(
+      route.view(),
+      transitionStyle: transitionStyle ?? route.transition,
+      coordinator: coordinator,
+      animated: animated
+    )
   }
 }
-

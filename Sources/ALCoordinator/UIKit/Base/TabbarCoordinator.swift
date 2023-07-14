@@ -24,7 +24,6 @@
 
 
 import UIKit
-import SwiftUI
 
 open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDelegate where PAGE: TabbarPage {
   
@@ -43,7 +42,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   // ---------------------------------------------------------------------
   // MARK: Constructor
   // ---------------------------------------------------------------------
-
+  
   
   public init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [PAGE]) {
     self.pages = pages
@@ -51,15 +50,6 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     tabController = tarbbarCtrl
     setup()
   }
-  
-  
-  public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
-    self.pages = pages
-    super.init(parent: parent)
-    tabController = CustomTabbarCtrl(view: customView)
-    setup()
-  }
-  
   
   // ---------------------------------------------------------------------
   // MARK: Helper funcs
@@ -96,7 +86,9 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   
   
   public func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-    currentPage = pages.first(where: { $0.position == tabBarController.selectedIndex })
+    let page = pages.first(where: { $0.position == tabBarController.selectedIndex })
+    guard let page, page.position != currentPage?.position else { return }
+    currentPage = page
   }
   
   

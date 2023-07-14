@@ -64,7 +64,7 @@ final class ALCoordinatorTests: XCTestCase {
     var sut = makeSut()
     let childCoordinator = ChildCoordinator(parent: sut)
     childCoordinator.push(.init(), animated: false)
-    sut.startChildCoordinator(childCoordinator)
+    sut.presentCoordinator(animated: false)
     XCTAssertEqual(sut.children.count, 1)
   }
   

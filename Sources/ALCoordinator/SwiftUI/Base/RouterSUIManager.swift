@@ -1,5 +1,5 @@
 //
-//  CoordinatorSUI.swift
+//  ManagerCoordinatorSUI.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,14 +22,15 @@
 //  THE SOFTWARE.
 //
 
-import SwiftUI
-import Combine
 
-open class CoordinatorSUI<Router: NavigationRouter>: BaseCoordinator {
+import SwiftUI
+
+public class RouterSUIManager<Route: NavigationRoute>: RouterManager where Route.T == (any View) {
   
   
-  private let manager = ManagerCoordinatorSUI<Router>()
-  public var cancelables = Set<AnyCancellable>()
+  override init(coordinator: Coordinator) {
+    super.init(coordinator: coordinator)
+  }
   
   
   // ---------------------------------------------------------------------
@@ -37,9 +38,42 @@ open class CoordinatorSUI<Router: NavigationRouter>: BaseCoordinator {
   // ---------------------------------------------------------------------
   
   
-  open func show(_ router: Router, transitionStyle: NavigationTransitionStyle? = nil, animated: Bool = true) {
-    manager.show(self, router: router, transitionStyle: transitionStyle, animated: animated)
+  open func show(
+    _ route: Route,
+    transitionStyle: NavigationTransitionStyle? = nil,
+    animated: Bool = true
+  ) {
+    let ctrl = buildHostingCtrl(view: route.view())
+    
+    handlePresentCtrl(
+      ctrl,
+      transitionStyle: transitionStyle ?? route.transition,
+      coordinator: coordinator,
+      animated: animated
+    )
+  }
+  
+  
+  // ---------------------------------------------------------------------
+  // MARK: Helper funcs
+  // ---------------------------------------------------------------------
+  
+  
+  private func buildHostingCtrl(view: (any View)) -> UIViewController {
+    let ctrl = UIHostingController(rootView: AnyView(view))
+    return ctrl
   }
 }
 
 
+
+public protocol RouterActions {
+  
+  associatedtype Route
+  
+  func show(_ coordinator: Coordinator, route: Route, transitionStyle: NavigationTransitionStyle?, animated: Bool) -> Void
+  func getTopCoordinator(mainCoordinator: Coordinator?) -> Coordinator?
+  func restartMainCoordinator(mainCoordinator: Coordinator?, animated: Bool, completion: (() -> Void)?) -> Void
+  
+  
+}
