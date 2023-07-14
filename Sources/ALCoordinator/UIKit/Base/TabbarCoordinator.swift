@@ -87,7 +87,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   
   public func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
     let page = pages.first(where: { $0.position == tabBarController.selectedIndex })
-    guard let page, page.position != currentPage?.position else { return }
+    guard page?.position != currentPage?.position else { return }
     currentPage = page
   }
   
