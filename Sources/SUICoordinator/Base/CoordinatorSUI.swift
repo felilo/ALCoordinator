@@ -23,6 +23,7 @@
 //
 
 import SwiftUI
+import UIKCoordinator
 
 open class CoordinatorSUI<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
   

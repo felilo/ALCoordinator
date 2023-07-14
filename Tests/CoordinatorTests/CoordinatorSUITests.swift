@@ -7,7 +7,8 @@
 
 import XCTest
 import SwiftUI
-@testable import ALCoordinator
+@testable import UIKCoordinator
+@testable import SUICoordinator
 
 
 final class CoordinatorSUITests: XCTestCase {

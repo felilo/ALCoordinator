@@ -23,6 +23,7 @@
 //
 
 import SwiftUI
+import UIKCoordinator
 
 open class TabbarCoordinatorSUI<PAGE>: TabbarCoordinator<PAGE> where PAGE: TabbarPage {
   

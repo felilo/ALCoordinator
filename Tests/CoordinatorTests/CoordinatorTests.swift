@@ -1,7 +1,8 @@
 import XCTest
 import UIKit
 import SwiftUI
-@testable import ALCoordinator
+@testable import UIKCoordinator
+@testable import SUICoordinator
 
 final class ALCoordinatorTests: XCTestCase {
   
@@ -64,7 +65,7 @@ final class ALCoordinatorTests: XCTestCase {
     var sut = makeSut()
     let childCoordinator = ChildCoordinator(parent: sut)
     childCoordinator.push(.init(), animated: false)
-    sut.presentCoordinator(animated: false)
+    sut.startChildCoordinator(childCoordinator)
     XCTAssertEqual(sut.children.count, 1)
   }
   

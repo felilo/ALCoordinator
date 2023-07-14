@@ -24,6 +24,7 @@
 
 
 import SwiftUI
+import UIKCoordinator
 
 public class RouterSUIManager<Route: NavigationRoute>: RouterManager where Route.T == (any View) {
   

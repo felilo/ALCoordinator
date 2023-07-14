@@ -25,13 +25,13 @@
 import UIKit
 
 
-public class RouterManager  {
+open class RouterManager  {
   
   
   private (set) var coordinator: Coordinator
   
   
-  init(coordinator: Coordinator) {
+  public init(coordinator: Coordinator) {
     self.coordinator = coordinator
   }
   
@@ -41,7 +41,7 @@ public class RouterManager  {
   // ---------------------------------------------------------------------
   
   
-  func show(
+  public func show(
     _ view: UIViewController,
     transitionStyle: NavigationTransitionStyle,
     animated: Bool = true
