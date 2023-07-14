@@ -33,4 +33,12 @@ open class TabbarCoordinatorSUI<PAGE>: TabbarCoordinator<PAGE> where PAGE: Tabba
       pages: pages
     )
   }
+  
+  
+  public init(parent: Coordinator?, pages: [PAGE]) {
+    super.init(
+      parent: parent,
+      pages: pages
+    )
+  }
 }

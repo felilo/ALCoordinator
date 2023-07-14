@@ -45,13 +45,6 @@ open class BaseCoordinator: NSObject, Coordinator  {
   // ---------------------------------------------------------
   
   
-  public init(parent: Coordinator?) {
-    uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
-    self.parent = parent
-    super.init()
-  }
-  
-  
   public init(parent: Coordinator?, presentationStyle: UIModalPresentationStyle = .fullScreen) {
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
     self.parent = parent
@@ -82,7 +75,6 @@ open class BaseCoordinator: NSObject, Coordinator  {
   
   private func handlePresentationStyle(presentationStyle: UIModalPresentationStyle) {
     root.modalPresentationStyle = presentationStyle
-    root.setNavigationBarHidden(true, animated: false)
     switch presentationStyle {
       case .custom, .none, .automatic, .fullScreen:
         break
@@ -103,6 +95,6 @@ extension BaseCoordinator: UIAdaptivePresentationControllerDelegate {
   
   
   public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    finish(withDissmis: false, completion: nil)
+    finish(withDissmis: true, completion: nil)
   }
 }

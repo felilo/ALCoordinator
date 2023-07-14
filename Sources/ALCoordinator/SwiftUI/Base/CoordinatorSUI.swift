@@ -27,5 +27,7 @@ import SwiftUI
 open class CoordinatorSUI<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
   
   
-  public lazy var router = RouterSUIManager<Route>(coordinator: self)
+  public var router: RouterSUIManager<Route> {
+    .init(coordinator: self)
+  }
 }

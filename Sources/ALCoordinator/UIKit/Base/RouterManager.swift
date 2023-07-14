@@ -41,30 +41,19 @@ public class RouterManager  {
   // ---------------------------------------------------------------------
   
   
-  
-  
-  func handlePresentCtrl(
-    _ ctrl: UIViewController,
+  func show(
+    _ view: UIViewController,
     transitionStyle: NavigationTransitionStyle,
-    coordinator: Coordinator,
-    animated: Bool
+    animated: Bool = true
   ) {
-    
-    let handlePresent: (UIModalPresentationStyle) -> Void = { [weak self] style in
-      self?.handlePresentCtrl(ctrl: ctrl, style: style, coordinator: coordinator, animated: animated)
-    }
-    
-    switch transitionStyle {
-      case .present:
-        handlePresent(.automatic)
-      case .presentFullscreen:
-        handlePresent(.fullScreen)
-      case .push:
-        handlePushCtrl(ctrl: ctrl, coordinator: coordinator, animated: animated)
-      case .custom(let style):
-        handlePresent(style)
-    }
+    handlePresentCtrl(
+      view,
+      transitionStyle: transitionStyle,
+      coordinator: coordinator,
+      animated: animated
+    )
   }
+  
   
   
   /// Push ViewController
@@ -164,6 +153,30 @@ public class RouterManager  {
       coordinator.root.viewControllers = [ctrl]
     } else {
       presentation()
+    }
+  }
+  
+  
+  private func handlePresentCtrl(
+    _ ctrl: UIViewController,
+    transitionStyle: NavigationTransitionStyle,
+    coordinator: Coordinator,
+    animated: Bool
+  ) {
+    
+    let handlePresent: (UIModalPresentationStyle) -> Void = { [weak self] style in
+      self?.handlePresentCtrl(ctrl: ctrl, style: style, coordinator: coordinator, animated: animated)
+    }
+    
+    switch transitionStyle {
+      case .present:
+        handlePresent(.automatic)
+      case .presentFullscreen:
+        handlePresent(.fullScreen)
+      case .push:
+        handlePushCtrl(ctrl: ctrl, coordinator: coordinator, animated: animated)
+      case .custom(let style):
+        handlePresent(style)
     }
   }
 }

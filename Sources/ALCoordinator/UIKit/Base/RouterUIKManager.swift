@@ -24,15 +24,7 @@
 
 import UIKit
 
-public class RouterUIKManager<Route: NavigationRoute> where Route.T == UIViewController  {
-  
-  
-  private let manager: RouterManager
-  
-  
-  init(coordinator: Coordinator) {
-    self.manager = .init(coordinator: coordinator)
-  }
+public class RouterUIKManager<Route: NavigationRoute>: RouterManager where Route.T == UIViewController  {
   
   
   // ---------------------------------------------------------------------
@@ -41,16 +33,13 @@ public class RouterUIKManager<Route: NavigationRoute> where Route.T == UIViewCon
   
   
   open func show(
-    _ coordinator: Coordinator,
-    route: Route,
+    _ route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
     animated: Bool = true
   ) {
-    
-    manager.handlePresentCtrl(
+    super.show(
       route.view(),
       transitionStyle: transitionStyle ?? route.transition,
-      coordinator: coordinator,
       animated: animated
     )
   }

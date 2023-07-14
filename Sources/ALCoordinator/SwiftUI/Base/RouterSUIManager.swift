@@ -28,52 +28,30 @@ import SwiftUI
 public class RouterSUIManager<Route: NavigationRoute>: RouterManager where Route.T == (any View) {
   
   
-  override init(coordinator: Coordinator) {
-    super.init(coordinator: coordinator)
-  }
-  
-  
   // ---------------------------------------------------------------------
   // MARK: Helper funcs
   // ---------------------------------------------------------------------
   
   
-  open func show(
+  public func show(
     _ route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
     animated: Bool = true
   ) {
-    let ctrl = buildHostingCtrl(view: route.view())
-    
-    handlePresentCtrl(
-      ctrl,
-      transitionStyle: transitionStyle ?? route.transition,
-      coordinator: coordinator,
-      animated: animated
+    super.show(
+      buildHostingCtrl(view: route.view()),
+      transitionStyle: transitionStyle ?? route.transition
     )
   }
   
   
   // ---------------------------------------------------------------------
-  // MARK: Helper funcs
+  // MARK: Private funcs
   // ---------------------------------------------------------------------
   
   
   private func buildHostingCtrl(view: (any View)) -> UIViewController {
-    let ctrl = UIHostingController(rootView: AnyView(view))
-    return ctrl
+    return UIHostingController(rootView: AnyView(view))
   }
 }
 
-
-
-public protocol RouterActions {
-  
-  associatedtype Route
-  
-  func show(_ coordinator: Coordinator, route: Route, transitionStyle: NavigationTransitionStyle?, animated: Bool) -> Void
-  func getTopCoordinator(mainCoordinator: Coordinator?) -> Coordinator?
-  func restartMainCoordinator(mainCoordinator: Coordinator?, animated: Bool, completion: (() -> Void)?) -> Void
-  
-  
-}
