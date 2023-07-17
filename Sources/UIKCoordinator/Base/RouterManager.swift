@@ -104,15 +104,6 @@ open class RouterManager  {
   }
   
   
-  /// Close the ViewController, this function checks what kind of presentation has the controller and then it make a dismiss or pop
-  /// - Parameters:
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  ///   - completion: se requiere hacer un proceso previo antes de finalizar la desvinculacion
-  public func close(animated: Bool = true, completion: (() -> Void)? = nil) {
-    coordinator.close(animated: animated, completion: completion)
-  }
-  
-  
   /// Close the current navigation controller and then removes it from its coordinator parent
   /// - Parameters:
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
@@ -121,10 +112,8 @@ open class RouterManager  {
     coordinator.finish(animated: animated, withDissmis: withDissmis, completion: completion)
   }
   
-  
-  // Restart coordinator
-  public func restart(animated: Bool, completion: (() -> Void)?) {
-    coordinator.restart(animated: animated, completion: completion)
+  public var stackViews: [UIViewController] {
+    coordinator.root.viewControllers
   }
   
   

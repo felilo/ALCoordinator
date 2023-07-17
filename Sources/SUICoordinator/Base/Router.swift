@@ -1,5 +1,5 @@
 //
-//  RouterManager.swift
+//  ManagerCoordinatorSUI.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,9 +22,10 @@
 //  THE SOFTWARE.
 //
 
-import UIKit
 
-public class RouterUIKManager<Route: NavigationRoute>: RouterManager where Route.T == UIViewController  {
+import SwiftUI
+
+public class Router<Route: NavigationRoute>: RouterManager where Route.T == (any View) {
   
   
   // ---------------------------------------------------------------------
@@ -32,15 +33,25 @@ public class RouterUIKManager<Route: NavigationRoute>: RouterManager where Route
   // ---------------------------------------------------------------------
   
   
-  open func show(
+  public func show(
     _ route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
     animated: Bool = true
   ) {
     super.show(
-      route.view(),
-      transitionStyle: transitionStyle ?? route.transition,
-      animated: animated
+      buildHostingCtrl(view: route.view()),
+      transitionStyle: transitionStyle ?? route.transition
     )
   }
+  
+  
+  // ---------------------------------------------------------------------
+  // MARK: Private funcs
+  // ---------------------------------------------------------------------
+  
+  
+  private func buildHostingCtrl(view: (any View)) -> UIViewController {
+    return UIHostingController(rootView: AnyView(view))
+  }
 }
+

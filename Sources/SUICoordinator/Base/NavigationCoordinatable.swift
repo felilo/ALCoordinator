@@ -23,12 +23,11 @@
 //
 
 import SwiftUI
-import UIKCoordinator
 
-open class CoordinatorSUI<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
+open class NavigationCoordinatable<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
   
   
-  public var router: RouterSUIManager<Route> {
+  public var router: Router<Route> {
     .init(coordinator: self)
   }
 }

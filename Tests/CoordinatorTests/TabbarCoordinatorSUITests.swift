@@ -2,62 +2,48 @@
 //  File.swift
 //  
 //
-//  Created by Andres Lozano on 14/03/23.
+//  Created by Andres Lozano on 17/07/23.
 //
 
 import XCTest
 import SwiftUI
-@testable import UIKCoordinator
+import SwiftUI
+@testable import SUICoordinator
 
-final class TabbarCoordinatorTests: XCTestCase {
+final class TabbarCoordinatorSUITests: XCTestCase {
   
+    func test_buildTabbarCoordinatorWithCustomView() {
+      var sut = makeSut()
+      buildTabbarExpect(sut)
   
-  func test_finishTabbarCoordinator() {
-    let sut = makeSut()
-    finishCoordinatorExpect(sut.parent!) {
-      _ = TabbarCoordinator(parent: sut, pages: Page.allCases)
+      sut = TabbarCoordinator(
+        parent: MainCoordinator(parent: nil),
+        customView: CustomView(),
+        pages: Page.allCases.sorted(by: { $0.position < $1.position })
+      )
+      sut.start(animated: false)
+  
+      buildTabbarExpect(sut)
     }
-  }
   
-  
-  func test_changeTab() {
-    let sut = makeSut()
-    XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
-    sut.currentPage = .secondStep
-    XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
-    XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
-    sut.currentPage = .firstStep
-    XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
-    XCTAssertEqual(sut.tabController.selectedIndex, Page.firstStep.position)
-  }
-  
-  
-  func test_getTopCoordinator() {
-    let sut = makeSut()
-    sut.currentPage = .secondStep
-    let currentCoordinator = sut.getCoordinatorSelected()
-    let mainCoordinator = sut.parent
-    XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
-  }
-  
-  
-  func test_setPages() {
-    let sut = makeSut()
-    let pages = [Page.firstStep]
-    let expect = XCTestExpectation()
-    XCTAssertEqual(sut.children.count, Page.allCases.count)
-    sut.setPages(pages) {
-      XCTAssertEqual(sut.children.count, pages.count)
-      XCTAssertEqual(pages.count, sut.tabController?.viewControllers?.count)
-      expect.fulfill()
-    }
-    wait(for: [expect], timeout: 1)
+  func test_buildDefaultTabbarCoordinator() {
+    var sut = makeSut()
+    buildTabbarExpect(sut)
+    
+    sut = TabbarCoordinator(
+      parent: MainCoordinator(parent: nil),
+      pages: Page.allCases.sorted(by: { $0.position < $1.position })
+    )
+    sut.start(animated: false)
+    
+    buildTabbarExpect(sut)
   }
 }
 
 
 
-extension TabbarCoordinatorTests {
+
+extension TabbarCoordinatorSUITests {
   
   
   // ---------------------------------------------------------------------
@@ -72,20 +58,6 @@ extension TabbarCoordinatorTests {
     )
     coordinator.start(animated: false)
     return coordinator
-  }
-  
-  
-  private func finishCoordinatorExpect(_ sut: Coordinator, when action: @escaping () -> Void) {
-    sut.push(.init(), animated: false)
-    sut.push(.init(), animated: false)
-    action()
-    let exp = XCTestExpectation()
-    sut.finish(animated: false) {
-      XCTAssertTrue(sut.children.isEmpty)
-      XCTAssertEqual(sut.root.viewControllers.count, 1)
-      exp.fulfill()
-    }
-    wait(for: [exp], timeout: 2)
   }
   
   
@@ -105,7 +77,7 @@ extension TabbarCoordinatorTests {
 
 
 
-extension TabbarCoordinatorTests {
+extension TabbarCoordinatorSUITests {
   
   
   // ---------------------------------------------------------------------
@@ -113,18 +85,18 @@ extension TabbarCoordinatorTests {
   // ---------------------------------------------------------------------
   
   
-  private class ChildCoordinator: BaseCoordinator {
+  private class ChildCoordinator: NavigationCoordinatable<CustomRoute> {
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
+      router.show(.one, transitionStyle: .push, animated: false)
       presentCoordinator(animated: animated)
     }
   }
   
   
-  private class OtherChildCoordinator: BaseCoordinator {
+  private class OtherChildCoordinator: NavigationCoordinatable<CustomRoute> {
     
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
+      router.show(.two, transitionStyle: .push, animated: false)
       presentCoordinator(animated: animated)
     }
   }
@@ -135,7 +107,7 @@ extension TabbarCoordinatorTests {
 
 
 
-extension TabbarCoordinatorTests {
+extension TabbarCoordinatorSUITests {
   
   
   // ---------------------------------------------------------------------
@@ -176,4 +148,22 @@ extension TabbarCoordinatorTests {
       }
     }
   }
+  
+  
+  enum CustomRoute: NavigationRoute {
+    var transition: NavigationTransitionStyle {
+      switch self {
+        default: return .push
+      }
+    }
+  
+    case one
+    case two
+    
+    func view() -> any View {
+      Text("")
+    }
+    
+  }
 }
+

@@ -1,5 +1,5 @@
 //
-//  TabbarCoordinatorSUI.swift
+//  TabbarNavigationRouter.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,23 +22,13 @@
 //  THE SOFTWARE.
 //
 
-import SwiftUI
+
 import UIKCoordinator
-open class TabbarCoordinator<PAGE>:  UIKCoordinator.TabbarCoordinator<PAGE> where PAGE: TabbarPage {
-  
-  public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
-    super.init(
-      parent: parent,
-      tarbbarCtrl: CustomTabbarCtrl(view: customView),
-      pages: pages
-    )
-  }
-  
-  
-  public init(parent: Coordinator?, pages: [PAGE]) {
-    super.init(
-      parent: parent,
-      pages: pages
-    )
-  }
-}
+
+public typealias Coordinator = UIKCoordinator.Coordinator
+public typealias TabbarPage = UIKCoordinator.TabbarPage
+public typealias BaseCoordinator = UIKCoordinator.BaseCoordinator
+public typealias NavigationRoute = UIKCoordinator.NavigationRoute
+public typealias RouterManager = UIKCoordinator.RouterManager
+public typealias NavigationTransitionStyle = UIKCoordinator.NavigationTransitionStyle
+public typealias TabbarNavigationRouter = UIKCoordinator.TabbarNavigationRouter
