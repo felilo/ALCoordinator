@@ -15,7 +15,9 @@ final class RouteTests: XCTestCase {
   func test_showVew() {
     let sut = makeSut()
     sut.show(.firstStep)
-    XCTAssertFalse(sut.coordinator.root.viewControllers.isEmpty)
+    finish(sut: sut) {
+      XCTAssertFalse(sut.coordinator.root.viewControllers.isEmpty)
+    }
   }
   
   func test_popView() {
@@ -23,33 +25,38 @@ final class RouteTests: XCTestCase {
     sut.show(.firstStep)
     sut.show(.secondStep)
     sut.pop(animated: false)
-    XCTAssertEqual(sut.stackViews.count, 1)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.stackViews.count, 1)
+    }
   }
   
   
   func test_pushView() {
     let sut = makeSut()
     sut.show(.firstStep, transitionStyle: .push, animated: false)
-    XCTAssertEqual(sut.coordinator.root.viewControllers.count, 1)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.coordinator.root.viewControllers.count, 1)
+    }
   }
   
   
   func test_finishFlow() {
     let sut = makeSut()
-    let exp = XCTestExpectation(description: "")
-    sut.finish(animated: false) {
+    sut.finish(completion: nil)
+    finish(sut: sut) {
       XCTAssertTrue(sut.coordinator.parent.children.isEmpty)
-      exp.fulfill()
     }
-    wait(for: [exp], timeout: 1)
   }
   
   func test_popToRoot() {
+    
     let sut = makeSut()
     sut.show(.secondStep)
     sut.show(.thirdStep)
     sut.popToRoot(animated: false)
-    XCTAssertEqual(sut.stackViews.count, 1)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.stackViews.count, 1)
+    }
   }
 }
 
@@ -57,10 +64,23 @@ final class RouteTests: XCTestCase {
 
 extension RouteTests {
   
-  private func makeSut() -> Router<Route> {
+  private func finish(sut: Router<Route>, _ completation: @escaping () -> Void ) -> Void {
+    let exp = XCTestExpectation(description: "")
+    DispatchQueue.main.async {
+      completation()
+      sut.finish(animated: false ,completion: nil)
+      exp.fulfill()
+    }
+    wait(for: [exp], timeout: 1)
+  }
+  
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> Router<Route> {
     let mainCoordinator = BaseCoordinator(parent: nil)
     let coordinator = NavigationCoordinatable<Route>(parent: mainCoordinator)
     coordinator.presentCoordinator(animated: false)
+    addTeardownBlock { [weak coordinator] in
+      XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
+    }
     return coordinator.router
   }
   

@@ -101,20 +101,6 @@ extension Coordinator {
   }
   
   
-  /// Close the current navigation controller and then removes it from its coordinator parent
-  /// - Parameters:
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  ///   - completion
-  func finish(animated: Bool = true, withDissmis: Bool = true, completion: (() -> Void)?) {
-    guard withDissmis else {
-      return handleFinish(completion: completion)
-    }
-    close(animated: animated) {
-      handleFinish(completion: completion)
-    }
-  }
-  
-  
   // Restart coordinator
   func restart(animated: Bool, completion: (() -> Void)?) {
     finish(animated: animated) {

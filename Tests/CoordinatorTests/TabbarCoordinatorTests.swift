@@ -13,22 +13,30 @@ final class TabbarCoordinatorTests: XCTestCase {
   
   
   func test_finishTabbarCoordinator() {
+    let exp = XCTestExpectation(description: "")
     let sut = makeSut()
-    finishCoordinatorExpect(sut.parent!) {
-      _ = TabbarCoordinator(parent: sut, pages: Page.allCases)
+
+    sut.finish(animated: false) {
+      _ = TabbarCoordinator(parent: sut.children.last, pages: Page.allCases)
+      XCTAssertEqual(sut.children.count, 0)
+      XCTAssertEqual(sut.root.viewControllers.count, 0)
+      exp.fulfill()
     }
+    wait(for: [exp], timeout: 1)
   }
   
   
   func test_changeTab() {
     let sut = makeSut()
-    XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
-    sut.currentPage = .secondStep
-    XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
-    XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
-    sut.currentPage = .firstStep
-    XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
-    XCTAssertEqual(sut.tabController.selectedIndex, Page.firstStep.position)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
+      sut.currentPage = .secondStep
+      XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
+      sut.currentPage = .firstStep
+      XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.firstStep.position)
+    }
   }
   
   
@@ -37,21 +45,23 @@ final class TabbarCoordinatorTests: XCTestCase {
     sut.currentPage = .secondStep
     let currentCoordinator = sut.getCoordinatorSelected()
     let mainCoordinator = sut.parent
-    XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
+    }
+    
   }
   
   
   func test_setPages() {
     let sut = makeSut()
     let pages = [Page.firstStep]
-    let expect = XCTestExpectation()
     XCTAssertEqual(sut.children.count, Page.allCases.count)
-    sut.setPages(pages) {
-      XCTAssertEqual(sut.children.count, pages.count)
-      XCTAssertEqual(pages.count, sut.tabController?.viewControllers?.count)
-      expect.fulfill()
+    sut.setPages(pages) { [weak self] in
+      self?.finish(sut: sut) {
+        XCTAssertEqual(sut.children.count, pages.count)
+        XCTAssertEqual(pages.count, sut.tabController?.viewControllers?.count)
+      }
     }
-    wait(for: [expect], timeout: 1)
   }
 }
 
@@ -65,12 +75,16 @@ extension TabbarCoordinatorTests {
   // ---------------------------------------------------------------------
   
   
-  private func makeSut() -> TabbarCoordinator<Page> {
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
     let coordinator = TabbarCoordinator(
       parent: MainCoordinator(parent: nil),
       pages: Page.allCases.sorted(by: { $0.position < $1.position })
     )
     coordinator.start(animated: false)
+    
+    addTeardownBlock { [weak coordinator] in
+      XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
+    }
     return coordinator
   }
   
@@ -79,13 +93,10 @@ extension TabbarCoordinatorTests {
     sut.push(.init(), animated: false)
     sut.push(.init(), animated: false)
     action()
-    let exp = XCTestExpectation()
-    sut.finish(animated: false) {
+    finish(sut: sut) {
       XCTAssertTrue(sut.children.isEmpty)
       XCTAssertEqual(sut.root.viewControllers.count, 1)
-      exp.fulfill()
     }
-    wait(for: [exp], timeout: 2)
   }
   
   
@@ -97,6 +108,16 @@ extension TabbarCoordinatorTests {
     XCTAssertEqual(pages.map({ $0.position }), viewControllers?.map({ $0.tabBarItem.tag }))
   }
   
+  private func finish(sut: Coordinator, _ completation: @escaping () -> Void ) -> Void {
+    let exp = XCTestExpectation(description: "")
+    DispatchQueue.main.async {
+      completation()
+      sut.finish(animated: false) {
+        exp.fulfill()
+      }
+    }
+    wait(for: [exp], timeout: 3)
+  }
   
   private struct CustomView: View {
     var body: some View { Text("") }

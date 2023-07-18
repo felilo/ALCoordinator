@@ -51,12 +51,15 @@ extension TabbarCoordinatorSUITests {
   // ---------------------------------------------------------------------
   
   
-  private func makeSut() -> TabbarCoordinator<Page> {
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
     let coordinator = TabbarCoordinator(
       parent: MainCoordinator(parent: nil),
       pages: Page.allCases.sorted(by: { $0.position < $1.position })
     )
     coordinator.start(animated: false)
+    addTeardownBlock { [weak coordinator] in
+      XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
+    }
     return coordinator
   }
   
@@ -64,9 +67,21 @@ extension TabbarCoordinatorSUITests {
   private func buildTabbarExpect(_ sut: TabbarCoordinator<Page>) {
     let pages = Page.allCases
     let viewControllers = sut.tabController.viewControllers
-    
-    XCTAssertEqual(sut.children.count, pages.count)
-    XCTAssertEqual(pages.map({ $0.position }), viewControllers?.map({ $0.tabBarItem.tag }))
+    finish(sut: sut) {
+      XCTAssertEqual(sut.children.count, pages.count)
+      XCTAssertEqual(pages.map({ $0.position }), viewControllers?.map({ $0.tabBarItem.tag }))
+    }
+  }
+  
+  
+  private func finish(sut: Coordinator, _ completation: @escaping () -> Void ) -> Void {
+    let exp = XCTestExpectation(description: "")
+    DispatchQueue.main.async {
+      completation()
+      sut.finish(animated: false ,completion: nil)
+      exp.fulfill()
+    }
+    wait(for: [exp], timeout: 1)
   }
   
   

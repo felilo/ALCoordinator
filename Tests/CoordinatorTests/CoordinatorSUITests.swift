@@ -36,15 +36,16 @@ final class CoordinatorSUITests: XCTestCase {
   }
   
   func test_navigatingToHostingViewControllerViaSUIView() {
-    typealias Item = UIHostingController<FirstView>
     let sut = makeSut()
-    let item = Item(rootView: FirstView())
     
-    navigateToViewExpect(sut.router, toCompleteWithView: item, when: {
-      sut.router.push(item, animated: false)
-      sut.router.push(.init(), animated: false)
-      sut.router.popToView(Item.self, animated: false)
-    })
+    sut.router.show(.firstStep, animated: false)
+    sut.router.show(.secondStep, animated: false)
+    sut.router.popToView(FirstView.self, animated: false)
+    
+    finish(sut: sut.router) {
+      let lastCtrl = sut.router.stackViews.last
+      XCTAssertEqual(lastCtrl?.name, "UIHostingController<FirstView>")
+    }
   }
 }
 
@@ -57,44 +58,44 @@ extension CoordinatorSUITests {
   // ---------------------------------------------------------------------
   
   
-  private func makeSut() -> NavigationCoordinatable<MyRouter> {
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> NavigationCoordinatable<MyRouter> {
     let coordinator = NavigationCoordinatable<MyRouter>.init(
       parent: MainCoordinator(parent: nil)
     )
+    addTeardownBlock { [weak coordinator] in
+      XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
+    }
     return coordinator
   }
   
   
-  private class ChildCoordinator: NavigationCoordinatable<MyRouter> {
-    override func start(animated: Bool = false) {
-      router.push(.init(), animated: animated)
-      presentCoordinator(animated: animated)
+  private func finish(sut: Router<MyRouter>, _ completation: @escaping () -> Void ) -> Void {
+    let exp = XCTestExpectation(description: "")
+    DispatchQueue.main.async {
+      completation()
+      sut.finish(animated: false ,completion: nil)
+      exp.fulfill()
     }
-  }
-  
-  
-  private func navigateToViewExpect(
-    _ sut: Router<MyRouter>,
-    toCompleteWithView expectedView: UIViewController?,
-    when action: @escaping () -> Void
-  ) {
-    sut.push(.init(), animated: false)
-    action()
-    let lastCtrl = sut.stackViews.last
-    XCTAssertEqual(lastCtrl, expectedView)
+    wait(for: [exp], timeout: 1)
   }
 }
 
 
 extension CoordinatorSUITests {
   
+  
   private enum MyRouter: NavigationRoute {
+    static let Name = "Hello world"
+    
     
     case firstStep
     case secondStep
     
     func view() -> any View {
-      CustomView()
+      switch self {
+        case .firstStep: return FirstView()
+        default: return CustomView()
+      }
     }
     
     var transition: NavigationTransitionStyle {

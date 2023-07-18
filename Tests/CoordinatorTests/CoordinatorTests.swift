@@ -54,8 +54,9 @@ final class ALCoordinatorTests: XCTestCase {
     let childCoordinator = ChildCoordinator(parent: sut)
     childCoordinator.router.show(.second, animated: false)
     childCoordinator.presentCoordinator(animated: false)
-    
-    XCTAssertEqual(sut.children.count, 1)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.children.count, 1)
+    }
   }
   
   
@@ -66,24 +67,24 @@ final class ALCoordinatorTests: XCTestCase {
     let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
     let thirdCoordinator = makeChildCoordinator(parent: secondCoordinator)
     
-    XCTAssertEqual(sut.topCoordinator()?.uuid, thirdCoordinator.uuid)
-    BaseCoordinator.mainCoordinator = sut
-    XCTAssertEqual(sut.getTopCoordinator()?.uuid, thirdCoordinator.uuid)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.topCoordinator()?.uuid, thirdCoordinator.uuid)
+      BaseCoordinator.mainCoordinator = sut
+      XCTAssertEqual(sut.getTopCoordinator()?.uuid, thirdCoordinator.uuid)
+      BaseCoordinator.mainCoordinator = nil
+    }
   }
   
   
   func test_restartMainCoordinator() {
-    let expect = XCTestExpectation()
     let sut = makeSut()
     let firstCoordinator = makeChildCoordinator(parent: sut)
     let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
     
-    secondCoordinator.restartMainCoordinator(mainCoordinator: sut, animated: false) {
+    secondCoordinator.restartMainCoordinator(mainCoordinator: sut, animated: false, completion: nil)
+    finish(sut: sut) {
       XCTAssertTrue(sut.children.isEmpty)
-      expect.fulfill()
     }
-    
-    wait(for: [expect], timeout: 1)
   }
 }
 
@@ -111,22 +112,23 @@ extension ALCoordinatorTests {
   
   
   private func finishCoordinatorExpect(_ sut: Coordinator, when action: @escaping () -> Void) {
-    let exp = XCTestExpectation()
     sut.push(.init(), animated: false)
     action()
-    
-    sut.finish(animated: false) {
-      XCTAssertTrue(sut.children.isEmpty)
-      XCTAssertEqual(sut.root.viewControllers.count, 1)
-      exp.fulfill()
+    sut.finish(animated: false) {[weak self] in
+      self?.finish(sut: sut) {
+        XCTAssertTrue(sut.children.isEmpty)
+        XCTAssertEqual(sut.root.viewControllers.count, 1)
+      }
     }
-    
-    wait(for: [exp], timeout: 2)
   }
   
   
-  private func makeSut() -> BaseCoordinator {
-    MainCoordinator(parent: nil)
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> BaseCoordinator {
+    let coordinator = MainCoordinator(parent: nil)
+    addTeardownBlock { [weak coordinator] in
+      XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
+    }
+    return coordinator
   }
   
   
@@ -168,6 +170,17 @@ extension ALCoordinatorTests {
     var transition: NavigationTransitionStyle {
       .push
     }
+  }
+  
+  private func finish(sut: Coordinator, _ completation: @escaping () -> Void ) -> Void {
+    let exp = XCTestExpectation(description: "")
+    DispatchQueue.main.async {
+      completation()
+      sut.finish(animated: false ,completion: nil)
+      exp.fulfill()
+    }
+    wait(for: [exp], timeout: 1)
+    
   }
   
   

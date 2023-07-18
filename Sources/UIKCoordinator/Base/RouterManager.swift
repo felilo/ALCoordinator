@@ -55,16 +55,6 @@ open class RouterManager  {
   }
   
   
-  
-  /// Push ViewController
-  /// - Parameters:
-  ///   - viewController: The view controller to push onto the stack. This object cannot be a tab bar controller. If the view controller is already on the navigation stack, this method throws an exception.
-  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  public func push(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
-    coordinator.push(viewController, animated: animated, completion: completion)
-  }
-  
-  
   /// Present ViewController
   /// - Parameters:
   ///   - viewController: controlador que llega como parametro
@@ -132,7 +122,7 @@ open class RouterManager  {
   
   private func handlePushCtrl(ctrl: UIViewController, coordinator: Coordinator, animated: Bool) {
     handlePresentation(coordinator: coordinator, ctrl: ctrl) { [weak self] in
-      self?.push(ctrl, animated: animated)
+      self?.coordinator.push(ctrl, animated: animated)
     }
   }
   

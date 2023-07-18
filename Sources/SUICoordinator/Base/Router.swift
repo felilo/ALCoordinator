@@ -50,8 +50,8 @@ public class Router<Route: NavigationRoute>: RouterManager where Route.T == (any
   // ---------------------------------------------------------------------
   
   
-  private func buildHostingCtrl(view: (any View)) -> UIViewController {
-    return UIHostingController(rootView: AnyView(view))
+  private func buildHostingCtrl(view: some View) -> UIViewController {
+    return UIHostingController(rootView: view)
   }
 }
 

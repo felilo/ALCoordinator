@@ -109,5 +109,3 @@ public class CustomTabbarCtrl: UITabBarController {
     return img!
   }
 }
-
-
