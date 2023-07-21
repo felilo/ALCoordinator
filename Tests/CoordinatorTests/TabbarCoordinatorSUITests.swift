@@ -102,8 +102,7 @@ extension TabbarCoordinatorSUITests {
   
   private class ChildCoordinator: NavigationCoordinatable<CustomRoute> {
     override func start(animated: Bool = false) {
-      router.show(.one, transitionStyle: .push, animated: false)
-      presentCoordinator(animated: animated)
+      router.startFlow(route: .one, animated: animated)
     }
   }
   
@@ -111,13 +110,16 @@ extension TabbarCoordinatorSUITests {
   private class OtherChildCoordinator: NavigationCoordinatable<CustomRoute> {
     
     override func start(animated: Bool = false) {
-      router.show(.two, transitionStyle: .push, animated: false)
-      presentCoordinator(animated: animated)
+      router.startFlow(route: .two, animated: animated)
     }
   }
   
   
-  private class MainCoordinator: BaseCoordinator { }
+  private class MainCoordinator: NavigationCoordinatable<CustomRoute> {
+    override func start(animated: Bool = false) {
+      router.startFlow(route: .one, animated: animated)
+    }
+  }
 }
 
 
@@ -166,19 +168,12 @@ extension TabbarCoordinatorSUITests {
   
   
   enum CustomRoute: NavigationRoute {
-    var transition: NavigationTransitionStyle {
-      switch self {
-        default: return .push
-      }
-    }
-  
+    
     case one
     case two
     
-    func view() -> any View {
-      Text("")
-    }
-    
+    var transition: NavigationTransitionStyle { .push }
+    func view() -> any View { Text("") }
   }
 }
 

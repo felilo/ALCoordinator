@@ -12,18 +12,12 @@ import SwiftUI
 
 final class RouteTests: XCTestCase {
   
-  func test_showVew() {
-    let sut = makeSut()
-    sut.show(.firstStep)
-    finish(sut: sut) {
-      XCTAssertFalse(sut.stackViews.isEmpty)
-    }
-  }
-  
   func test_popView() {
     let sut = makeSut()
-    sut.show(.firstStep)
-    sut.show(.secondStep)
+    
+    sut.navigate(to: .secondStep, animated: false)
+    XCTAssertEqual(sut.stackViews.count, 2)
+    
     sut.pop(animated: false)
     finish(sut: sut) {
       XCTAssertEqual(sut.stackViews.count, 1)
@@ -33,29 +27,38 @@ final class RouteTests: XCTestCase {
   
   func test_pushView() {
     let sut = makeSut()
-    sut.show(.firstStep, transitionStyle: .push, animated: false)
+    sut.navigate(to: .secondStep, animated: false)
     finish(sut: sut) {
-      XCTAssertEqual(sut.stackViews.count, 1)
+      XCTAssertEqual(sut.stackViews.count, 2)
     }
   }
   
   
   func test_finishFlow() {
+    let exp = XCTestExpectation(description: "finishFlow")
     let sut = makeSut()
-    sut.finish(completion: nil)
-    finish(sut: sut) {
-      XCTAssertTrue(sut.stackViews.isEmpty)
+    
+    sut.finishFlow(completion: nil)
+    sut.navigate(to: .secondStep, animated: false)
+    XCTAssertEqual(sut.stackViews.count, 2)
+    
+    sut.finishFlow(animated: false) {
+      XCTAssertEqual(sut.stackViews.count, 1)
+      exp.fulfill()
     }
+    
+    wait(for: [exp], timeout: 1)
   }
   
   func test_popToRoot() {
-    
     let sut = makeSut()
-    sut.show(.secondStep)
-    sut.show(.thirdStep)
+    
+    sut.navigate(to: .secondStep, animated: false)
+    sut.navigate(to: .thirdStep, animated: false)
     sut.popToRoot(animated: false)
+    
     finish(sut: sut) {
-      XCTAssertEqual(sut.stackViews.count, 1)
+      XCTAssertEqual(sut.stackViews.last?.name, "\(FirstStepController.self)")
     }
   }
 }
@@ -68,16 +71,15 @@ extension RouteTests {
     let exp = XCTestExpectation(description: "")
     DispatchQueue.main.async {
       completation()
-      sut.finish(animated: false ,completion: nil)
+      sut.finishFlow(animated: false ,completion: nil)
       exp.fulfill()
     }
     wait(for: [exp], timeout: 1)
   }
   
   private func makeSut(file: StaticString = #file, line: UInt = #line) -> Router<Route> {
-    let mainCoordinator = BaseCoordinator(parent: nil)
-    let coordinator = NavigationCoordinatable<Route>(parent: mainCoordinator)
-    coordinator.presentCoordinator(animated: false)
+    let coordinator = NavigationCoordinatable<Route>(parent: nil)
+    coordinator.router.startFlow(route: .firstStep, animated: false)
     addTeardownBlock { [weak coordinator] in
       XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
     }
@@ -91,7 +93,13 @@ extension RouteTests {
     case secondStep
     case thirdStep
     
-    func view() -> UIViewController { .init() }
+    func view() -> UIViewController {
+      switch self {
+        case .firstStep: return FirstStepController()
+        case .secondStep: return SecondStepController()
+        case .thirdStep: return ThirdStepController()
+      }
+    }
     
     var transition: NavigationTransitionStyle {
       switch self {
@@ -100,4 +108,8 @@ extension RouteTests {
       }
     }
   }
+  
+  class FirstStepController: UIViewController {}
+  class SecondStepController: UIViewController {}
+  class ThirdStepController: UIViewController {}
 }

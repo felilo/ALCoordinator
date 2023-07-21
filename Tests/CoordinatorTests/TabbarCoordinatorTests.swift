@@ -19,7 +19,7 @@ final class TabbarCoordinatorTests: XCTestCase {
     let coordinator = TabbarCoordinator(parent: sut.children.first, pages: Page.allCases)
     coordinator.start(animated: false)
     DispatchQueue.main.async {
-      sut.finishTabbar(animated: false) {
+      sut.finish(animated: false) {
         XCTAssertTrue(sut.children.isEmpty)
         XCTAssertTrue(sut.root.viewControllers.isEmpty)
         exp.fulfill()
@@ -80,6 +80,7 @@ extension TabbarCoordinatorTests {
   
   
   private func makeSut(file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
+    
     let coordinator = TabbarCoordinator(
       parent: MainCoordinator(parent: nil),
       pages: Page.allCases.sorted(by: { $0.position < $1.position })
@@ -97,7 +98,7 @@ extension TabbarCoordinatorTests {
     let exp = XCTestExpectation(description: "")
     DispatchQueue.main.async {
       completation()
-      sut.finishTabbar(animated: false) {
+      sut.finish(animated: false) {
         exp.fulfill()
       }
     }
@@ -115,24 +116,25 @@ extension TabbarCoordinatorTests {
   // ---------------------------------------------------------------------
   
   
-  private class ChildCoordinator: BaseCoordinator {
+  private class ChildCoordinator: NavigationCoordinatable<MyRouter> {
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
-      presentCoordinator(animated: animated)
+      router.startFlow(route: .first, animated: animated)
     }
   }
   
   
-  private class OtherChildCoordinator: BaseCoordinator {
-    
+  private class OtherChildCoordinator: NavigationCoordinatable<MyRouter> {
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
-      presentCoordinator(animated: animated)
+      router.startFlow(route: .first, animated: animated)
     }
   }
   
   
-  private class MainCoordinator: BaseCoordinator { }
+  private class MainCoordinator: NavigationCoordinatable<MyRouter> {
+    override func start(animated: Bool = false) {
+      router.startFlow(route: .first, animated: animated)
+    }
+  }
 }
 
 
@@ -177,5 +179,19 @@ extension TabbarCoordinatorTests {
         case .secondStep: return 1
       }
     }
+  }
+  
+  
+  private enum MyRouter: NavigationRoute {
+    
+    case first
+    case second
+    case third
+    
+    func view() -> UIViewController {
+      .init()
+    }
+    
+    var transition: NavigationTransitionStyle { .push }
   }
 }

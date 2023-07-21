@@ -44,10 +44,16 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   // ---------------------------------------------------------------------
   
   
-  public init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [PAGE]) {
+  public init(
+    parent: Coordinator?,
+    tarbbarCtrl: UITabBarController = .init(),
+    presentationStyle: UIModalPresentationStyle = .fullScreen,
+    pages: [PAGE]
+  ) {
     self.pages = pages
     super.init(parent: parent)
     tabController = tarbbarCtrl
+    tabController?.modalPresentationStyle = presentationStyle
     setup()
   }
   
@@ -62,9 +68,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   
   
   public override func start(animated: Bool = true) {
-    parent?.children.append(self)
-    tabController?.modalPresentationStyle = .fullScreen
-    parent?.present(tabController, animated: animated)
+    presentCoordinator(animated: animated)
   }
   
   
@@ -107,7 +111,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   
   private func handleUpdatePages(completion: (() -> Void)? = nil) {
     removeChildren(animated: false) { [weak self] in
-      self?.cleanCoordinator()
+      self?.emptyControllers()
       self?.setupPages()
       completion?()
     }

@@ -41,11 +41,11 @@ open class RouterManager  {
   // ---------------------------------------------------------------------
   
   
-  public func show(
-    _ view: UIViewController,
+  public func navigate<T>(
+    _ view: T,
     transitionStyle: NavigationTransitionStyle,
     animated: Bool = true
-  ) {
+  ) where T: UIViewController {
     handlePresentCtrl(
       view,
       transitionStyle: transitionStyle,
@@ -60,27 +60,27 @@ open class RouterManager  {
   ///   - viewController: controlador que llega como parametro
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion
-  public func present(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+  open func present(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
     coordinator.present(viewController, animated: animated, completion: completion)
   }
   
   
   /// Close the ViewController doing a pop
   /// - Parameter animated: define si se quiere mostrar la animación
-  public func pop(animated: Bool = true) {
+  open func pop(animated: Bool = true) {
     coordinator.pop(animated: animated)
   }
   
   
   /// Close the ViewController doing a popToRoot
   /// - Parameter animated: Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
-  public func popToRoot(animated: Bool = true) {
+  open func popToRoot(animated: Bool = true) {
     coordinator.popToRoot(animated: animated)
   }
   
   
   @discardableResult
-  public func popToView<T>(_ view: T, animated: Bool = true) -> Bool {
+  open func popToView<T>(_ view: T, animated: Bool = true) -> Bool {
     coordinator.popToView(view, animated: animated)
   }
   
@@ -89,7 +89,7 @@ open class RouterManager  {
   /// - Parameters:
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion: se requiere hacer un proceso previo antes de finalizar la desvinculacion
-  public func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
+  open func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
     coordinator.dismiss(animated: animated, completion: completion)
   }
   
@@ -98,19 +98,34 @@ open class RouterManager  {
   /// - Parameters:
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion
-  public func finish(animated: Bool = true, withDissmis: Bool = true, completion: (() -> Void)?) {
+  open func finishFlow(animated: Bool = true, withDissmis: Bool = true, completion: (() -> Void)?) {
     coordinator.finish(animated: animated, withDissmis: withDissmis, completion: completion)
   }
   
-  /// Close the current navigation controller and then removes it from its coordinator parent
+  
+  /// Open current navigation controller and then removes it from its coordinator parent
   /// - Parameters:
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion
-  public func finishTabbar(animated: Bool = true, withDissmis: Bool = true, completion: (() -> Void)?) {
-    coordinator.finishTabbar(animated: animated, withDissmis: withDissmis, completion: completion)
+  open func navigate(to coordinator: Coordinator, animated: Bool = true) {
+    var aux: Coordinator = coordinator
+    aux.parent = self.coordinator
+    aux.start(animated: animated)
+//    coordinator.start(animated: animated)
   }
   
-  public var stackViews: [UIViewController] {
+  
+  /// Open current navigation controller and then removes it from its coordinator parent
+  /// - Parameters:
+  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
+  ///   - completion
+  open func startFlow(_ view: UIViewController, transitionStyle: NavigationTransitionStyle, animated: Bool = true) {
+    navigate(view, transitionStyle: transitionStyle, animated: animated)
+    coordinator.presentCoordinator(animated: animated)
+  }
+  
+  
+  open var stackViews: [UIViewController] {
     coordinator.root.viewControllers
   }
   

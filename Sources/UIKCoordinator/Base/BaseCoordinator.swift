@@ -93,6 +93,6 @@ extension BaseCoordinator: UIAdaptivePresentationControllerDelegate {
   
   
   public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    finish(withDissmis: false, completion: nil)
+    handleFinish(withDissmis: false, completion: nil)
   }
 }

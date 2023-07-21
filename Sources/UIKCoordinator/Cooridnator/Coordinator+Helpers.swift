@@ -95,14 +95,14 @@ extension Coordinator {
       completion?()
       return
     }
-    coordinator.finish(animated: animated, completion: {
+    coordinator.handleFinish(animated: animated, withDissmis: false, completion: {
       removeChildren(completion)
     })
   }
   
   
   // Clear all its properties
-  func cleanCoordinator() {
+  func emptyControllers() {
     if let item = self as? (any TabbarCoordinatable) {
       item.tabController?.viewControllers = []
     }
@@ -110,12 +110,12 @@ extension Coordinator {
   }
   
   
-  func handleFinish(completion: (() -> Void)?) {
+  func emptyCoordinator(completion: (() -> Void)?) {
     guard let parent = parent else {
       popToRoot(animated: false)
       return removeChildren(completion)
     }
-    cleanCoordinator()
+    emptyControllers()
     parent.removeChild(
       coordinator: self,
       completion: completion

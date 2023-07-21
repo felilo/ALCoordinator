@@ -32,12 +32,21 @@ public class Router<Route: NavigationRoute>: RouterManager where Route.T == UIVi
   // ---------------------------------------------------------------------
   
   
-  open func show(
-    _ route: Route,
+  open func navigate(
+    to route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
     animated: Bool = true
   ) {
-    super.show(
+    super.navigate(
+      route.view(),
+      transitionStyle: transitionStyle ?? route.transition,
+      animated: animated
+    )
+  }
+  
+  
+  open func startFlow(route: Route, transitionStyle: NavigationTransitionStyle? = nil, animated: Bool = true) {
+    super.startFlow(
       route.view(),
       transitionStyle: transitionStyle ?? route.transition,
       animated: animated

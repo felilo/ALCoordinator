@@ -33,14 +33,28 @@ public class Router<Route: NavigationRoute>: RouterManager where Route.T == (any
   // ---------------------------------------------------------------------
   
   
-  public func show(
-    _ route: Route,
+  open func navigate(
+    to route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
     animated: Bool = true
   ) {
-    super.show(
-      buildHostingCtrl(view: route.view()),
+    super.navigate(
+      buildHosting(with: route.view()),
       transitionStyle: transitionStyle ?? route.transition
+    )
+  }
+  
+  
+  open func present(_ view: some View, animated: Bool = true, completion: (() -> Void)? = nil) {
+    super.present(buildHosting(with: view), animated: animated, completion: completion)
+  }
+  
+  
+  open func startFlow(route: Route, transitionStyle: NavigationTransitionStyle? = nil, animated: Bool = true) {
+    super.startFlow(
+      buildHosting(with: route.view()),
+      transitionStyle: transitionStyle ?? route.transition,
+      animated: animated
     )
   }
   
@@ -50,7 +64,7 @@ public class Router<Route: NavigationRoute>: RouterManager where Route.T == (any
   // ---------------------------------------------------------------------
   
   
-  private func buildHostingCtrl(view: some View) -> UIViewController {
+  private func buildHosting(with view: some View) -> UIViewController {
     return UIHostingController(rootView: view)
   }
 }

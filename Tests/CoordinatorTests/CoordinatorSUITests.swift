@@ -31,7 +31,7 @@ final class CoordinatorSUITests: XCTestCase {
   
   func test_showVew() {
     let sut = makeSut()
-    sut.router.show(.firstStep)
+    sut.router.navigate(to: .firstStep)
     XCTAssertFalse(sut.root.viewControllers.isEmpty)
   }
   
@@ -39,8 +39,8 @@ final class CoordinatorSUITests: XCTestCase {
     typealias Item = FirstView
     let sut = makeSut()
     
-    sut.router.show(.firstStep, animated: false)
-    sut.router.show(.secondStep, animated: false)
+    sut.router.navigate(to: .firstStep, animated: false)
+    sut.router.navigate(to: .secondStep, animated: false)
     sut.router.popToView(Item.self, animated: false)
     
     finish(sut: sut.router) {
@@ -61,7 +61,7 @@ extension CoordinatorSUITests {
   
   private func makeSut(file: StaticString = #file, line: UInt = #line) -> NavigationCoordinatable<MyRouter> {
     let coordinator = NavigationCoordinatable<MyRouter>.init(
-      parent: MainCoordinator(parent: nil)
+      parent: nil
     )
     addTeardownBlock { [weak coordinator] in
       XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
@@ -74,7 +74,7 @@ extension CoordinatorSUITests {
     let exp = XCTestExpectation(description: "")
     DispatchQueue.main.async {
       completation()
-      sut.finish(animated: false ,completion: nil)
+      sut.finishFlow(animated: false ,completion: nil)
       exp.fulfill()
     }
     wait(for: [exp], timeout: 1)
@@ -114,6 +114,4 @@ extension CoordinatorSUITests {
   private struct CustomView: View {
     var body: some View { Text("") }
   }
-  
-  private class MainCoordinator: BaseCoordinator { }
 }

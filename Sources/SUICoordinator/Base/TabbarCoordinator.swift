@@ -24,9 +24,10 @@
 
 import SwiftUI
 import UIKCoordinator
+
 open class TabbarCoordinator<PAGE>:  UIKCoordinator.TabbarCoordinator<PAGE> where PAGE: TabbarPage {
   
-  public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
+  public init(parent: Coordinator?, customView: some View, pages: [PAGE]) {
     super.init(
       parent: parent,
       tarbbarCtrl: CustomTabbarCtrl(view: customView),

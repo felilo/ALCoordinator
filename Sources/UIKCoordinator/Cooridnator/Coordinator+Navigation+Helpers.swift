@@ -103,7 +103,7 @@ extension Coordinator {
   
   // Restart coordinator
   func restart(animated: Bool, completion: (() -> Void)?) {
-    finish(animated: animated) {
+    handleFinish(animated: animated) {
       start(animated: animated)
       completion?()
     }
