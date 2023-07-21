@@ -12,16 +12,20 @@ import SwiftUI
 final class TabbarCoordinatorTests: XCTestCase {
   
   
-  func test_finishTabbarCoordinator() {
+  func test_finishTabbarCoordinator_with_childTabbarCoordinator() {
     let exp = XCTestExpectation(description: "")
     let sut = makeSut()
-
-    sut.finish(animated: false) {
-      _ = TabbarCoordinator(parent: sut.children.last, pages: Page.allCases)
-      XCTAssertEqual(sut.children.count, 0)
-      XCTAssertEqual(sut.root.viewControllers.count, 0)
-      exp.fulfill()
+    
+    let coordinator = TabbarCoordinator(parent: sut.children.first, pages: Page.allCases)
+    coordinator.start(animated: false)
+    DispatchQueue.main.async {
+      sut.finishTabbar(animated: false) {
+        XCTAssertTrue(sut.children.isEmpty)
+        XCTAssertTrue(sut.root.viewControllers.isEmpty)
+        exp.fulfill()
+      }
     }
+    
     wait(for: [exp], timeout: 1)
   }
   
@@ -81,6 +85,7 @@ extension TabbarCoordinatorTests {
       pages: Page.allCases.sorted(by: { $0.position < $1.position })
     )
     coordinator.start(animated: false)
+    BaseCoordinator.mainCoordinator = coordinator.parent
     
     addTeardownBlock { [weak coordinator] in
       XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
@@ -88,39 +93,15 @@ extension TabbarCoordinatorTests {
     return coordinator
   }
   
-  
-  private func finishCoordinatorExpect(_ sut: Coordinator, when action: @escaping () -> Void) {
-    sut.push(.init(), animated: false)
-    sut.push(.init(), animated: false)
-    action()
-    finish(sut: sut) {
-      XCTAssertTrue(sut.children.isEmpty)
-      XCTAssertEqual(sut.root.viewControllers.count, 1)
-    }
-  }
-  
-  
-  private func buildTabbarExpect(_ sut: TabbarCoordinator<Page>) {
-    let pages = Page.allCases
-    let viewControllers = sut.tabController.viewControllers
-    
-    XCTAssertEqual(sut.children.count, pages.count)
-    XCTAssertEqual(pages.map({ $0.position }), viewControllers?.map({ $0.tabBarItem.tag }))
-  }
-  
   private func finish(sut: Coordinator, _ completation: @escaping () -> Void ) -> Void {
     let exp = XCTestExpectation(description: "")
     DispatchQueue.main.async {
       completation()
-      sut.finish(animated: false) {
+      sut.finishTabbar(animated: false) {
         exp.fulfill()
       }
     }
-    wait(for: [exp], timeout: 3)
-  }
-  
-  private struct CustomView: View {
-    var body: some View { Text("") }
+    wait(for: [exp], timeout: 1)
   }
 }
 

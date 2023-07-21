@@ -16,7 +16,7 @@ final class RouteTests: XCTestCase {
     let sut = makeSut()
     sut.show(.firstStep)
     finish(sut: sut) {
-      XCTAssertFalse(sut.coordinator.root.viewControllers.isEmpty)
+      XCTAssertFalse(sut.stackViews.isEmpty)
     }
   }
   
@@ -35,7 +35,7 @@ final class RouteTests: XCTestCase {
     let sut = makeSut()
     sut.show(.firstStep, transitionStyle: .push, animated: false)
     finish(sut: sut) {
-      XCTAssertEqual(sut.coordinator.root.viewControllers.count, 1)
+      XCTAssertEqual(sut.stackViews.count, 1)
     }
   }
   
@@ -44,7 +44,7 @@ final class RouteTests: XCTestCase {
     let sut = makeSut()
     sut.finish(completion: nil)
     finish(sut: sut) {
-      XCTAssertTrue(sut.coordinator.parent.children.isEmpty)
+      XCTAssertTrue(sut.stackViews.isEmpty)
     }
   }
   

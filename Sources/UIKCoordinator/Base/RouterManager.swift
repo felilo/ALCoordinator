@@ -28,7 +28,7 @@ import UIKit
 open class RouterManager  {
   
   
-  private (set) var coordinator: Coordinator
+  private  var coordinator: Coordinator
   
   
   public init(coordinator: Coordinator) {
@@ -102,6 +102,14 @@ open class RouterManager  {
     coordinator.finish(animated: animated, withDissmis: withDissmis, completion: completion)
   }
   
+  /// Close the current navigation controller and then removes it from its coordinator parent
+  /// - Parameters:
+  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
+  ///   - completion
+  public func finishTabbar(animated: Bool = true, withDissmis: Bool = true, completion: (() -> Void)?) {
+    coordinator.finishTabbar(animated: animated, withDissmis: withDissmis, completion: completion)
+  }
+  
   public var stackViews: [UIViewController] {
     coordinator.root.viewControllers
   }
@@ -128,7 +136,7 @@ open class RouterManager  {
   
   
   private func handlePresentation(coordinator: Coordinator, ctrl: UIViewController, _ presentation: @escaping () -> ()) {
-    if coordinator.root.viewControllers.isEmpty {
+    if stackViews.isEmpty {
       coordinator.root.viewControllers = [ctrl]
     } else {
       presentation()

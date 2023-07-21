@@ -62,9 +62,9 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   
   
   public override func start(animated: Bool = true) {
-    parent.children.append(self)
+    parent?.children.append(self)
     tabController?.modalPresentationStyle = .fullScreen
-    parent.present(tabController, animated: animated)
+    parent?.present(tabController, animated: animated)
   }
   
   
@@ -83,14 +83,6 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     pages = values
     handleUpdatePages(completion: completion)
   }
-  
-  
-  public func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-    let page = pages.first(where: { $0.position == tabBarController.selectedIndex })
-    guard page?.position != currentPage?.position else { return }
-    currentPage = page
-  }
-  
   
   private func setupPages() {
     pages.forEach({
@@ -125,5 +117,17 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   private func setup() {
     self.tabController?.delegate = self
     setupPages()
+  }
+  
+  
+  // ---------------------------------------------------------------------
+  // MARK: UITabBarControllerDelegate
+  // ---------------------------------------------------------------------
+  
+
+  open func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+    let page = pages.first(where: { $0.position == tabBarController.selectedIndex })
+    guard page?.position != currentPage?.position else { return }
+    currentPage = page
   }
 }

@@ -36,15 +36,16 @@ final class CoordinatorSUITests: XCTestCase {
   }
   
   func test_navigatingToHostingViewControllerViaSUIView() {
+    typealias Item = FirstView
     let sut = makeSut()
     
     sut.router.show(.firstStep, animated: false)
     sut.router.show(.secondStep, animated: false)
-    sut.router.popToView(FirstView.self, animated: false)
+    sut.router.popToView(Item.self, animated: false)
     
     finish(sut: sut.router) {
       let lastCtrl = sut.router.stackViews.last
-      XCTAssertEqual(lastCtrl?.name, "UIHostingController<FirstView>")
+      XCTAssertEqual(lastCtrl?.name, "UIHostingController<\(Item.self)>")
     }
   }
 }

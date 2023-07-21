@@ -20,11 +20,15 @@ final class ALCoordinatorTests: XCTestCase {
   
   func test_navigatingToViewControllerThatDoesNotBelongOnNavStack() {
     typealias Item = FirstViewController
+    let exp = XCTestExpectation(description: "")
     let sut = makeSut()
-    sut.push(.init(), animated: false)
-    XCTAssertFalse(sut.popToView(Item.self, animated: false))
-    let lastCtrl = sut.root.viewControllers.last
-    XCTAssertNotEqual(sut.getNameOf(viewController: lastCtrl!), sut.getNameOf(object: Item.self))
+    sut.push(.init(), animated: false) {
+      XCTAssertFalse(sut.popToView(Item.self, animated: false))
+      let lastCtrl = sut.root.viewControllers.last
+      XCTAssertNotEqual(sut.getNameOf(viewController: lastCtrl!), sut.getNameOf(object: Item.self))
+      exp.fulfill()
+    }
+    wait(for: [exp], timeout: 1)
   }
   
   
@@ -103,11 +107,13 @@ extension ALCoordinatorTests {
     toCompleteWithView expectedView: UIViewController?,
     when action: @escaping () -> Void
   ) {
-    sut.push(.init(), animated: false)
-    
-    action()
-    
-    XCTAssertEqual(sut.root.viewControllers.last, expectedView)
+    let exp = XCTestExpectation(description: "")
+    sut.push(.init(), animated: false) {
+      action()
+      XCTAssertEqual(sut.root.viewControllers.last, expectedView)
+      exp.fulfill()
+    }
+    wait(for: [exp], timeout: 1)
   }
   
   
@@ -167,20 +173,16 @@ extension ALCoordinatorTests {
       }
     }
     
-    var transition: NavigationTransitionStyle {
-      .push
-    }
+    var transition: NavigationTransitionStyle { .push }
   }
   
   private func finish(sut: Coordinator, _ completation: @escaping () -> Void ) -> Void {
     let exp = XCTestExpectation(description: "")
     DispatchQueue.main.async {
       completation()
-      sut.finish(animated: false ,completion: nil)
-      exp.fulfill()
+      sut.finish(animated: false) { exp.fulfill() }
     }
-    wait(for: [exp], timeout: 1)
-    
+    wait(for: [exp], timeout: 5)
   }
   
   

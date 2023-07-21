@@ -76,10 +76,8 @@ open class BaseCoordinator: NSObject, Coordinator  {
   private func handlePresentationStyle(presentationStyle: UIModalPresentationStyle) {
     root.modalPresentationStyle = presentationStyle
     switch presentationStyle {
-      case .custom, .none, .automatic, .fullScreen:
-        break
-      default:
-        root.presentationController?.delegate = self
+      case .custom, .none, .automatic, .fullScreen: break
+      default: root.presentationController?.delegate = self
     }
   }
 }
@@ -95,6 +93,6 @@ extension BaseCoordinator: UIAdaptivePresentationControllerDelegate {
   
   
   public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    finish(withDissmis: true, completion: nil)
+    finish(withDissmis: false, completion: nil)
   }
 }

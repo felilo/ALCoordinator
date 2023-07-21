@@ -70,8 +70,30 @@ public extension Coordinator {
     guard withDissmis else {
       return handleFinish(completion: completion)
     }
-    close(animated: animated) {
-      handleFinish(completion: completion)
+    close(animated: animated) { handleFinish(completion: completion) }
+  }
+  
+  
+  /// Close the current navigation controller and then removes it from its coordinator parent
+  /// - Parameters:
+  ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
+  ///   - completion
+  func finishTabbar(
+    animated: Bool = true,
+    withDissmis: Bool = true,
+    completion: (() -> Void)?
+  ) {
+    
+    let handleFinish: (Coordinator?) -> Void = { coordinator in
+      coordinator?.finish(animated: animated, withDissmis: withDissmis, completion: completion)
+    }
+    
+    if (self is (any TabbarCoordinatable)) {
+      parent?.close(animated: animated) { handleFinish(self) }
+    } else if (parent is (any TabbarCoordinatable)) {
+      close(animated: animated) { handleFinish(parent) }
+    } else {
+      handleFinish(self)
     }
   }
 }
