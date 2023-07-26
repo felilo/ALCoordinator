@@ -16,7 +16,7 @@ final class TabbarCoordinatorTests: XCTestCase {
     let exp = XCTestExpectation(description: "")
     let sut = makeSut()
     
-    let coordinator = TabbarCoordinator(parent: sut.children.first, pages: Page.allCases)
+    let coordinator = TabbarCoordinator(pages: Page.allCases, parent: sut.children.first)
     coordinator.start(animated: false)
     DispatchQueue.main.async {
       sut.finish(animated: false) {
@@ -82,10 +82,11 @@ extension TabbarCoordinatorTests {
   private func makeSut(file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
     
     let coordinator = TabbarCoordinator(
-      parent: MainCoordinator(parent: nil),
       pages: Page.allCases.sorted(by: { $0.position < $1.position })
     )
-    coordinator.start(animated: false)
+    
+    let mainCoordinator = MainCoordinator(parent: nil)
+    mainCoordinator.router.navigate(to: coordinator, animated: false)
     BaseCoordinator.mainCoordinator = coordinator.parent
     
     addTeardownBlock { [weak coordinator] in

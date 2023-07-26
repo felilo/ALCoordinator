@@ -48,11 +48,24 @@ extension Coordinator {
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion
   func present(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+    var ctrl = viewController
+    
+    let isValid = viewController.navigationController == nil &&
+    !(viewController is UINavigationController) &&
+    root.presentedViewController != nil
+    
+    if isValid {
+      let nc = UINavigationController(rootViewController: viewController)
+      nc.isNavigationBarHidden = true
+      ctrl = nc
+    }
+    
+    let navCtrl = getLatestViewCtrl(root.presentedViewController) ?? root
+    
     DispatchQueue.main.async {
-      root.present(viewController, animated: animated, completion: completion)
+      navCtrl.present(ctrl, animated: animated, completion: completion)
     }
   }
-  
   
   /// Close the ViewController doing a pop
   /// - Parameter animated: define si se quiere mostrar la animación
@@ -81,8 +94,15 @@ extension Coordinator {
   /// - Parameters:
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion: se requiere hacer un proceso previo antes de finalizar la desvinculacion
-  func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
-    root.dismiss(animated: animated, completion: completion)
+  func dismiss(animated: Bool = true, finishFlow: Bool = false, completion: (() -> Void)? = nil) {
+    let actionDismiss: (UIViewController?) -> Void = { ctrl in
+      ctrl?.dismiss(animated: animated, completion: completion)
+    }
+    
+    guard finishFlow else {
+      return actionDismiss(getLatestViewCtrl(root.presentedViewController))
+    }
+    actionDismiss(root)
   }
   
   
@@ -90,10 +110,11 @@ extension Coordinator {
   /// - Parameters:
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion: se requiere hacer un proceso previo antes de finalizar la desvinculacion
-  func close(animated: Bool = true, completion: (() -> Void)? = nil) {
-    let isDismiss = root.isModal || (root.viewControllers.last?.isModal == true)
+  func close(animated: Bool = true, finishFlow: Bool = false, completion: (() -> Void)? = nil) {
+    let ctrl = getLatestViewCtrl(root.presentedViewController)
+    let isDismiss = (finishFlow ? root.isModal : ctrl?.isModal == true) || (root.viewControllers.last?.isModal == true)
     if isDismiss || parent == nil {
-      dismiss(animated: animated, completion: completion)
+      dismiss(animated: animated, finishFlow: finishFlow, completion: completion)
     } else {
       pop(animated: animated)
       completion?()
@@ -103,7 +124,7 @@ extension Coordinator {
   
   // Restart coordinator
   func restart(animated: Bool, completion: (() -> Void)?) {
-    handleFinish(animated: animated) {
+    finish(animated: false) {
       start(animated: animated)
       completion?()
     }

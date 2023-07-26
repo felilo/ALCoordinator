@@ -1,5 +1,5 @@
 //
-//  Coordinator+Helpers.swift
+//  Coordinator+PublicHelpers.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -52,12 +52,13 @@ public extension Coordinator {
   
   mutating func startChildCoordinator(_ coordinator: Coordinator, animated: Bool = true){
     children.append(coordinator)
-    if let tabbar = (self as? (any TabbarCoordinatable))?.tabController {
+    if let tabbar = getTabbarCoordinable(self)?.tabController {
       var ctrls = tabbar.viewControllers ?? []
       ctrls.append(coordinator.root)
       tabbar.setViewControllers(ctrls, animated: animated)
-    } else if let tabbar = (coordinator as? (any TabbarCoordinatable))?.tabController {
-      present(tabbar, animated: animated)
+    } else if let tabbar = getTabbarCoordinable(coordinator)?.tabController {
+      coordinator.root.viewControllers = [tabbar]
+      present(coordinator.root, animated: animated)
     } else {
       present(coordinator.root, animated: animated)
     }
@@ -72,7 +73,7 @@ public extension Coordinator {
     guard withDissmis else {
       return emptyCoordinator(completion: completion)
     }
-    close(animated: animated) { emptyCoordinator(completion: completion) }
+    close(animated: animated, finishFlow: true) { emptyCoordinator(completion: completion) }
   }
   
   
@@ -91,9 +92,9 @@ public extension Coordinator {
     }
     
     if (self is (any TabbarCoordinatable)) {
-      parent?.close(animated: animated) { handleFinish(self) }
+      parent?.close(animated: animated, finishFlow: true ) { handleFinish(self) }
     } else if (parent is (any TabbarCoordinatable)) {
-      close(animated: animated) { handleFinish(parent) }
+      close(animated: animated, finishFlow: true) { handleFinish(parent) }
     } else {
       handleFinish(self)
     }

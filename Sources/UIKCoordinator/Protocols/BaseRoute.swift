@@ -5,7 +5,7 @@
 //  Created by Andres Lozano on 13/07/23.
 //
 
-import UIKit
+import Foundation
 
 public protocol NavigationRoute {
   
@@ -23,5 +23,5 @@ public enum NavigationTransitionStyle {
   case push
   case present
   case presentFullscreen
-  case custom(style: UIModalPresentationStyle)
+  case custom(style: PresentationStyle)
 }

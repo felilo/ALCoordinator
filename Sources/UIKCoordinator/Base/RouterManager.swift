@@ -26,11 +26,21 @@ import UIKit
 
 
 open class RouterManager  {
+
   
+  // ---------------------------------------------------------------------
+  // MARK: Properties
+  // ---------------------------------------------------------------------
+
   
   private  var coordinator: Coordinator
   
   
+  // ---------------------------------------------------------------------
+  // MARK: Constructor
+  // ---------------------------------------------------------------------
+  
+
   public init(coordinator: Coordinator) {
     self.coordinator = coordinator
   }
@@ -44,13 +54,15 @@ open class RouterManager  {
   public func navigate<T>(
     _ view: T,
     transitionStyle: NavigationTransitionStyle,
-    animated: Bool = true
+    animated: Bool = true,
+    completion: (() -> Void)? = nil
   ) where T: UIViewController {
     handlePresentCtrl(
       view,
       transitionStyle: transitionStyle,
       coordinator: coordinator,
-      animated: animated
+      animated: animated,
+      completion: completion
     )
   }
   
@@ -90,7 +102,7 @@ open class RouterManager  {
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion: se requiere hacer un proceso previo antes de finalizar la desvinculacion
   open func dismiss(animated: Bool = true, completion: (() -> Void)? = nil) {
-    coordinator.dismiss(animated: animated, completion: completion)
+    coordinator.dismiss(animated: animated, finishFlow: false, completion: completion)
   }
   
   
@@ -111,7 +123,6 @@ open class RouterManager  {
     var aux: Coordinator = coordinator
     aux.parent = self.coordinator
     aux.start(animated: animated)
-//    coordinator.start(animated: animated)
   }
   
   
@@ -135,17 +146,23 @@ open class RouterManager  {
   // ---------------------------------------------------------------------
   
   
-  private func handlePresentCtrl(ctrl: UIViewController, style: UIModalPresentationStyle, coordinator: Coordinator, animated: Bool) {
+  private func handlePresentCtrl(
+    ctrl: UIViewController,
+    style: PresentationStyle,
+    coordinator: Coordinator,
+    animated: Bool,
+    completion: (() -> Void)? = nil
+  ) {
     handlePresentation(coordinator: coordinator, ctrl: ctrl) { [weak self] in
       ctrl.modalPresentationStyle = style
-      self?.present(ctrl, animated: animated)
+      self?.present(ctrl, animated: animated, completion: completion)
     }
   }
   
   
-  private func handlePushCtrl(ctrl: UIViewController, coordinator: Coordinator, animated: Bool) {
+  private func handlePushCtrl(ctrl: UIViewController, coordinator: Coordinator, animated: Bool, completion: (() -> Void)? = nil) {
     handlePresentation(coordinator: coordinator, ctrl: ctrl) { [weak self] in
-      self?.coordinator.push(ctrl, animated: animated)
+      self?.coordinator.push(ctrl, animated: animated, completion: completion)
     }
   }
   
@@ -163,11 +180,18 @@ open class RouterManager  {
     _ ctrl: UIViewController,
     transitionStyle: NavigationTransitionStyle,
     coordinator: Coordinator,
-    animated: Bool
+    animated: Bool,
+    completion: (() -> Void)? = nil
   ) {
     
-    let handlePresent: (UIModalPresentationStyle) -> Void = { [weak self] style in
-      self?.handlePresentCtrl(ctrl: ctrl, style: style, coordinator: coordinator, animated: animated)
+    let handlePresent: (PresentationStyle) -> Void = { [weak self] style in
+      self?.handlePresentCtrl(
+        ctrl: ctrl,
+        style: style,
+        coordinator: coordinator,
+        animated: animated,
+        completion: completion
+      )
     }
     
     switch transitionStyle {

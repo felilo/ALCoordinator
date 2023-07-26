@@ -17,9 +17,9 @@ final class TabbarCoordinatorSUITests: XCTestCase {
       buildTabbarExpect(sut)
   
       sut = TabbarCoordinator(
-        parent: MainCoordinator(parent: nil),
         customView: CustomView(),
-        pages: Page.allCases.sorted(by: { $0.position < $1.position })
+        pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+        parent: MainCoordinator(parent: nil)
       )
       sut.start(animated: false)
   
@@ -31,8 +31,8 @@ final class TabbarCoordinatorSUITests: XCTestCase {
     buildTabbarExpect(sut)
     
     sut = TabbarCoordinator(
-      parent: MainCoordinator(parent: nil),
-      pages: Page.allCases.sorted(by: { $0.position < $1.position })
+      pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+      parent: MainCoordinator(parent: nil)
     )
     sut.start(animated: false)
     
@@ -53,8 +53,8 @@ extension TabbarCoordinatorSUITests {
   
   private func makeSut(file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
     let coordinator = TabbarCoordinator(
-      parent: MainCoordinator(parent: nil),
-      pages: Page.allCases.sorted(by: { $0.position < $1.position })
+      pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+      parent: MainCoordinator(parent: nil)
     )
     coordinator.start(animated: false)
     addTeardownBlock { [weak coordinator] in

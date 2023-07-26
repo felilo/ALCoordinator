@@ -36,9 +36,9 @@ final class ALCoordinatorTests: XCTestCase {
     let sut = makeSut()
     
     finishCoordinatorExpect(sut) { [weak self] in
-      let c1 = self?.makeChildCoordinator(parent: sut)
+      let c1 = self?.makeChildCoordinator()
       c1?.router.startFlow(route: .first, animated: false)
-      let c2 = self?.makeChildCoordinator(parent: sut)
+      let c2 = self?.makeChildCoordinator()
       c2?.router.startFlow(route: .first, animated: false)
     }
   }
@@ -49,9 +49,9 @@ final class ALCoordinatorTests: XCTestCase {
     
     finishCoordinatorExpect(sut) { [weak self] in
       guard let self = self else { return }
-      let coordinator = self.makeChildCoordinator(parent: sut)
+      let coordinator = self.makeChildCoordinator()
       sut.router.navigate(to: coordinator, animated: false)
-      let otherCoordinator = self.makeChildCoordinator(parent: coordinator)
+      let otherCoordinator = self.makeChildCoordinator()
       coordinator.router.navigate(to: otherCoordinator, animated: false)
     }
   }
@@ -72,11 +72,11 @@ final class ALCoordinatorTests: XCTestCase {
   func test_getTopCoordinator() {
     let sut = makeSut()
     
-    let firstCoordinator = makeChildCoordinator(parent: sut)
+    let firstCoordinator = makeChildCoordinator()
     sut.router.navigate(to: firstCoordinator, animated: false)
-    let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
+    let secondCoordinator = makeChildCoordinator()
     firstCoordinator.router.navigate(to: secondCoordinator, animated: false)
-    let thirdCoordinator = makeChildCoordinator(parent: secondCoordinator)
+    let thirdCoordinator = makeChildCoordinator()
     secondCoordinator.router.navigate(to: thirdCoordinator, animated: false)
     
     finish(sut: sut) {
@@ -90,10 +90,11 @@ final class ALCoordinatorTests: XCTestCase {
   
   func test_restartMainCoordinator() {
     let sut = makeSut()
-    let firstCoordinator = makeChildCoordinator(parent: sut)
-    let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
-    
-    secondCoordinator.restartMainCoordinator(mainCoordinator: sut, animated: false, completion: nil)
+    let firstCoordinator = makeChildCoordinator()
+    sut.router.navigate(to: firstCoordinator, animated: false)
+    let secondCoordinator = makeChildCoordinator()
+    firstCoordinator.router.navigate(to: secondCoordinator, animated: false)
+    secondCoordinator.restartApp(mainCoordinator: sut, animated: false, completion: nil)
     finish(sut: sut) {
       XCTAssertTrue(sut.children.isEmpty)
     }
@@ -145,8 +146,8 @@ extension ALCoordinatorTests {
   }
   
   
-  private func makeChildCoordinator(parent: Coordinator?) -> NavigationCoordinatable<MyRouter> {
-    let item = ChildCoordinator(parent: parent, presentationStyle: .fullScreen)
+  private func makeChildCoordinator() -> NavigationCoordinatable<MyRouter> {
+    let item = ChildCoordinator(presentationStyle: .fullScreen)
     return item
   }
   

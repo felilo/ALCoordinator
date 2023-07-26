@@ -27,19 +27,30 @@ import UIKCoordinator
 
 open class TabbarCoordinator<PAGE>:  UIKCoordinator.TabbarCoordinator<PAGE> where PAGE: TabbarPage {
   
-  public init(parent: Coordinator?, customView: some View, pages: [PAGE]) {
+  // ---------------------------------------------------------------------
+  // MARK: Constructor
+  // ---------------------------------------------------------------------
+  
+
+  public init(
+    customView: some View,
+    pages: [PAGE],
+    presentationStyle: PresentationStyle = .fullScreen,
+    parent: Coordinator? = nil
+  ) {
     super.init(
-      parent: parent,
       tarbbarCtrl: CustomTabbarCtrl(view: customView),
-      pages: pages
+      pages: pages,
+      presentationStyle: presentationStyle,
+      parent: parent
     )
   }
   
-  
-  public init(parent: Coordinator?, pages: [PAGE]) {
+  public init(pages: [PAGE], presentationStyle: PresentationStyle = .fullScreen, parent: Coordinator? = nil) {
     super.init(
-      parent: parent,
-      pages: pages
+      pages: pages,
+      presentationStyle: presentationStyle,
+      parent: parent
     )
   }
 }

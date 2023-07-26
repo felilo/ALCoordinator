@@ -28,6 +28,10 @@ import Foundation
 public protocol TabbarPageDataSource {
   var title: String { get }
   var icon: String { get }
+  
+  /**
+   * Description: Determines the order and position of the tabs in the Tabbar. It must start from 0 and the numbers be consecutive.
+   */
   var position: Int { get }
 }
 

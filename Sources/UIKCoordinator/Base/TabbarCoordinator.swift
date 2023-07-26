@@ -45,15 +45,14 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   
   
   public init(
-    parent: Coordinator?,
     tarbbarCtrl: UITabBarController = .init(),
-    presentationStyle: UIModalPresentationStyle = .fullScreen,
-    pages: [PAGE]
+    pages: [PAGE],
+    presentationStyle: PresentationStyle = .fullScreen,
+    parent: Coordinator? = nil
   ) {
     self.pages = pages
-    super.init(parent: parent)
+    super.init(parent: parent, presentationStyle: presentationStyle)
     tabController = tarbbarCtrl
-    tabController?.modalPresentationStyle = presentationStyle
     setup()
   }
   

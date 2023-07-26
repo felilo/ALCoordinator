@@ -36,11 +36,14 @@ public class Router<Route: NavigationRoute>: RouterManager where Route.T == (any
   open func navigate(
     to route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
-    animated: Bool = true
+    animated: Bool = true,
+    completion: (() -> Void)? = nil
   ) {
     super.navigate(
       buildHosting(with: route.view()),
-      transitionStyle: transitionStyle ?? route.transition
+      transitionStyle: transitionStyle ?? route.transition,
+      animated: animated,
+      completion: completion
     )
   }
   
