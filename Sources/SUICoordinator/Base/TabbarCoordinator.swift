@@ -35,20 +35,28 @@ open class TabbarCoordinator<PAGE>:  UIKCoordinator.TabbarCoordinator<PAGE> wher
   public init(
     customView: some View,
     pages: [PAGE],
+    currentPage: PAGE? = nil,
     presentationStyle: PresentationStyle = .fullScreen,
     parent: Coordinator? = nil
   ) {
     super.init(
       tarbbarCtrl: CustomTabbarCtrl(view: customView),
       pages: pages,
+      currentPage: currentPage,
       presentationStyle: presentationStyle,
       parent: parent
     )
   }
   
-  public init(pages: [PAGE], presentationStyle: PresentationStyle = .fullScreen, parent: Coordinator? = nil) {
+  public init(
+    pages: [PAGE],
+    currentPage: PAGE? = nil,
+    presentationStyle: PresentationStyle = .fullScreen,
+    parent: Coordinator? = nil
+  ) {
     super.init(
       pages: pages,
+      currentPage: currentPage,
       presentationStyle: presentationStyle,
       parent: parent
     )

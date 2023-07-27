@@ -67,6 +67,16 @@ final class TabbarCoordinatorTests: XCTestCase {
       }
     }
   }
+  
+  
+  func test_startCoordinator_with_customPage() {
+    var sut = makeSut(currentPage: .secondStep)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
+    }
+  }
 }
 
 
@@ -79,10 +89,11 @@ extension TabbarCoordinatorTests {
   // ---------------------------------------------------------------------
   
   
-  private func makeSut(file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
+  private func makeSut(currentPage: Page? = nil, file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
     
     let coordinator = TabbarCoordinator(
-      pages: Page.allCases.sorted(by: { $0.position < $1.position })
+      pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+      currentPage: currentPage
     )
     
     let mainCoordinator = MainCoordinator(parent: nil)

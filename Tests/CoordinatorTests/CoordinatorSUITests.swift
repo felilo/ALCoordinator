@@ -48,6 +48,19 @@ final class CoordinatorSUITests: XCTestCase {
       XCTAssertEqual(lastCtrl?.name, "UIHostingController<\(Item.self)>")
     }
   }
+  
+  func test_force_to_present_a_coordinator() {
+    let sut = makeSut()
+    
+    XCTAssertTrue(sut.children.isEmpty)
+    
+    let makeChildCoordinator = NavigationCoordinatable<MyRouter>()
+    makeChildCoordinator.forcePresentation(route: .secondStep, animated: false, mainCoordinator: sut)
+    
+    finish(sut: sut.router) {
+      XCTAssertEqual(sut.children.last?.uuid, makeChildCoordinator.uuid)
+    }
+  }
 }
 
 

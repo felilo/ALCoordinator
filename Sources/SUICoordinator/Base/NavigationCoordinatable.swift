@@ -42,4 +42,25 @@ open class NavigationCoordinatable<Route: NavigationRoute>: BaseCoordinator wher
   public init(presentationStyle: PresentationStyle = .fullScreen, parent: Coordinator? = nil) {
     super.init(parent: parent, presentationStyle: presentationStyle)
   }
+  
+  
+  // ---------------------------------------------------------------------
+  // MARK: Helper funcs
+  // ---------------------------------------------------------------------
+  
+  
+  open func forcePresentation(
+    route: Route,
+    transitionStyle: NavigationTransitionStyle? = nil,
+    animated: Bool = true,
+    mainCoordinator: Coordinator? = mainCoordinator
+  ) {
+    let topCoordinator = getTopCoordinator(mainCoordinator: mainCoordinator)
+    self.parent = topCoordinator
+    router.startFlow(
+      route: route,
+      transitionStyle: transitionStyle ?? route.transition,
+      animated: animated
+    )
+  }
 }

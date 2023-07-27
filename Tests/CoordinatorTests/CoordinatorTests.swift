@@ -90,13 +90,31 @@ final class ALCoordinatorTests: XCTestCase {
   
   func test_restartMainCoordinator() {
     let sut = makeSut()
+    
     let firstCoordinator = makeChildCoordinator()
     sut.router.navigate(to: firstCoordinator, animated: false)
+    
     let secondCoordinator = makeChildCoordinator()
     firstCoordinator.router.navigate(to: secondCoordinator, animated: false)
+    
     secondCoordinator.restartApp(mainCoordinator: sut, animated: false, completion: nil)
+    
     finish(sut: sut) {
       XCTAssertTrue(sut.children.isEmpty)
+    }
+  }
+  
+  
+  func test_force_to_present_a_coordinator() {
+    let sut = makeSut()
+    
+    XCTAssertTrue(sut.children.isEmpty)
+    
+    let makeChildCoordinator = makeChildCoordinator()
+    makeChildCoordinator.forcePresentation(route: .third, animated: false, mainCoordinator: sut)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.children.last?.uuid, makeChildCoordinator.uuid)
     }
   }
 }
