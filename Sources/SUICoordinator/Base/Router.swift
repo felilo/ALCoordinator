@@ -71,4 +71,3 @@ public class Router<Route: NavigationRoute>: RouterManager where Route.T == (any
     return UIHostingController(rootView: view)
   }
 }
-
