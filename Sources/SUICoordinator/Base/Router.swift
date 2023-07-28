@@ -26,8 +26,6 @@
 import SwiftUI
 
 public class Router<Route: NavigationRoute>: RouterManager, RouterAction where Route.T == (any View) {
-
-  
   
   
   // ---------------------------------------------------------------------
@@ -49,11 +47,9 @@ public class Router<Route: NavigationRoute>: RouterManager, RouterAction where R
     )
   }
   
-  
   open func present(_ view: some View, animated: Bool = true, completion: (() -> Void)? = nil) {
     super.present(buildHosting(with: view), animated: animated, completion: completion)
   }
-  
   
   open func startFlow(route: Route, transitionStyle: NavigationTransitionStyle? = nil, animated: Bool = true) {
     super.startFlow(

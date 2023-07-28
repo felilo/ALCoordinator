@@ -39,7 +39,7 @@ open class NavigationCoordinator<Route: NavigationRoute>: BaseCoordinator where 
   // ---------------------------------------------------------------------
   
 
-  public init(presentationStyle: PresentationStyle = .fullScreen, parent: Coordinator? = nil) {
+  public init(presentationStyle: PresentationStyle = .automatic, parent: Coordinator? = nil) {
     super.init(parent: parent, presentationStyle: presentationStyle)
   }
   

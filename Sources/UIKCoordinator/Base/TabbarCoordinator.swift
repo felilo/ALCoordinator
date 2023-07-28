@@ -39,6 +39,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     willSet { setCurrentPage(newValue) }
   }
   
+  
   // ---------------------------------------------------------------------
   // MARK: Constructor
   // ---------------------------------------------------------------------
@@ -58,6 +59,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     defer { self.currentPage = currentPage ?? pages.first }
   }
   
+  
   // ---------------------------------------------------------------------
   // MARK: Helper funcs
   // ---------------------------------------------------------------------
@@ -67,11 +69,9 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     children[tabController.selectedIndex]
   }
   
-  
   public override func start(animated: Bool = true) {
     presentCoordinator(animated: animated)
   }
-  
   
   open func buildTabbarItem(page: PAGE) -> UITabBarItem? {
     let item = UITabBarItem(
@@ -82,7 +82,6 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     item.tag = page.position
     return item
   }
-  
   
   open func setPages(_ values: [PAGE], completion: (() -> Void)? = nil) {
     pages = values
