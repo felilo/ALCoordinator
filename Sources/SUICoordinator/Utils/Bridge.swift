@@ -33,3 +33,4 @@ public typealias RouterManager = UIKCoordinator.RouterManager
 public typealias NavigationTransitionStyle = UIKCoordinator.NavigationTransitionStyle
 public typealias TabbarNavigationRouter = UIKCoordinator.TabbarNavigationRouter
 public typealias PresentationStyle = UIKCoordinator.PresentationStyle
+

@@ -25,7 +25,9 @@
 
 import SwiftUI
 
-public class Router<Route: NavigationRoute>: RouterManager where Route.T == (any View) {
+public class Router<Route: NavigationRoute>: RouterManager, RouterAction where Route.T == (any View) {
+
+  
   
   
   // ---------------------------------------------------------------------

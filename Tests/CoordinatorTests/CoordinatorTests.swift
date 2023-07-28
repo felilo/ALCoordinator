@@ -37,6 +37,7 @@ final class ALCoordinatorTests: XCTestCase {
     
     finishCoordinatorExpect(sut) { [weak self] in
       let c1 = self?.makeChildCoordinator()
+      
       c1?.router.startFlow(route: .first, animated: false)
       let c2 = self?.makeChildCoordinator()
       c2?.router.startFlow(route: .first, animated: false)
@@ -49,8 +50,10 @@ final class ALCoordinatorTests: XCTestCase {
     
     finishCoordinatorExpect(sut) { [weak self] in
       guard let self = self else { return }
+      
       let coordinator = self.makeChildCoordinator()
       sut.router.navigate(to: coordinator, animated: false)
+      
       let otherCoordinator = self.makeChildCoordinator()
       coordinator.router.navigate(to: otherCoordinator, animated: false)
     }
@@ -74,14 +77,17 @@ final class ALCoordinatorTests: XCTestCase {
     
     let firstCoordinator = makeChildCoordinator()
     sut.router.navigate(to: firstCoordinator, animated: false)
+    
     let secondCoordinator = makeChildCoordinator()
     firstCoordinator.router.navigate(to: secondCoordinator, animated: false)
+    
     let thirdCoordinator = makeChildCoordinator()
     secondCoordinator.router.navigate(to: thirdCoordinator, animated: false)
     
     finish(sut: sut) {
       XCTAssertEqual(sut.topCoordinator()?.uuid, thirdCoordinator.uuid)
       BaseCoordinator.mainCoordinator = sut
+      
       XCTAssertEqual(sut.getTopCoordinator()?.uuid, thirdCoordinator.uuid)
       BaseCoordinator.mainCoordinator = nil
     }
@@ -155,7 +161,7 @@ extension ALCoordinatorTests {
   }
   
   
-  private func makeSut(file: StaticString = #file, line: UInt = #line) -> NavigationCoordinatable<MyRouter> {
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> NavigationCoordinator<MyRouter> {
     let coordinator = MainCoordinator(parent: nil)
     addTeardownBlock { [weak coordinator] in
       XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
@@ -164,20 +170,20 @@ extension ALCoordinatorTests {
   }
   
   
-  private func makeChildCoordinator() -> NavigationCoordinatable<MyRouter> {
+  private func makeChildCoordinator() -> NavigationCoordinator<MyRouter> {
     let item = ChildCoordinator(presentationStyle: .fullScreen)
     return item
   }
   
   
-  private class ChildCoordinator: NavigationCoordinatable<MyRouter> {
+  private class ChildCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
       router.startFlow(route: .first)
     }
   }
   
   
-  private class MainCoordinator: NavigationCoordinatable<MyRouter> {
+  private class MainCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
       router.startFlow(route: .third, animated: false)
     }

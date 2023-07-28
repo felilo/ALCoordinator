@@ -24,8 +24,7 @@
 
 import UIKit
 
-public class Router<Route: NavigationRoute>: RouterManager where Route.T == UIViewController  {
-  
+public class Router<Route: NavigationRoute>: RouterManager, RouterAction where Route : NavigationRoute, UIViewController == Route.T {
   
   // ---------------------------------------------------------------------
   // MARK: Helper funcs
@@ -35,17 +34,22 @@ public class Router<Route: NavigationRoute>: RouterManager where Route.T == UIVi
   open func navigate(
     to route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
-    animated: Bool = true
+    animated: Bool = true,
+    completion: (() -> Void)? = nil
   ) {
     super.navigate(
       route.view(),
       transitionStyle: transitionStyle ?? route.transition,
-      animated: animated
+      animated: animated,
+      completion: completion
     )
   }
   
-  
-  open func startFlow(route: Route, transitionStyle: NavigationTransitionStyle? = nil, animated: Bool = true) {
+  open func startFlow(
+    route: Route,
+    transitionStyle: NavigationTransitionStyle? = nil,
+    animated: Bool = true
+  ) {
     super.startFlow(
       route.view(),
       transitionStyle: transitionStyle ?? route.transition,

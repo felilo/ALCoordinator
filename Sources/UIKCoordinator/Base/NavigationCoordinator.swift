@@ -5,9 +5,9 @@
 //  Created by Andres Lozano on 14/07/23.
 //
 
-import SwiftUI
+import UIKit
 
-open class NavigationCoordinatable<Route: NavigationRoute>: BaseCoordinator where Route.T == UIViewController {
+open class NavigationCoordinator<Route: NavigationRoute>: BaseCoordinator where Route.T == UIViewController {
   
   // ---------------------------------------------------------------------
   // MARK: Properties

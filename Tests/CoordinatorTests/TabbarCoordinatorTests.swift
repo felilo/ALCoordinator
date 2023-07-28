@@ -13,30 +13,29 @@ final class TabbarCoordinatorTests: XCTestCase {
   
   
   func test_finishTabbarCoordinator_with_childTabbarCoordinator() {
-    let exp = XCTestExpectation(description: "")
     let sut = makeSut()
     
     let coordinator = TabbarCoordinator(pages: Page.allCases, parent: sut.children.first)
     coordinator.start(animated: false)
-    DispatchQueue.main.async {
-      sut.finish(animated: false) {
-        XCTAssertTrue(sut.children.isEmpty)
-        XCTAssertTrue(sut.root.viewControllers.isEmpty)
-        exp.fulfill()
-      }
-    }
     
-    wait(for: [exp], timeout: 1)
+    sut.finish(animated: false) {
+      XCTAssertTrue(sut.children.isEmpty)
+      XCTAssertTrue(sut.root.viewControllers.isEmpty)
+    }
   }
   
   
   func test_changeTab() {
     let sut = makeSut()
+    
     finish(sut: sut) {
       XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.firstStep.position)
+      
       sut.currentPage = .secondStep
       XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
       XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
+      
       sut.currentPage = .firstStep
       XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
       XCTAssertEqual(sut.tabController.selectedIndex, Page.firstStep.position)
@@ -47,19 +46,25 @@ final class TabbarCoordinatorTests: XCTestCase {
   func test_getTopCoordinator() {
     let sut = makeSut()
     sut.currentPage = .secondStep
-    let currentCoordinator = sut.getCoordinatorSelected()
-    let mainCoordinator = sut.parent
+    var currentCoordinator = sut.getCoordinatorSelected()
+    var mainCoordinator = sut.parent
     finish(sut: sut) {
       XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
+      
+      sut.currentPage = .firstStep
+      currentCoordinator = sut.getCoordinatorSelected()
+      mainCoordinator = sut.parent
+      XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
     }
-    
   }
   
   
   func test_setPages() {
     let sut = makeSut()
     let pages = [Page.firstStep]
+    
     XCTAssertEqual(sut.children.count, Page.allCases.count)
+    
     sut.setPages(pages) { [weak self] in
       self?.finish(sut: sut) {
         XCTAssertEqual(sut.children.count, pages.count)
@@ -70,11 +75,29 @@ final class TabbarCoordinatorTests: XCTestCase {
   
   
   func test_startCoordinator_with_customPage() {
-    var sut = makeSut(currentPage: .secondStep)
+    let sut = makeSut(currentPage: .secondStep)
     
     finish(sut: sut) {
       XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
       XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
+    }
+  }
+  
+  
+  func test_force_to_present_a_coordinator() {
+    let mainCoordinator = MainCoordinator(parent: nil)
+    let makeChildCoordinator = ChildCoordinator()
+    
+    let sut = TabbarCoordinator(
+      pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+      currentPage: .secondStep
+    )
+    
+    mainCoordinator.router.navigate(to: makeChildCoordinator, animated: false)
+    sut.forcePresentation(animated: false, mainCoordinator: mainCoordinator)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
     }
   }
 }
@@ -128,21 +151,21 @@ extension TabbarCoordinatorTests {
   // ---------------------------------------------------------------------
   
   
-  private class ChildCoordinator: NavigationCoordinatable<MyRouter> {
+  private class ChildCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
       router.startFlow(route: .first, animated: animated)
     }
   }
   
   
-  private class OtherChildCoordinator: NavigationCoordinatable<MyRouter> {
+  private class OtherChildCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
       router.startFlow(route: .first, animated: animated)
     }
   }
   
   
-  private class MainCoordinator: NavigationCoordinatable<MyRouter> {
+  private class MainCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
       router.startFlow(route: .first, animated: animated)
     }

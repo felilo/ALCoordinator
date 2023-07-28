@@ -12,19 +12,19 @@ import SwiftUI
 
 final class TabbarCoordinatorSUITests: XCTestCase {
   
-    func test_buildTabbarCoordinatorWithCustomView() {
-      var sut = makeSut()
-      buildTabbarExpect(sut)
-  
-      sut = TabbarCoordinator(
-        customView: CustomView(),
-        pages: Page.allCases.sorted(by: { $0.position < $1.position }),
-        parent: MainCoordinator(parent: nil)
-      )
-      sut.start(animated: false)
-  
-      buildTabbarExpect(sut)
-    }
+  func test_buildTabbarCoordinatorWithCustomView() {
+    var sut = makeSut()
+    buildTabbarExpect(sut)
+    
+    sut = TabbarCoordinator(
+      customView: CustomView(),
+      pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+      parent: MainCoordinator(parent: nil)
+    )
+    
+    sut.start(animated: false)
+    buildTabbarExpect(sut)
+  }
   
   func test_buildDefaultTabbarCoordinator() {
     var sut = makeSut()
@@ -34,8 +34,8 @@ final class TabbarCoordinatorSUITests: XCTestCase {
       pages: Page.allCases.sorted(by: { $0.position < $1.position }),
       parent: MainCoordinator(parent: nil)
     )
-    sut.start(animated: false)
     
+    sut.start(animated: false)
     buildTabbarExpect(sut)
   }
 }
@@ -100,14 +100,14 @@ extension TabbarCoordinatorSUITests {
   // ---------------------------------------------------------------------
   
   
-  private class ChildCoordinator: NavigationCoordinatable<CustomRoute> {
+  private class ChildCoordinator: NavigationCoordinator<CustomRoute> {
     override func start(animated: Bool = false) {
       router.startFlow(route: .one, animated: animated)
     }
   }
   
   
-  private class OtherChildCoordinator: NavigationCoordinatable<CustomRoute> {
+  private class OtherChildCoordinator: NavigationCoordinator<CustomRoute> {
     
     override func start(animated: Bool = false) {
       router.startFlow(route: .two, animated: animated)
@@ -115,7 +115,7 @@ extension TabbarCoordinatorSUITests {
   }
   
   
-  private class MainCoordinator: NavigationCoordinatable<CustomRoute> {
+  private class MainCoordinator: NavigationCoordinator<CustomRoute> {
     override func start(animated: Bool = false) {
       router.startFlow(route: .one, animated: animated)
     }

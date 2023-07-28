@@ -24,7 +24,7 @@
 
 import SwiftUI
 
-open class NavigationCoordinatable<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
+open class NavigationCoordinator<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
   
   // ---------------------------------------------------------------------
   // MARK: Properties

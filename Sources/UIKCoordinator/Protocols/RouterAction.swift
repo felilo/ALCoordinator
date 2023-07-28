@@ -1,5 +1,5 @@
 //
-//  TabbarPage.swift
+//  RouterAction.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -25,14 +25,17 @@
 import Foundation
 
 
-public protocol TabbarPageDataSource {
-  var title: String { get }
-  var icon: String { get }
+public protocol RouterAction {
   
-  /**
-   * Determines the order and position of the tabs in the Tabbar. It must start from 0 and the numbers be consecutive.
-   */
-  var position: Int { get }
+  associatedtype Route
+  associatedtype ViewType
+  
+  func navigate(to route: Route, transitionStyle: NavigationTransitionStyle?, animated: Bool, completion: (() -> Void)?)
+  func startFlow(route: Route, transitionStyle: NavigationTransitionStyle?, animated: Bool)
+  func present(_ viewController: ViewType, animated: Bool, completion: (() -> Void)?)
+  func pop(animated: Bool)
+  func popToRoot(animated: Bool)
+  func popToView<T>(_ view: T, animated: Bool) -> Bool
+  func finishFlow(animated: Bool, withDissmis: Bool, completion: (() -> Void)?)
+  func navigate(to coordinator: Coordinator, animated: Bool)
 }
-
-public typealias TabbarPage = TabbarPageDataSource & TabbarNavigationRouter

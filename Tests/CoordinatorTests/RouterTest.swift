@@ -78,7 +78,7 @@ extension RouteTests {
   }
   
   private func makeSut(file: StaticString = #file, line: UInt = #line) -> Router<Route> {
-    let coordinator = NavigationCoordinatable<Route>(parent: nil)
+    let coordinator = NavigationCoordinator<Route>(parent: nil)
     coordinator.router.startFlow(route: .firstStep, animated: false)
     addTeardownBlock { [weak coordinator] in
       XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)

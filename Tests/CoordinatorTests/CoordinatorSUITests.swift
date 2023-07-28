@@ -54,7 +54,7 @@ final class CoordinatorSUITests: XCTestCase {
     
     XCTAssertTrue(sut.children.isEmpty)
     
-    let makeChildCoordinator = NavigationCoordinatable<MyRouter>()
+    let makeChildCoordinator = NavigationCoordinator<MyRouter>()
     makeChildCoordinator.forcePresentation(route: .secondStep, animated: false, mainCoordinator: sut)
     
     finish(sut: sut.router) {
@@ -72,8 +72,8 @@ extension CoordinatorSUITests {
   // ---------------------------------------------------------------------
   
   
-  private func makeSut(file: StaticString = #file, line: UInt = #line) -> NavigationCoordinatable<MyRouter> {
-    let coordinator = NavigationCoordinatable<MyRouter>.init(
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> NavigationCoordinator<MyRouter> {
+    let coordinator = NavigationCoordinator<MyRouter>.init(
       parent: nil
     )
     addTeardownBlock { [weak coordinator] in
