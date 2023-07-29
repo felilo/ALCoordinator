@@ -214,6 +214,11 @@ extension TabbarCoordinatorTests {
         case .secondStep: return 1
       }
     }
+    
+    
+    static var itemsSorted: [Self] {
+      Self.allCases.sorted(by: { $0.position < $1.position })
+    }
   }
   
   
