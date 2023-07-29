@@ -115,7 +115,7 @@ extension CoordinatorSUITests {
     var transition: NavigationTransitionStyle {
       switch self {
         case .firstStep: return .push
-        case .secondStep: return .present
+        case .secondStep: return .modal
       }
     }
   }

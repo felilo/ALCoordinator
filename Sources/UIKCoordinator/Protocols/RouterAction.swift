@@ -38,4 +38,5 @@ public protocol RouterAction {
   func popToView<T>(_ view: T, animated: Bool) -> Bool
   func finishFlow(animated: Bool, withDissmis: Bool, completion: (() -> Void)?)
   func navigate(to coordinator: Coordinator, animated: Bool)
+  func dismiss(animated: Bool, completion: (() -> Void)?)
 }

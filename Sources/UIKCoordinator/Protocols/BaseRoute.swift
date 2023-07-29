@@ -21,7 +21,7 @@ public protocol NavigationRoute {
 
 public enum NavigationTransitionStyle {
   case push
-  case present
-  case presentFullscreen
+  case modal
+  case modalFullscreen
   case custom(style: PresentationStyle)
 }

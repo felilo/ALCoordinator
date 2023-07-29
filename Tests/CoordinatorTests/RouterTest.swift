@@ -103,7 +103,7 @@ extension RouteTests {
     
     var transition: NavigationTransitionStyle {
       switch self {
-        case .thirdStep: return .present
+        case .thirdStep: return .modal
         default: return .push
       }
     }

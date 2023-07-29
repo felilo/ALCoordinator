@@ -33,6 +33,8 @@ public protocol TabbarPageDataSource {
    * Determines the order and position of the tabs in the Tabbar. It must start from 0 and the numbers be consecutive.
    */
   var position: Int { get }
+  
+  static var itemsSorted: [Self] { get }
 }
 
 public typealias TabbarPage = TabbarPageDataSource & TabbarNavigationRouter

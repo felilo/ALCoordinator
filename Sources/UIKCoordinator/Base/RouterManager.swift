@@ -131,6 +131,7 @@ open class RouterManager  {
   ///   - animated: Bool, Specify true to animate the transition or false if you do not want the transition to be animated. You might specify false if you are setting up the navigation controller at launch time.
   ///   - completion
   open func startFlow(_ view: UIViewController, transitionStyle: NavigationTransitionStyle, animated: Bool = true) {
+    coordinator.root.viewControllers = []
     navigate(view, transitionStyle: transitionStyle, animated: animated)
     coordinator.presentCoordinator(animated: animated)
   }
@@ -195,9 +196,9 @@ open class RouterManager  {
     }
     
     switch transitionStyle {
-      case .present:
+      case .modal:
         handlePresent(.automatic)
-      case .presentFullscreen:
+      case .modalFullscreen:
         handlePresent(.fullScreen)
       case .push:
         handlePushCtrl(ctrl: ctrl, coordinator: coordinator, animated: animated)

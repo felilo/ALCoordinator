@@ -1,250 +1,414 @@
 # ALCoodinator
 
 This repository contains a library implementing the Coordinator pattern, which is a design pattern used in iOS app development to manage app navigation flows. The library provides a set of classes and protocols that can be used to implement the Coordinator pattern in an iOS app. It works either UIKit or SwiftUI apps
-
 Its core navigation has created with UINavigationController (UIKit) with the aim to get profit about navigation stack.
 
-### Getting Started
+## Getting Started
 
 To use the Coordinator pattern library in your iOS project, you'll need to add the library files to your project and set up a Coordinator object. Here are the basic steps:
 
-<br>
-
-### Create a Coordinator
-
-```swift
-    enum OnboardingRouter: NavigationRouter {
-
-      case firstStep(viewModel: FirstStepViewModel)
-      case secondStep(viewModel: SecondStepViewModel)
-      case info(message: String)
-
-      // MARK: NavigationRouter
-      var transition: NavigationTranisitionStyle {
-        switch self {
-          case .firstStep, secondStep:
-            return .push
-          case .info:
-            return .present
-        }
-      }
-
-      func view() -> any View {
-        switch self {
-          case .firstStep(let vm):
-            return FirstStepView(viewModel: vm)
-          case .secondStep(let vm):
-            return SecondStepView().environmentObject(vm)
-          case .info(let message):
-            return InfoView(message: message)
-        }
-      }
-    }
-```
-        
-```swift
-    class OnboardingCoordinator: CoordinatorSUI<OnboardingRouter> {
-
-      override func start(animated: Bool) {
-        show(.firstStep(viewModel: FirstStepViewModel(coordinator: self)))
-        presentCoordinator(animated: animated)
-      }
-
-      func showStep2() {
-        show(.secondStep(viewModel: SecondStepViewModel(coordinator: self)))
-      }
-      
-      func presentInfo(message: String) {
-        show(.info(message: message))
-      }
-
-      func showLoginCoordinator() {
-        let coordinator = LoginCoordinator()
-        coordinator.start()
-      }
-    }
-```
-    
-<br>    
-
-
-### Create a TabbarCoordinator
-
-
-1. Create a router
-
-    ```swift
-    enum HomeRouter: CaseIterable, TabbarPage {
-
-      case marketplace
-      case settings
-
-      // MARK: NavigationRouter
-
-      func coordinator(parent: Coordinator) -> Coordinator {
-        switch self {
-          case .settings:
-            return SettingCoordinator(parent: parent)
-          case .marketplace:
-            return MarketplaceCoordinator(parent: parent)
-        }
-      }
-
-      // MARK: TabbarPageDataSource
-
-      public var title: String {
-        switch self {
-          case .marketplace:
-            return "Marketplace"
-          case .settings:
-            return "Settings"
-        }
-      }
-
-      public var icon: String {
-        switch self {
-          case .marketplace:
-            return "house"
-          case .settings:
-            return "gearshape"
-        }
-      }
-
-      public var position: Int {
-        switch self {
-          case .marketplace:
-            return 0
-          case .settings:
-            return 1
-        }
-      }
-    }
-    ```
-<br>
-
-2. Create a TabbarCoordinator
-
-  * Default tabbar build with UIKIT (It also works with SwiftUI)
-    ```swift
-    class HomeCoordinator: TabbarCoordinator<HomeRouter> {
-    
-      public init(parent: Coordinator) {
-        let pages: [Router] = [.marketplace, .settings]
-        super.init(parent: parent,pages: pages)
-      }
-    }
-    ```
-
-  * Custom view (SwiftUI)
-
-    ```swift
-    class HomeCoordinator: TabbarCoordinator<HomeRouter> {
-    
-      public init(parent: Coordinator) {
-        let pages: [Router] = [.marketplace, .settings]
-        let view = HomeTabbarView(pages: pages)
-        
-        super.init(
-            parent: parent, 
-            customView: view,
-            pages: pages
-        )
-        
-        view.$currentPage
-          .sink { [weak self] page in
-            self?.currentPage = page
-          }.store(in: &cancelables)
-      }
-    }
-    ```
-
-<br>
-
-
-### Create MainCoordinator: 
+## Defining the coordinator
+First let's define our paths and its views
 
 ```swift
-    class MainCoordinator: BaseCoordinator {
-      
-      init() {
-        super.init(parent: nil)
-      }
-      
-      override func start(animated: Bool = false) {
-        let coordinator = OnboardingCoordinator(parent: self)
-        coordinator.start(animated: animated)
-      }
+import SUICoordinator
+import SwiftUI
+
+enum OnboardingRoute: NavigationRoute {
+  
+  case firstStep(viewModel: FirstViewModel)
+  case secondStep(viewModel: SecondViewModel)
+  
+  // MARK: NavigationRouter
+  
+  var transition: NavigationTransitionStyle {
+    switch self {
+      case .firstStep:
+        return .push
+      case .secondStep:
+        return .present
     }
+  }
+  
+  func view() -> any View {
+    switch self {
+      case .firstStep(let vm):
+        return FirstView(viewModel: vm)
+      case .secondStep(let vm):
+        return SecondView(viewModel: vm)
+    }
+  }
+}
 ```
+
+Second let's create our first Coordinator. All coordinator should to implement the ``start()`` function and then starts the flow (mandatory). Finally add additional flows
+
+```swift
+import SUICoordinator
+
+class OnboardingCoordinator: NavigationCoordinator<OnboardingRoute> {
+
+  // MARK: Coordinator
+  
+  override func start(animated: Bool) {
+    let vm = FirstViewModel(coordinator: self)
+    router.startFlow(
+      route: .firstStep(viewModel: vm),
+      animated: animated
+    )
+  }
+
+  // MARK: Helper funcs
+  
+  func showStep2() {
+    let vm = SecondViewModel(coordinator: self)
+    router.navigate(to: .secondStep(viewModel: vm))
+  }
+  
+  func showHomeCoordinator() {
+    let coordinator = HomeCoordinatorSUI(currentPage: .settings)
+    router.navigate(to: coordinator)
+  }
+}
+```
+
 <br>
 
+## Create a TabbarCoordinator
+
+### 1. Create a router
+
+```swift
+import SUICoordinator
+
+enum HomeRoute: CaseIterable, TabbarPage {
+  
+  case marketplace
+  case settings
+  
+  // MARK: NavigationRouter
+  
+  func coordinator(parent: Coordinator) -> Coordinator {
+    switch self {
+      case .settings:
+        return SettingsCoordinator(parent: parent)
+      case .marketplace:
+        return MarketplaceCoordinator(parent: parent)
+    }
+  }
+  
+  // MARK: TabbarPageDataSource
+  
+  public var title: String {
+    switch self {
+      case .marketplace:
+        return "Marketplace"
+      case .settings:
+        return "Settings"
+    }
+  }
+  
+  public var icon: String {
+    switch self {
+      case .marketplace:
+        return "house"
+      case .settings:
+        return "gearshape"
+    }
+  }
+  
+  public var position: Int {
+    switch self {
+      case .marketplace:
+        return 0
+      case .settings:
+        return 1
+    }
+  }
+  
+  static var itemsSorted: [HomeRoute] {
+    Self.allCases.sorted(by: { $0.position < $1.position })
+  }
+}
+```
+
+### 2. Create a TabbarCoordinator
+
+* Default tabbar build with UIKIT (It also works with SwiftUI)
+
+```swift
+import UIKCoordinator
+import UIKit
+
+class HomeCoordinatorUIKit: TabbarCoordinator<HomeRoute> {
+  
+  // MARK: Constructor
+  
+  public init() {
+    super.init(
+      pages: [.marketplace, .settings],
+      currentPage: .marketplace
+    )
+  }
+}
+```
+
+* Custom view (SwiftUI)
+
+```swift
+import SUICoordinator
+import SwiftUI
+import Combine
+
+class HomeCoordinatorSUI: TabbarCoordinator<HomeRoute> {
+
+  // MARK: Properties
+  
+  var cancelables = Set<AnyCancellable>()
+
+  // Custom Tabbar view
+  public init(currentPage: HomeRoute) {
+    let viewModel = HomeTabbarViewModel()
+    let view = HomeTabbarView(viewModel: viewModel)
+    viewModel.currentPage = currentPage
+
+    super.init(
+      customView: view,
+      pages: [.marketplace, .settings],
+      currentPage: currentPage
+    )
+    
+    viewModel.$currentPage
+      .sink { [weak self] page in
+        self?.currentPage = page
+      }.store(in: &cancelables)
+    
+    UITabBar.appearance().isHidden = true
+  }
+  
+  // Default Tabbar view
+  public init(default: Bool ) {
+    super.init(pages: [.marketplace, .settings])
+  }
+}
+```
+
+<br>
+
+### 3. Create MainCoordinator
+
+```swift
+import SUICoordinator
+
+class MainCoordinator: NavigationCoordinator<MainRoute> {
+  
+  // MARK: Constructor
+  
+  init() {
+    super.init(parent: nil)
+    router.startFlow(route: .splash, animated: false)
+  }
+  
+  // MARK: Coordinator
+  
+  override func start(animated: Bool = false) {
+    router.navigate(to: OnboardingCoordinator(presentationStyle: .fullScreen), animated: animated)
+  }
+}
+```
+
+```swift
+import SUICoordinator
+import SwiftUI
+
+enum MainRoute: NavigationRoute {
+  
+  case splash
+
+  // MARK: NavigationRoute
+
+  var transition: NavigationTransitionStyle { .push }
+  func view() -> any View { SplashScreenView() }
+}
+```
 
 ### Setup project
-
 
 <br>
 
 1. Create a SceneDelegate class if your app supports scenes:
 
 ```swift
-    import UIKit
-    import ALCoordinator
-    
-    class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    
-        var window: UIWindow?
-        var mainCoordinator: MainCoordinator?
-    
-        func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-            guard let windowScene = (scene as? UIWindowScene) else { return }
-            window = UIWindow(windowScene: windowScene)
-            window?.makeKeyAndVisible()
-            setupCoordinator(window: window, animated: true)
-        }
-        
-        private func setupCoordinator(window: UIWindow?, animated: Bool = false) {
-          mainCoordinator = .init()
-          window?.rootViewController = mainCoordinator.root
-          mainCoordinator?.start(animated: animated)
-          BaseCoordinator.mainCoordinator = mainCoordinator
-        }
-    }
+import SwiftUI
+import SUICoordinator
+
+final class SceneDelegate: NSObject, UIWindowSceneDelegate {
+  
+  var mainCoordinator: MainCoordinator?
+  var window: UIWindow?
+  
+  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+    guard let windowScene = (scene as? UIWindowScene) else { return }
+    window = UIWindow(windowScene: windowScene)
+    setupCoordinator(window: window, animated: true)
+  }
+  
+  private func setupCoordinator(window: UIWindow?, animated: Bool = false) {
+    mainCoordinator = .init()
+    setupWindow(controller: mainCoordinator?.root)
+    BaseCoordinator.mainCoordinator = mainCoordinator
+    mainCoordinator?.start(animated: animated)
+  }
+  
+  private func setupWindow(controller: UIViewController?) {
+    window?.rootViewController = controller
+    window?.makeKeyAndVisible()
+  }
+}
 ```
+
 <br>
 
 2. In your app's AppDelegate file, set the SceneDelegate class as the windowScene delegate:
 
-
 ```swift
+import UIKit
+
 @main
-    class AppDelegate: UIResponder, UIApplicationDelegate {
-    
-        var window: UIWindow?
-    
-        func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-            return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
-        }
-    
-        func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {}
-    
-        // Add this method
-        func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-            guard let windowScene = (scene as? UIWindowScene) else { return }
-            let sceneDelegate = SceneDelegate()
-            sceneDelegate.scene(windowScene, willConnectTo: session, options: connectionOptions)
-        }
-    }
+final class AppDelegate: NSObject, UIApplicationDelegate {
+  
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    return true
+  }
+  
+  func application(
+    _ application: UIApplication,
+    configurationForConnecting connectingSceneSession: UISceneSession,
+    options: UIScene.ConnectionOptions
+  ) -> UISceneConfiguration {
+    let sessionRole = connectingSceneSession.role
+    let sceneConfig = UISceneConfiguration(name: nil, sessionRole: sessionRole)
+    sceneConfig.delegateClass = SceneDelegate.self
+    return sceneConfig
+  }
+}
 ```
 
+
+##### You can find an example here <https://github.com/felilo/TestCoordinatorLibrary>
+
 <br>
-<br>
 
+#### Actions you can perform from the coordinator depends on the kind of coordinator used. For instance, using a Router, NavigationCoordinator or TabbarCoordinator some of the functions you can perform are:
 
-#### You can find an example here https://github.com/felilo/TestCoordinatorLibrary
+#### Router
 
-
-### Actions:
-Actions you can perform from the coordinator depends on the kind of coordinator used. For instance, using a BaseCoordinator, CoordinatorSUI or Coordinator some of the functions you can perform are:
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Parametes</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code style="color: blue;">navigate(_)</code></td>
+      <td>
+      <b>to:</b> <code>Route</code><br> 
+      <b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,<br> 
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br> 
+      <b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code><br>
+      </td>
+      <td>
+      Allows you to navigate among the views that were defined in the Route. The types of presentation are Push, Modal, ModalFullScreen and Custom.
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">navigate(_)</code></td>
+      <td>
+      <b>to:</b> <code>Coordinator</code><br>
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br>
+      </td>
+      <td>
+      Allows you to navigate among the Coordinators. It calls the <code>start()</code> function
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">startFlow(_)</code></td>
+      <td>
+      <b>to:</b> <code>Route</code><br> 
+      <b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,<br> 
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code><br>
+      </td>
+      <td>
+      Cleans the navigation stack and runs the navigation flow
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">present(_)</code></td>
+      <td>
+      <b>_ view:</b> <code>ViewType</code><br> 
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br>
+      <b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code><br>
+      </td>
+      <td>
+      Presents a view modally.
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">pop(_)</code></td>
+      <td>
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br>
+      </td>
+      <td>
+      Pops the top view from the navigation stack and updates the display.
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">popToRoot(_)</code></td>
+      <td>
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br>
+      <b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code><br>
+      </td>
+      <td>
+      Pops all the views on the stack except the root view and updates the display.
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">dismiss(_)</code></td>
+      <td>
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br>
+      </td>
+      <td>
+      Dismisses the view that was presented modally by the view.
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">popToView(_)</code></td>
+      <td>
+      <b>_ view:</b> <code>T</code><br> 
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br>
+      </td>
+      <td>
+      Pops views until the specified view is at the top of the navigation stack.
+      </td>
+    </tr>
+    <tr>
+      <td><code style="color: blue;">finishFlow(_)</code></td>
+      <td>
+      <b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,<br>
+      <b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code><br>
+      </td>
+      <td>
+      Pops all the views on the stack including the root view, dismisses all the modal view and remove the current coordinator from the coordinator stack
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 <table>
   <thead>
@@ -305,7 +469,7 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
     </tr>
     <tr>
       <td><code>popToView(_:)</code></td>
-      <td>Pops view controllers until the specified view controller is at the top of the navigation stack. 
+      <td>Pops view controllers until the specified view controller is at the top of the navigation stack.
         <br> if the view is onto navigation stack returns true. e.i: popToView(MyObject.self, animated: false).
         <br>Params:
         <br><b>view:</b> <span>Any</span>
@@ -357,7 +521,6 @@ Actions you can perform from the coordinator depends on the kind of coordinator 
     </tr>
   </tbody>
 </table>
-
 
 #### Classes
 
@@ -435,7 +598,6 @@ The TabbarCoordinator class is a specialized coordinator object that is designed
 
 <br>
 
-
 `CoordinatorSUI`
 The CoordinatorSUI class is a specialized coordinator object that is designed to manage the navigation flow of a SwiftUI app. This class provides methods for showing views.
 
@@ -472,8 +634,7 @@ The typealias TabbarPage is a short way to implement protocols TabbarPageDataSou
 
 SPM
 
-Open Xcode and your project, click File / Swift Packages / Add package dependency... . In the textfield "Enter package repository URL", write https://github.com/felilo/ALCoordinator and press Next twice
-
+Open Xcode and your project, click File / Swift Packages / Add package dependency... . In the textfield "Enter package repository URL", write <https://github.com/felilo/ALCoordinator> and press Next twice
 
 ## Contributing
 
