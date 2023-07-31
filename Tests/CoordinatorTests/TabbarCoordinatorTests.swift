@@ -187,10 +187,10 @@ extension TabbarCoordinatorTests {
     case firstStep
     case secondStep
     
-    func coordinator(parent: Coordinator) -> Coordinator {
+    func coordinator() -> Coordinator {
       switch self {
-        case .firstStep: return ChildCoordinator(parent: parent)
-        case .secondStep: return OtherChildCoordinator(parent: parent)
+        case .firstStep: return ChildCoordinator()
+        case .secondStep: return OtherChildCoordinator()
       }
     }
     
@@ -201,10 +201,10 @@ extension TabbarCoordinatorTests {
       }
     }
     
-    var icon: String {
+    var icon: Image {
       switch self {
-        case .firstStep: return "home"
-        case .secondStep: return "gear"
+        case .firstStep: return .init(systemName: "home")
+        case .secondStep: return .init(systemName: "gear")
       }
     }
     
@@ -213,11 +213,6 @@ extension TabbarCoordinatorTests {
         case .firstStep: return 0
         case .secondStep: return 1
       }
-    }
-    
-    
-    static var itemsSorted: [Self] {
-      Self.allCases.sorted(by: { $0.position < $1.position })
     }
   }
   
