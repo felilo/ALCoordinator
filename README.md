@@ -88,12 +88,12 @@ enum HomeRoute: CaseIterable, TabbarPage {
   
   // MARK: NavigationRouter
   
-  func coordinator(parent: Coordinator) -> Coordinator {
+  func coordinator() -> Coordinator {
     switch self {
       case .settings:
-        return SettingsCoordinator(parent: parent)
+        return SettingsCoordinator()
       case .marketplace:
-        return MarketplaceCoordinator(parent: parent)
+        return MarketplaceCoordinator()
     }
   }
   

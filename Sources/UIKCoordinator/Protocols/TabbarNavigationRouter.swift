@@ -26,5 +26,5 @@
 import Foundation
 
 public protocol TabbarNavigationRouter {
-  func coordinator(parent: Coordinator) -> Coordinator
+  func coordinator() -> Coordinator
 }

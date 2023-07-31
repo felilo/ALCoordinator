@@ -1,5 +1,5 @@
 //
-//  TabbarPage.swift
+//  TabbarPageDataSource+Helpers.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,20 +22,19 @@
 //  THE SOFTWARE.
 //
 
-import Foundation
+import UIKit
+import SwiftUI
 
-
-public protocol TabbarPageDataSource {
-  
-  associatedtype ImageType
-  
-  var title: String { get }
-  var icon: ImageType { get }
-  
-  /**
-   * Determines the order and position of the tabs in the Tabbar. It must start from 0 and the numbers be consecutive.
-   */
-  var position: Int { get }
+extension TabbarPageDataSource {
+  func getImage() -> UIImage? {
+    (icon as? UIImage) ?? (icon as? Image)?.asUIImage()
+  }
 }
 
-public typealias TabbarPage = TabbarPageDataSource & TabbarNavigationRouter
+
+public extension TabbarPageDataSource where Self: CaseIterable {
+  
+  static var itemsSorted: [Self] {
+    Self.allCases.sorted(by: { $0.position < $1.position })
+  }
+}

@@ -76,8 +76,8 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   open func buildTabbarItem(page: PAGE) -> UITabBarItem? {
     let item = UITabBarItem(
       title: page.title,
-      image: .init(systemName: page.icon),
-      selectedImage: .init(systemName: page.icon)
+      image: page.getImage(),
+      selectedImage: page.getImage()
     )
     item.tag = page.position
     return item
@@ -90,7 +90,8 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   
   open func setupPages() {
     pages.forEach({
-      let item = $0.coordinator(parent: self)
+      var item = $0.coordinator()
+      item.parent = self
       item.root.tabBarItem = buildTabbarItem(page: $0)
       item.start(animated: false)
     })
@@ -111,7 +112,7 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   // ---------------------------------------------------------------------
   
   
-  private func setCurrentPage(_ value: TabbarPage?) {
+  private func setCurrentPage(_ value: (any TabbarPage)?) {
     guard let value, value.position != currentPage?.position else { return  }
     guard let index = children.firstIndex(where: { $0.root.tabBarItem.tag == value.position })
     else {
