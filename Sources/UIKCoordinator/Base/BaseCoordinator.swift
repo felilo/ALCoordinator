@@ -45,14 +45,7 @@ open class BaseCoordinator: NSObject, Coordinator  {
   // ---------------------------------------------------------
   
   
-  public init(parent: Coordinator?) {
-    uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
-    self.parent = parent
-    super.init()
-  }
-  
-  
-  public init(parent: Coordinator?, presentationStyle: UIModalPresentationStyle = .fullScreen) {
+  public init(parent: Coordinator?, presentationStyle: PresentationStyle = .automatic) {
     uuid = "\(NSStringFromClass(type(of: self))) - \(UUID().uuidString)"
     self.parent = parent
     super.init()
@@ -75,19 +68,16 @@ open class BaseCoordinator: NSObject, Coordinator  {
   }
   
   
-  open func restartMainCoordinator(mainCoordinator: Coordinator? = mainCoordinator, animated: Bool, completion: (() -> Void)?){
+  open func restartApp(mainCoordinator: Coordinator? = mainCoordinator, animated: Bool, completion: (() -> Void)?){
     mainCoordinator?.restart(animated: animated, completion: completion)
   }
   
   
   private func handlePresentationStyle(presentationStyle: UIModalPresentationStyle) {
     root.modalPresentationStyle = presentationStyle
-    root.setNavigationBarHidden(true, animated: false)
     switch presentationStyle {
-      case .custom, .none, .automatic, .fullScreen:
-        break
-      default:
-        root.presentationController?.delegate = self
+      case .custom, .none, .automatic, .fullScreen: break
+      default: root.presentationController?.delegate = self
     }
   }
 }
@@ -102,7 +92,7 @@ extension BaseCoordinator: UIAdaptivePresentationControllerDelegate {
   // ---------------------------------------------------------------------
   
   
-  public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    finish(withDissmis: false, completion: nil)
+  open func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    handleFinish(withDissmis: false, completion: nil)
   }
 }

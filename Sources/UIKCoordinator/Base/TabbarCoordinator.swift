@@ -24,7 +24,6 @@
 
 
 import UIKit
-import SwiftUI
 
 open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDelegate where PAGE: TabbarPage {
   
@@ -34,30 +33,30 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
   // ---------------------------------------------------------------------
   
   
-  open var tabController: UITabBarController!
   private (set) var pages: [PAGE]
+  open var tabController: UITabBarController!
   open var currentPage: PAGE? {
-    didSet { setCurrentPage(currentPage) }
+    willSet { setCurrentPage(newValue) }
   }
+  
   
   // ---------------------------------------------------------------------
   // MARK: Constructor
   // ---------------------------------------------------------------------
-
   
-  public init(parent: Coordinator?, tarbbarCtrl: UITabBarController = .init(), pages: [PAGE]) {
+  
+  public init(
+    tarbbarCtrl: UITabBarController = .init(),
+    pages: [PAGE],
+    currentPage: PAGE? = nil,
+    presentationStyle: PresentationStyle = .fullScreen,
+    parent: Coordinator? = nil
+  ) {
     self.pages = pages
-    super.init(parent: parent)
+    super.init(parent: parent, presentationStyle: presentationStyle)
     tabController = tarbbarCtrl
     setup()
-  }
-  
-  
-  public init(parent: Coordinator?, customView: any View, pages: [PAGE]) {
-    self.pages = pages
-    super.init(parent: parent)
-    tabController = CustomTabbarCtrl(view: customView)
-    setup()
+    defer { self.currentPage = currentPage ?? pages.first }
   }
   
   
@@ -70,51 +69,52 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     children[tabController.selectedIndex]
   }
   
-  
   public override func start(animated: Bool = true) {
-    parent.children.append(self)
-    tabController?.modalPresentationStyle = .fullScreen
-    parent.present(tabController, animated: animated)
+    presentCoordinator(animated: animated)
   }
-  
   
   open func buildTabbarItem(page: PAGE) -> UITabBarItem? {
     let item = UITabBarItem(
       title: page.title,
-      image: .init(systemName: page.icon),
-      selectedImage: .init(systemName: page.icon)
+      image: page.getImage(),
+      selectedImage: page.getImage()
     )
     item.tag = page.position
     return item
   }
-  
   
   open func setPages(_ values: [PAGE], completion: (() -> Void)? = nil) {
     pages = values
     handleUpdatePages(completion: completion)
   }
   
-  
-  public func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-    let page = pages.first(where: { $0.position == tabBarController.selectedIndex })
-    guard page?.position != currentPage?.position else { return }
-    currentPage = page
-  }
-  
-  
-  private func setupPages() {
+  open func setupPages() {
     pages.forEach({
-      let item = $0.coordinator(parent: self)
+      var item = $0.coordinator()
+      item.parent = self
       item.root.tabBarItem = buildTabbarItem(page: $0)
       item.start(animated: false)
     })
-    currentPage = pages.first
+  }
+  
+  open func forcePresentation(
+    animated: Bool = true,
+    mainCoordinator: Coordinator? = mainCoordinator
+  ) {
+    let topCoordinator = getTopCoordinator(mainCoordinator: mainCoordinator)
+    self.parent = topCoordinator
+    start(animated: animated)
   }
   
   
-  private func setCurrentPage(_ value: TabbarPage?) {
-    guard let value,
-          let index = children.firstIndex(where: { $0.root.tabBarItem.tag == value.position })
+  // ---------------------------------------------------------------------
+  // MARK: Private helper funcs
+  // ---------------------------------------------------------------------
+  
+  
+  private func setCurrentPage(_ value: (any TabbarPage)?) {
+    guard let value, value.position != currentPage?.position else { return  }
+    guard let index = children.firstIndex(where: { $0.root.tabBarItem.tag == value.position })
     else {
       currentPage = nil
       return
@@ -122,18 +122,28 @@ open class TabbarCoordinator<PAGE>: TabbarCoordinatable, UITabBarControllerDeleg
     tabController?.selectedIndex = index
   }
   
-  
   private func handleUpdatePages(completion: (() -> Void)? = nil) {
     removeChildren(animated: false) { [weak self] in
-      self?.cleanCoordinator()
+      self?.emptyControllers()
       self?.setupPages()
       completion?()
     }
   }
   
-  
   private func setup() {
     self.tabController?.delegate = self
     setupPages()
+  }
+  
+  
+  // ---------------------------------------------------------------------
+  // MARK: UITabBarControllerDelegate
+  // ---------------------------------------------------------------------
+  
+
+  open func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+    let page = pages.first(where: { $0.position == tabBarController.selectedIndex })
+    guard page?.position != currentPage?.position else { return }
+    currentPage = page
   }
 }

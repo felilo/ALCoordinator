@@ -1,7 +1,6 @@
 import XCTest
 import UIKit
-import SwiftUI
-@testable import ALCoordinator
+@testable import UIKCoordinator
 
 final class ALCoordinatorTests: XCTestCase {
   
@@ -10,6 +9,7 @@ final class ALCoordinatorTests: XCTestCase {
     typealias Item = FirstViewController
     let sut = makeSut()
     let item = Item()
+    
     navigateToViewExpect(sut, toCompleteWithView: item, when: {
       sut.push(item, animated: false)
       sut.push(.init(), animated: false)
@@ -18,25 +18,17 @@ final class ALCoordinatorTests: XCTestCase {
   }
   
   
-  func test_navigatingToHostingViewControllerViaSUIView() {
-    typealias Item = UIHostingController<FirstView>
-    let sut = makeSut()
-    let item = Item(rootView: FirstView())
-    navigateToViewExpect(sut, toCompleteWithView: item, when: {
-      sut.push(item, animated: false)
-      sut.push(.init(), animated: false)
-      sut.popToView(Item.self, animated: false)
-    })
-  }
-  
-  
   func test_navigatingToViewControllerThatDoesNotBelongOnNavStack() {
     typealias Item = FirstViewController
+    let exp = XCTestExpectation(description: "")
     let sut = makeSut()
-    sut.push(UIViewController(), animated: false)
-    XCTAssertFalse(sut.popToView(Item.self, animated: false))
-    let lastCtrl = sut.root.viewControllers.last
-    XCTAssertNotEqual(sut.getNameOf(viewController: lastCtrl!), sut.getNameOf(object: Item.self))
+    sut.push(.init(), animated: false) {
+      XCTAssertFalse(sut.popToView(Item.self, animated: false))
+      let lastCtrl = sut.root.viewControllers.last
+      XCTAssertNotEqual(sut.getNameOf(viewController: lastCtrl!), sut.getNameOf(object: Item.self))
+      exp.fulfill()
+    }
+    wait(for: [exp], timeout: 1)
   }
   
   
@@ -44,8 +36,11 @@ final class ALCoordinatorTests: XCTestCase {
     let sut = makeSut()
     
     finishCoordinatorExpect(sut) { [weak self] in
-      _ = self?.makeChildCoordinator(parent: sut)
-      _ = self?.makeChildCoordinator(parent: sut)
+      let c1 = self?.makeChildCoordinator()
+      
+      c1?.router.startFlow(route: .first, animated: false)
+      let c2 = self?.makeChildCoordinator()
+      c2?.router.startFlow(route: .first, animated: false)
     }
   }
   
@@ -54,46 +49,79 @@ final class ALCoordinatorTests: XCTestCase {
     let sut = makeSut()
     
     finishCoordinatorExpect(sut) { [weak self] in
-      let coordinator = self?.makeChildCoordinator(parent: sut)
-      _ = self?.makeChildCoordinator(parent: coordinator)
+      guard let self = self else { return }
+      
+      let coordinator = self.makeChildCoordinator()
+      sut.router.navigate(to: coordinator, animated: false)
+      
+      let otherCoordinator = self.makeChildCoordinator()
+      coordinator.router.navigate(to: otherCoordinator, animated: false)
     }
   }
   
   
   func test_startChildCoordinator() {
-    var sut = makeSut()
+    let sut = makeSut()
+    
     let childCoordinator = ChildCoordinator(parent: sut)
-    childCoordinator.push(.init(), animated: false)
-    sut.startChildCoordinator(childCoordinator)
-    XCTAssertEqual(sut.children.count, 1)
+    sut.router.navigate(to: childCoordinator, animated: false)
+    finish(sut: sut) {
+      XCTAssertEqual(sut.children.count, 1)
+      XCTAssertEqual(sut.children.last?.uuid, childCoordinator.uuid)
+    }
   }
   
   
   func test_getTopCoordinator() {
     let sut = makeSut()
-    let firstCoordinator = makeChildCoordinator(parent: sut)
-    let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
-    let thirdCoordinator = makeChildCoordinator(parent: secondCoordinator)
     
-    XCTAssertEqual(sut.topCoordinator()?.uuid, thirdCoordinator.uuid)
-    BaseCoordinator.mainCoordinator = sut
-    XCTAssertEqual(sut.getTopCoordinator()?.uuid, thirdCoordinator.uuid)
+    let firstCoordinator = makeChildCoordinator()
+    sut.router.navigate(to: firstCoordinator, animated: false)
+    
+    let secondCoordinator = makeChildCoordinator()
+    firstCoordinator.router.navigate(to: secondCoordinator, animated: false)
+    
+    let thirdCoordinator = makeChildCoordinator()
+    secondCoordinator.router.navigate(to: thirdCoordinator, animated: false)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.topCoordinator()?.uuid, thirdCoordinator.uuid)
+      BaseCoordinator.mainCoordinator = sut
+      
+      XCTAssertEqual(sut.getTopCoordinator()?.uuid, thirdCoordinator.uuid)
+      BaseCoordinator.mainCoordinator = nil
+    }
   }
   
   
   func test_restartMainCoordinator() {
     let sut = makeSut()
-    let firstCoordinator = makeChildCoordinator(parent: sut)
-    let secondCoordinator = makeChildCoordinator(parent: firstCoordinator)
     
-    let expect = XCTestExpectation()
+    let firstCoordinator = makeChildCoordinator()
+    sut.router.navigate(to: firstCoordinator, animated: false)
     
-    secondCoordinator.restartMainCoordinator(mainCoordinator: sut, animated: false) {
+    let secondCoordinator = makeChildCoordinator()
+    firstCoordinator.router.navigate(to: secondCoordinator, animated: false)
+    
+    secondCoordinator.restartApp(mainCoordinator: sut, animated: false, completion: nil)
+    
+    finish(sut: sut) {
       XCTAssertTrue(sut.children.isEmpty)
-      expect.fulfill()
     }
+  }
+  
+  
+  func test_force_to_present_a_coordinator() {
+    let sut = makeSut()
     
-    wait(for: [expect], timeout: 1)
+    XCTAssertTrue(sut.children.isEmpty)
+    
+    let makeChildCoordinator = makeChildCoordinator()
+    makeChildCoordinator.forcePresentation(startWith: .third, animated: false, mainCoordinator: sut)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.children.last?.uuid, makeChildCoordinator.uuid)
+    }
   }
 }
 
@@ -112,65 +140,83 @@ extension ALCoordinatorTests {
     toCompleteWithView expectedView: UIViewController?,
     when action: @escaping () -> Void
   ) {
-    sut.push(UIViewController(), animated: false)
+    let exp = XCTestExpectation(description: "")
+    sut.push(.init(), animated: false)
     action()
-    let lastCtrl = sut.root.viewControllers.last
-    XCTAssertEqual(lastCtrl, expectedView)
+    XCTAssertEqual(sut.root.viewControllers.last, expectedView)
+    exp.fulfill()
+    wait(for: [exp], timeout: 1)
   }
   
   
   private func finishCoordinatorExpect(_ sut: Coordinator, when action: @escaping () -> Void) {
     sut.push(.init(), animated: false)
     action()
-    let exp = XCTestExpectation()
-    sut.finish(animated: false) {
-      XCTAssertTrue(sut.children.isEmpty)
-      XCTAssertEqual(sut.root.viewControllers.count, 1)
-      exp.fulfill()
+    sut.finish(animated: false) {[weak self] in
+      self?.finish(sut: sut) {
+        XCTAssertTrue(sut.children.isEmpty)
+        XCTAssertEqual(sut.root.viewControllers.count, 1)
+      }
     }
-    wait(for: [exp], timeout: 2)
   }
   
   
-  private func makeSut() -> BaseCoordinator {
-    MainCoordinator(parent: nil)
+  private func makeSut(file: StaticString = #file, line: UInt = #line) -> NavigationCoordinator<MyRouter> {
+    let coordinator = MainCoordinator(parent: nil)
+    addTeardownBlock { [weak coordinator] in
+      XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
+    }
+    return coordinator
   }
   
   
-  private func makeChildCoordinator(parent: Coordinator?) -> BaseCoordinator {
-    let item = ChildCoordinator(parent: parent, presentationStyle: .fullScreen)
-    item.start(animated: false)
+  private func makeChildCoordinator() -> NavigationCoordinator<MyRouter> {
+    let item = ChildCoordinator(presentationStyle: .fullScreen)
     return item
   }
   
   
-  private class ChildCoordinator: BaseCoordinator {
+  private class ChildCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
-      presentCoordinator(animated: animated)
-      presentCoordinator(animated: animated)
+      router.startFlow(route: .first)
     }
   }
   
   
-  private class MainCoordinator: BaseCoordinator {
+  private class MainCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
+      router.startFlow(route: .third, animated: false)
     }
+  }
+  
+  private enum MyRouter: NavigationRoute {
+    
+    case first
+    case second
+    case third
+    
+    func view() -> UIViewController {
+      switch self {
+        case .first: return FirstViewController()
+        case .second: return SecondViewController()
+        case .third: return ThirdViewController()
+      }
+    }
+    
+    var transition: NavigationTransitionStyle { .push }
+  }
+  
+  private func finish(sut: Coordinator, _ completation: @escaping () -> Void ) -> Void {
+    let exp = XCTestExpectation(description: "")
+    DispatchQueue.main.async {
+      completation()
+      sut.finish(animated: false) { exp.fulfill() }
+    }
+    wait(for: [exp], timeout: 5)
   }
   
   
   class FirstViewController: UIViewController {}
   class SecondViewController: UIViewController {}
   class ThirdViewController: UIViewController {}
-  
-  
-  struct FirstView: View {
-    var body: some View { Text("FirstView") }
-  }
-  
-  
-  struct SecondView: View {
-    var body: some View { Text("SecondView") }
-  }
 }

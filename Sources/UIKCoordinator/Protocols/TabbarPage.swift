@@ -1,5 +1,5 @@
 //
-//  TabbarNavigationRouter.swift
+//  TabbarPage.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -22,9 +22,20 @@
 //  THE SOFTWARE.
 //
 
-
 import Foundation
 
-public protocol TabbarNavigationRouter {
-  func coordinator(parent: Coordinator) -> Coordinator
+
+public protocol TabbarPageDataSource {
+  
+  associatedtype ImageType
+  
+  var title: String { get }
+  var icon: ImageType { get }
+  
+  /**
+   * Determines the order and position of the tabs in the Tabbar. It must start from 0 and the numbers be consecutive.
+   */
+  var position: Int { get }
 }
+
+public typealias TabbarPage = TabbarPageDataSource & TabbarNavigationRouter

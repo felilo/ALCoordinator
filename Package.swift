@@ -11,7 +11,8 @@ let package = Package(
     .library(
       name: "ALCoordinator",
       targets: [
-        "ALCoordinator",
+        "SUICoordinator",
+        "UIKCoordinator"
       ]
     ),
   ],
@@ -23,12 +24,16 @@ let package = Package(
     // Targets are the basic building blocks of a package. A target can define a module or a test suite.
     // Targets can depend on other targets in this package, and on products in packages this package depends on.
     .target(
-      name: "ALCoordinator",
+      name: "SUICoordinator",
+      dependencies: ["UIKCoordinator"]
+    ),
+    .target(
+      name: "UIKCoordinator",
       dependencies: []
     ),
     .testTarget(
       name: "CoordinatorTests",
-      dependencies: ["ALCoordinator"]
+      dependencies: ["SUICoordinator", "UIKCoordinator"]
     ),
   ],
   swiftLanguageVersions: [.v5]
