@@ -312,6 +312,8 @@ These are the most important features and actions that you can perform:
 
 #### Router
 
+The router is encharge to manage the navigation stack and coordinate the transitions between different views. It abstracts away the navigation details from the views, allowing them to focus on their specific features such as:
+
 <br>
 <table>
   <thead>
@@ -420,6 +422,8 @@ These are the most important features and actions that you can perform:
 
 #### NavigationCoordinator
 
+Acts as a separate entity from the views, decoupling the navigation logic from the presentation logic. This separation of concerns allows the views to focus solely on their specific functionalities, while the Navigation Coordinator takes charge of the app's overall navigation flow. Some features are:
+
 <br>
 <table>
   <thead>
@@ -472,6 +476,8 @@ These are the most important features and actions that you can perform:
 <br>
 
 #### TabbarCoordinator
+
+Acts as a separate entity from the views, decoupling the navigation logic from the presentation logic. This separation of concerns allows the views to focus solely on their specific functionalities, while the Navigation Coordinator takes charge of the app's overall navigation flow. It is encharge if build the tab bar (UITabbarController) with the coordinators that were defined in its route, some features are:
 
 <br>
 <table>
