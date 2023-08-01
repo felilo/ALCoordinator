@@ -24,7 +24,7 @@
 
 import SwiftUI
 
-open class NavigationCoordinator<Route: NavigationRoute>: BaseCoordinator where Route.T == (any View) {
+open class NavigationCoordinator<Route: NavigationRoute>: BaseCoordinator, NavigationAction where Route.T == (any View) {
   
   // ---------------------------------------------------------------------
   // MARK: Properties
@@ -50,7 +50,7 @@ open class NavigationCoordinator<Route: NavigationRoute>: BaseCoordinator where 
   
   
   open func forcePresentation(
-    route: Route,
+    startWith route: Route,
     transitionStyle: NavigationTransitionStyle? = nil,
     animated: Bool = true,
     mainCoordinator: Coordinator? = mainCoordinator
