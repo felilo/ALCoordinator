@@ -436,7 +436,7 @@ Acts as a separate entity from the views, decoupling the navigation logic from t
   <tbody>
     <tr>
       <td><code style="color: blue;">router</code></td>
-      <td></td>
+      <td>&nbsp;</td>
       <td>Variable of Route type which allow performs action router.</td>
     </tr>
     <tr>
@@ -491,6 +491,7 @@ Acts as a separate entity from the views, decoupling the navigation logic from t
   <tbody>
     <tr>
       <td><code style="color: blue;">currentPage</code></td>
+      <td>&nbsp;</td>
       <td> Returns the current page selected.</td>
     </tr>
     <tr>
@@ -541,20 +542,3 @@ Contributions to the ALCoordinator library are welcome! To contribute, simply fo
 License
 
 The ALCoordinator library is released under the MIT license. See the LICENSE file for more information.
-
-<style>
-table th:first-of-type, td:first-of-type {
-    width: 20% !important;
-}
-table th:nth-of-type(2), td:nth-of-type(2) {
-    width: 40% !important;
-}
-table th:nth-of-type(3), td:nth-of-type(3) {
-    width: 40% !important;
-}
-
-
-table colgroup col {
-  width: auto !important;
-}
-</style>
