@@ -117,12 +117,12 @@ enum HomeRoute: CaseIterable, TabbarPage {
     }
   }
   
-  public var icon: String {
+  public var icon: Image {
     switch self {
       case .marketplace:
-        return "house"
+        return Image(systemName: "house")
       case .settings:
-        return "gearshape"
+        return Image(systemName: "gearshape")
     }
   }
   
@@ -312,6 +312,8 @@ These are the most important features and actions that you can perform:
 
 #### Router
 
+The router is encharge to manage the navigation stack and coordinate the transitions between different views. It abstracts away the navigation details from the views, allowing them to focus on their specific features such as:
+
 <br>
 <table>
   <thead>
@@ -325,92 +327,92 @@ These are the most important features and actions that you can perform:
     <tr>
       <td><code style="color: blue;">navigate(_)</code></td>
       <td>
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>to:</b> <code>Route</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></td></tr>
-        </table>
+        <ul cellspacing="0" cellpadding="0">
+          <li><b>to:</b> <code>Route</code>,</li>
+          <li><b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,</li>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+          <li><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></li>
+        </ul>
       </td>
       <td>Allows you to navigate among the views that were defined in the Route. The types of presentation are Push, Modal, ModalFullScreen and Custom.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">navigate(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>to:</b> <code>Coordinator</code></td></tr>
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-        </table>
+        <ul>
+          <li><b>to:</b> <code>Coordinator</code></li>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+        </ul>
       </td>
       <td>Allows you to navigate among the Coordinators. It calls the <code>start()</code> function.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">startFlow(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>to:</b> <code>Route</code></td></tr>
-          <tr class="c1"><td class="c1"><b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code></td></tr>
-        </table>
+        <ul>
+          <li><b>to:</b> <code>Route</code></li>
+          <li><b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,</li>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code></li>
+        </ul>
       </td>
       <td>Cleans the navigation stack and runs the navigation flow.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">present(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>_ view:</b> <code>ViewType</code></td></tr>
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></td></tr>
-        </table>
+        <ul>
+          <li><b>_ view:</b> <code>ViewType</code></li>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+          <li><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></li>
+        </ul>
       </td>
       <td>Presents a view modally.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">pop(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-        </table>
+        <ul>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+        </ul>
       </td>
       <td>Pops the top view from the navigation stack and updates the display.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">popToRoot(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></td></tr>
-        </table>
+        <ul>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+          <li><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></li>
+        </ul>
       </td>
       <td>Pops all the views on the stack except the root view and updates the display.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">dismiss(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-        </table>
+        <ul>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+        </ul>
       </td>
       <td>Dismisses the view that was presented modally by the view.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">popToView(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>_ view:</b> <code>T</code></td></tr>
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-        </table>
+        <ul>
+          <li><b>_ view:</b> <code>T</code></li>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+        </ul>
       </td>
       <td>Pops views until the specified view is at the top of the navigation stack. Example: <code>router.popToView(MyView.self)</code></td>
     </tr>
     <tr>
       <td><code style="color: blue;">finishFlow(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></td></tr>
-        </table>
+        <ul>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+          <li><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></li>
+        </ul>
       </td>
       <td>Pops all the views on the stack including the root view, dismisses all the modal view and remove the current coordinator from the coordinator stack.</td>
     </tr>
@@ -419,6 +421,8 @@ These are the most important features and actions that you can perform:
 <br>
 
 #### NavigationCoordinator
+
+Acts as a separate entity from the views, decoupling the navigation logic from the presentation logic. This separation of concerns allows the views to focus solely on their specific functionalities, while the Navigation Coordinator takes charge of the app's overall navigation flow. Some features are:
 
 <br>
 <table>
@@ -438,32 +442,32 @@ These are the most important features and actions that you can perform:
     <tr>
       <td><code style="color: blue;">forcePresentation(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>route:</b> <code>Route</code></td></tr>
-          <tr class="c1"><td class="c1"><b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>mainCoordinator:</b> <code>Coordinator?</code>, default: <code style="color: #ec6b6f;">mainCoordinator</code></td></tr>
-        </table>
+        <ul>
+          <li><b>route:</b> <code>Route</code></li>
+          <li><b>transitionStyle:</b> <code>NavigationTransitionStyle?</code>, default: <code style="color: #ec6b6f;">automatic</code>,</li>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+          <li><b>mainCoordinator:</b> <code>Coordinator?</code>, default: <code style="color: #ec6b6f;">mainCoordinator</code></li>
+        </ul>
       </td>
       <td>Puts the current coordinator at the top of the coordinator stack, making it the active and visible coordinator. This feature is very useful to start the navigation flow from push notifications, notification center, atypical flows, etc.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">getTopCoordinator(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>mainCoordinator:</b> <code>Coordinator?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</td></tr>
-        </table>
+        <ul>
+          <li><b>mainCoordinator:</b> <code>Coordinator?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</li>
+        </ul>
       </td>
       <td>Returns the coordinator that is at the top of the coordinator stack.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">restartApp(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>mainCoordinator:</b> <code>Coordinator?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></td></tr>
-        </table>
+        <ul>
+          <li><b>mainCoordinator:</b> <code>Coordinator?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</li>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+          <li><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></li>
+        </ul>
       </td>
       <td>Cleans the navigation stack and runs the main coordinator navigation flow.</td>
     </tr>
@@ -472,6 +476,8 @@ These are the most important features and actions that you can perform:
 <br>
 
 #### TabbarCoordinator
+
+Acts as a separate entity from the views, decoupling the navigation logic from the presentation logic. This separation of concerns allows the views to focus solely on their specific functionalities, while the Navigation Coordinator takes charge of the app's overall navigation flow. It is encharge if build the tab bar (UITabbarController) with the coordinators that were defined in its route, some features are:
 
 <br>
 <table>
@@ -490,29 +496,29 @@ These are the most important features and actions that you can perform:
     <tr>
       <td><code style="color: blue;">getCoordinatorSelected()</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>mainCoordinator:</b> <code>Coordinator?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</td></tr>
-        </table>
+        <ul>
+          <li><b>mainCoordinator:</b> <code>Coordinator?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</li>
+        </ul>
       </td>
       <td>Returns the coordinator selected that is associated to the selected tab</td>
     </tr>
     <tr>
       <td><code style="color: blue;">setPages(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>_values:</b> <code>[PAGE]?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></td></tr>
-        </table>
+        <ul>
+          <li><b>_values:</b> <code>[PAGE]?</code>, default <code style="color: #ec6b6f;">mainCoordinator</code>,</li>
+          <li><b>completion:</b> <code>(() -> Void)?</code>, default: <code style="color: #ec6b6f;">nil</code></li>
+        </ul>
       </td>
       <td>Updates the page set.</td>
     </tr>
     <tr>
       <td><code style="color: blue;">forcePresentation(_)</code></td>
       <td> 
-        <table cellspacing="0" cellpadding="0">
-          <tr class="c1"><td class="c1"><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</td></tr>
-          <tr class="c1"><td class="c1"><b>mainCoordinator:</b> <code>Coordinator?</code>, default: <code style="color: #ec6b6f;">mainCoordinator</code></td></tr>
-        </table>
+        <ul>
+          <li><b>animated:</b> <code>Bool?</code>, default <code style="color: #ec6b6f;">true</code>,</li>
+          <li><b>mainCoordinator:</b> <code>Coordinator?</code>, default: <code style="color: #ec6b6f;">mainCoordinator</code></li>
+        </ul>
       </td>
       <td>Puts the current coordinator at the top of the coordinator stack, making it the active and visible coordinator. This feature is very useful to start the navigation flow from push notifications, notification center, atypical flows, etc.</td>
     </tr>
@@ -537,8 +543,18 @@ License
 The ALCoordinator library is released under the MIT license. See the LICENSE file for more information.
 
 <style>
-table { border: none; }
-table .c1 {
-border: none !important;
+table th:first-of-type, td:first-of-type {
+    width: 20% !important;
+}
+table th:nth-of-type(2), td:nth-of-type(2) {
+    width: 40% !important;
+}
+table th:nth-of-type(3), td:nth-of-type(3) {
+    width: 40% !important;
+}
+
+
+table colgroup col {
+  width: auto !important;
 }
 </style>
