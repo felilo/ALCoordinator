@@ -544,13 +544,13 @@ The ALCoordinator library is released under the MIT license. See the LICENSE fil
 
 <style>
 table th:first-of-type, td:first-of-type {
-    width: 20%;
+    width: 20% !important;
 }
 table th:nth-of-type(2), td:nth-of-type(2) {
-    width: 40%;
+    width: 40% !important;
 }
 table th:nth-of-type(3), td:nth-of-type(3) {
-    width: 40%;
+    width: 40% !important;
 }
 
 
