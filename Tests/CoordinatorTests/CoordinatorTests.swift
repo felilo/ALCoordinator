@@ -117,7 +117,7 @@ final class ALCoordinatorTests: XCTestCase {
     XCTAssertTrue(sut.children.isEmpty)
     
     let makeChildCoordinator = makeChildCoordinator()
-    makeChildCoordinator.forcePresentation(route: .third, animated: false, mainCoordinator: sut)
+    makeChildCoordinator.forcePresentation(startWith: .third, animated: false, mainCoordinator: sut)
     
     finish(sut: sut) {
       XCTAssertEqual(sut.children.last?.uuid, makeChildCoordinator.uuid)

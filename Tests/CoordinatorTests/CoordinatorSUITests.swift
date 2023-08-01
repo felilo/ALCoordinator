@@ -55,7 +55,7 @@ final class CoordinatorSUITests: XCTestCase {
     XCTAssertTrue(sut.children.isEmpty)
     
     let makeChildCoordinator = NavigationCoordinator<MyRouter>()
-    makeChildCoordinator.forcePresentation(route: .secondStep, animated: false, mainCoordinator: sut)
+    makeChildCoordinator.forcePresentation(startWith: .secondStep, animated: false, mainCoordinator: sut)
     
     finish(sut: sut.router) {
       XCTAssertEqual(sut.children.last?.uuid, makeChildCoordinator.uuid)
