@@ -7,64 +7,98 @@
 
 import XCTest
 import SwiftUI
-@testable import ALCoordinator
+@testable import UIKCoordinator
 
 final class TabbarCoordinatorTests: XCTestCase {
   
   
-  func test_finishTabbarCoordinator() {
+  func test_finishTabbarCoordinator_with_childTabbarCoordinator() {
     let sut = makeSut()
-    finishCoordinatorExpect(sut.parent!) {
-      _ = TabbarCoordinator(parent: sut, pages: Page.allCases)
+    
+    let coordinator = TabbarCoordinator(pages: Page.allCases, parent: sut.children.first)
+    coordinator.start(animated: false)
+    
+    sut.finish(animated: false) {
+      XCTAssertTrue(sut.children.isEmpty)
+      XCTAssertTrue(sut.root.viewControllers.isEmpty)
     }
-  }
-  
-  
-  func test_buildTabbarCoordinator() {
-    var sut = makeSut()
-    buildTabbarExpect(sut)
-    
-    sut = TabbarCoordinator(
-      parent: MainCoordinator(parent: nil),
-      customView: CustomView(),
-      pages: Page.allCases.sorted(by: { $0.position < $1.position })
-    )
-    sut.start(animated: false)
-    
-    buildTabbarExpect(sut)
   }
   
   
   func test_changeTab() {
     let sut = makeSut()
-    XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
-    sut.currentPage = .secondStep
-    XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
-    sut.currentPage = .firstStep
-    XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.firstStep.position)
+      
+      sut.currentPage = .secondStep
+      XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
+      
+      sut.currentPage = .firstStep
+      XCTAssertEqual(sut.currentPage?.position, Page.firstStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.firstStep.position)
+    }
   }
   
   
   func test_getTopCoordinator() {
     let sut = makeSut()
     sut.currentPage = .secondStep
-    let currentCoordinator = sut.getCoordinatorSelected()
-    let mainCoordinator = sut.parent
-    XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
+    var currentCoordinator = sut.getCoordinatorSelected()
+    var mainCoordinator = sut.parent
+    finish(sut: sut) {
+      XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
+      
+      sut.currentPage = .firstStep
+      currentCoordinator = sut.getCoordinatorSelected()
+      mainCoordinator = sut.parent
+      XCTAssertEqual(sut.getTopCoordinator(mainCoordinator: mainCoordinator)?.uuid, currentCoordinator.uuid)
+    }
   }
-
+  
   
   func test_setPages() {
     let sut = makeSut()
     let pages = [Page.firstStep]
-    let expect = XCTestExpectation()
+    
     XCTAssertEqual(sut.children.count, Page.allCases.count)
-    sut.setPages(pages) {
-      XCTAssertEqual(sut.children.count, pages.count)
-      XCTAssertEqual(pages.count, sut.tabController?.viewControllers?.count)
-      expect.fulfill()
+    
+    sut.setPages(pages) { [weak self] in
+      self?.finish(sut: sut) {
+        XCTAssertEqual(sut.children.count, pages.count)
+        XCTAssertEqual(pages.count, sut.tabController?.viewControllers?.count)
+      }
     }
-    wait(for: [expect], timeout: 1)
+  }
+  
+  
+  func test_startCoordinator_with_customPage() {
+    let sut = makeSut(currentPage: .secondStep)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
+      XCTAssertEqual(sut.tabController.selectedIndex, Page.secondStep.position)
+    }
+  }
+  
+  
+  func test_force_to_present_a_coordinator() {
+    let mainCoordinator = MainCoordinator(parent: nil)
+    let makeChildCoordinator = ChildCoordinator()
+    
+    let sut = TabbarCoordinator(
+      pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+      currentPage: .secondStep
+    )
+    
+    mainCoordinator.router.navigate(to: makeChildCoordinator, animated: false)
+    sut.forcePresentation(animated: false, mainCoordinator: mainCoordinator)
+    
+    finish(sut: sut) {
+      XCTAssertEqual(sut.currentPage?.position, Page.secondStep.position)
+    }
   }
 }
 
@@ -78,78 +112,70 @@ extension TabbarCoordinatorTests {
   // ---------------------------------------------------------------------
   
   
-  private func makeSut() -> TabbarCoordinator<Page> {
+  private func makeSut(currentPage: Page? = nil, file: StaticString = #file, line: UInt = #line) -> TabbarCoordinator<Page> {
+    
     let coordinator = TabbarCoordinator(
-      parent: MainCoordinator(parent: nil),
-      pages: Page.allCases.sorted(by: { $0.position < $1.position })
+      pages: Page.allCases.sorted(by: { $0.position < $1.position }),
+      currentPage: currentPage
     )
-    coordinator.start(animated: false)
+    
+    let mainCoordinator = MainCoordinator(parent: nil)
+    mainCoordinator.router.navigate(to: coordinator, animated: false)
+    BaseCoordinator.mainCoordinator = coordinator.parent
+    
+    addTeardownBlock { [weak coordinator] in
+      XCTAssertNil(coordinator, "Instance should have been deallocated, potential memory leak", file: file, line: line)
+    }
     return coordinator
   }
   
-  
-  private func finishCoordinatorExpect(_ sut: Coordinator, when action: @escaping () -> Void) {
-    sut.push(.init(), animated: false)
-    sut.push(.init(), animated: false)
-    action()
-    let exp = XCTestExpectation()
-    sut.finish(animated: false) {
-      XCTAssertTrue(sut.children.isEmpty)
-      XCTAssertEqual(sut.root.viewControllers.count, 1)
-      exp.fulfill()
+  private func finish(sut: Coordinator, _ completation: @escaping () -> Void ) -> Void {
+    let exp = XCTestExpectation(description: "")
+    DispatchQueue.main.async {
+      completation()
+      sut.finish(animated: false) {
+        exp.fulfill()
+      }
     }
-    wait(for: [exp], timeout: 2)
-  }
-  
-  
-  private func buildTabbarExpect(_ sut: TabbarCoordinator<Page>) {
-    let pages = Page.allCases
-    let viewControllers = sut.tabController.viewControllers
-    
-    XCTAssertEqual(sut.children.count, pages.count)
-    XCTAssertEqual(pages.map({ $0.position }), viewControllers?.map({ $0.tabBarItem.tag }))
-  }
-  
-  
-  private struct CustomView: View {
-    var body: some View { Text("") }
+    wait(for: [exp], timeout: 1)
   }
 }
 
 
 
 extension TabbarCoordinatorTests {
- 
+  
   
   // ---------------------------------------------------------------------
   // MARK: Coordinators
   // ---------------------------------------------------------------------
   
-
-  private class ChildCoordinator: BaseCoordinator {
+  
+  private class ChildCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
-      presentCoordinator(animated: animated)
+      router.startFlow(route: .first, animated: animated)
     }
   }
   
   
-  private class OtherChildCoordinator: BaseCoordinator {
-    
+  private class OtherChildCoordinator: NavigationCoordinator<MyRouter> {
     override func start(animated: Bool = false) {
-      push(.init(), animated: animated)
-      presentCoordinator(animated: animated)
+      router.startFlow(route: .first, animated: animated)
     }
   }
   
   
-  private class MainCoordinator: BaseCoordinator { }
+  private class MainCoordinator: NavigationCoordinator<MyRouter> {
+    override func start(animated: Bool = false) {
+      router.startFlow(route: .first, animated: animated)
+    }
+  }
 }
 
 
 
 extension TabbarCoordinatorTests {
-
+  
   
   // ---------------------------------------------------------------------
   // MARK: Enums
@@ -161,10 +187,10 @@ extension TabbarCoordinatorTests {
     case firstStep
     case secondStep
     
-    func coordinator(parent: Coordinator) -> Coordinator {
+    func coordinator() -> Coordinator {
       switch self {
-        case .firstStep: return ChildCoordinator(parent: parent)
-        case .secondStep: return OtherChildCoordinator(parent: parent)
+        case .firstStep: return ChildCoordinator()
+        case .secondStep: return OtherChildCoordinator()
       }
     }
     
@@ -175,10 +201,10 @@ extension TabbarCoordinatorTests {
       }
     }
     
-    var icon: String {
+    var icon: Image {
       switch self {
-        case .firstStep: return "home"
-        case .secondStep: return "gear"
+        case .firstStep: return .init(systemName: "home")
+        case .secondStep: return .init(systemName: "gear")
       }
     }
     
@@ -188,5 +214,19 @@ extension TabbarCoordinatorTests {
         case .secondStep: return 1
       }
     }
+  }
+  
+  
+  private enum MyRouter: NavigationRoute {
+    
+    case first
+    case second
+    case third
+    
+    func view() -> UIViewController {
+      .init()
+    }
+    
+    var transition: NavigationTransitionStyle { .push }
   }
 }

@@ -1,5 +1,5 @@
 //
-//  CustomTabbarCtrl.swift
+//  NavigationAction.swift
 //
 //  Copyright (c) Andres F. Lozano
 //
@@ -24,19 +24,18 @@
 
 import SwiftUI
 
-public protocol NavigationRouter {
+public protocol NavigationAction where Route: NavigationRoute, Self.Route.T == any View {
   
-  var transition: NavigationTransitionStyle { get }
+  associatedtype Route
   
-  /// Creates and returns a view of assosiated type
-  ///
-  func view() -> any View
-}
-
-
-public enum NavigationTransitionStyle {
-  case push
-  case present
-  case presentFullscreen
-  case custom(style: UIModalPresentationStyle)
+  var router: Router<Route> { get }
+  
+  func forcePresentation(
+    startWith route: Route,
+    transitionStyle: NavigationTransitionStyle?,
+    animated: Bool,
+    mainCoordinator: Coordinator?
+  )
+  func getTopCoordinator(mainCoordinator: Coordinator?) -> Coordinator?
+  func restartApp(mainCoordinator: Coordinator?, animated: Bool, completion: (() -> Void)?)
 }

@@ -23,7 +23,6 @@
 //
 
 import UIKit
-import SwiftUI
 
 extension Coordinator {
   
@@ -61,7 +60,7 @@ extension Coordinator {
   func getDeepCoordinator(from value: inout Coordinator?) -> Coordinator?{
     if value?.children.last == nil {
       return value
-    } else if let tabCoordinator = value as? (any TabbarCoordinatable) {
+    } else if let value = value, let tabCoordinator = getTabbarCoordinable(value) {
       return topCoordinator(pCoodinator: tabCoordinator.getCoordinatorSelected())
     } else {
       var last = value?.children.last
@@ -96,17 +95,49 @@ extension Coordinator {
       completion?()
       return
     }
-    coordinator.finish(animated: animated, completion: {
+    coordinator.handleFinish(animated: animated, withDissmis: false, completion: {
       removeChildren(completion)
     })
   }
   
   
   // Clear all its properties
-  func cleanCoordinator() {
-    if let item = self as? (any TabbarCoordinatable) {
+  func emptyControllers() {
+    if let item = getTabbarCoordinable(self) {
       item.tabController?.viewControllers = []
     }
     root.viewControllers = []
+  }
+  
+  
+  func emptyCoordinator(completion: (() -> Void)?) {
+    guard let parent = parent else {
+      popToRoot(animated: false)
+      return removeChildren(completion)
+    }
+    emptyControllers()
+    parent.removeChild(
+      coordinator: self,
+      completion: completion
+    )
+  }
+  
+  
+  func getTabbarCoordinable(_ coordinator: Coordinator) ->  (any TabbarCoordinatable)? {
+    coordinator as? (any TabbarCoordinatable)
+  }
+  
+  
+  func getLatestViewCtrl(_ ctrl: UIViewController? = nil) -> UIViewController? {
+    if ctrl?.presentedViewController == nil {
+      if let navCtrl = ctrl as? UINavigationController {
+        return navCtrl.viewControllers.last
+      }
+      return ctrl
+    } else if let navCtrl = ctrl as? UINavigationController {
+      return getLatestViewCtrl(navCtrl.viewControllers.last)
+    } else {
+      return getLatestViewCtrl(ctrl?.presentedViewController)
+    }
   }
 }
