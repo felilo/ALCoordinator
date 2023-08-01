@@ -17,6 +17,7 @@ First let's define our paths and its views.
 > Next we are going to write an example of SwiftUI
 
 <br>
+
 ```swift
 import SUICoordinator
 import SwiftUI
@@ -82,7 +83,6 @@ class OnboardingCoordinator: NavigationCoordinator<OnboardingRoute> {
 _____
 
 ## Create a TabbarCoordinator
-
 
 ### 1. Create a router
 
@@ -305,13 +305,17 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 ```
 
 #### You can find an example here <https://github.com/felilo/TestCoordinatorLibrary>
+
 _____
 
-#### Actions you can perform from the coordinator depends on the kind of coordinator used. For instance, using a Router, NavigationCoordinator or TabbarCoordinator some of the functions you can perform are:
+### Features
 
+These are the most important features and actions that you can perform:
 <br>
+
 #### Router
 
+<br>
 <table>
   <thead>
     <tr>
@@ -415,10 +419,11 @@ _____
     </tr>
   </tbody>
 </table>
-
 <br>
+
 #### NavigationCoordinator
 
+<br>
 <table>
   <thead>
     <tr>
@@ -469,11 +474,11 @@ _____
     </tr>
   </tbody>
 </table>
-
-
 <br>
+
 #### TabbarCoordinator
 
+<br>
 <table>
   <thead>
     <tr>
