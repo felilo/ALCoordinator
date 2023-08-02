@@ -215,7 +215,8 @@ class MainCoordinator: NavigationCoordinator<MainRoute> {
   // MARK: Coordinator
   
   override func start(animated: Bool = false) {
-    router.navigate(to: OnboardingCoordinator(presentationStyle: .fullScreen), animated: animated)
+    let coordinator = OnboardingCoordinator(presentationStyle: .fullScreen)
+    router.navigate(to: coordinator, animated: animated)
   }
 }
 ```
@@ -254,10 +255,10 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
     guard let windowScene = (scene as? UIWindowScene) else { return }
     window = UIWindow(windowScene: windowScene)
-    setupCoordinator(window: window, animated: true)
+    setupCoordinator(animated: true)
   }
   
-  private func setupCoordinator(window: UIWindow?, animated: Bool = false) {
+  private func setupCoordinator(animated: Bool = false) {
     mainCoordinator = .init()
     setupWindow(controller: mainCoordinator?.root)
     BaseCoordinator.mainCoordinator = mainCoordinator
